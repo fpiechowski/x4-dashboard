@@ -1,0 +1,21 @@
+{
+  "name": "x4-dashboard",
+  "version": "1.0.0",
+  "description": "X4: Foundations cockpit dashboard",
+  "scripts": {
+    "install:all": "cd server && npm install && cd ../client && npm install",
+
+    "dev": "concurrently -n server,client -c cyan,magenta \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && node --watch index.js",
+    "dev:client": "cd client && npm run dev",
+
+    "mock": "node server/index.js --mock",
+    "dev:mock": "concurrently -n server,client -c cyan,magenta \"node server/index.js --mock\" \"npm run dev:client\"",
+
+    "build": "cd client && npm run build",
+    "start": "node server/index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

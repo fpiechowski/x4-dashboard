@@ -1,0 +1,66 @@
+{
+  "description": "Key bindings for X4 Dashboard system toggle buttons",
+  "note": "Key format uses Windows SendKeys notation: '{F1}'-'{F12}' for function keys, 'a'-'z' for letters, '^a' = Ctrl+A, '+a' = Shift+A, '%a' = Alt+A, '{ENTER}', '{ESC}', '{SPACE}', '{UP}', '{DOWN}', '{LEFT}', '{RIGHT}'",
+  "bindings": {
+    "flightAssist": {
+      "key": "{F7}",
+      "modifiers": [],
+      "label": "Flight Assist",
+      "description": "Toggle flight assist on/off"
+    },
+    "seta": {
+      "key": "{F8}",
+      "modifiers": [],
+      "label": "SETA",
+      "description": "Toggle SETA (time acceleration)"
+    },
+    "autopilot": {
+      "key": "{F6}",
+      "modifiers": [],
+      "label": "Autopilot",
+      "description": "Toggle autopilot navigation"
+    },
+    "boostEngine": {
+      "key": " ",
+      "modifiers": [],
+      "label": "Boost",
+      "description": "Activate engine boost"
+    },
+    "lightsOn": {
+      "key": "{F9}",
+      "modifiers": [],
+      "label": "Lights",
+      "description": "Toggle ship lights"
+    },
+    "landingGear": {
+      "key": "{F5}",
+      "modifiers": [],
+      "label": "Landing Gear",
+      "description": "Deploy/retract landing gear"
+    },
+    "hardpoints": {
+      "key": "{F3}",
+      "modifiers": [],
+      "label": "Weapons",
+      "description": "Deploy/retract weapons"
+    },
+    "shieldBoost": {
+      "key": "{F4}",
+      "modifiers": [],
+      "label": "Shield Boost",
+      "description": "Activate shield boost"
+    },
+    "travelDrive": {
+      "key": "{F2}",
+      "modifiers": [],
+      "label": "Travel Drive",
+      "description": "Toggle travel drive"
+    },
+    "silentRunning": {
+      "key": "{F1}",
+      "modifiers": [],
+      "label": "Silent Running",
+      "description": "Toggle silent running mode"
+    }
+  }
+}
