@@ -46,8 +46,8 @@ The frontend uses `@arwes/react` v1.0.0-next.25020502 — a sci-fi animation fra
 
 - **Never use React strict mode** (breaks Arwes animations)
 - All `<Text>` components must have a parent `<Animator>` node
-- Reusable panel wrapper: `client/src/components/ArwesPanel.tsx` — use this for all new panels; it handles `FrameLines` border, glow, color themes (`primary`/`danger`/`success`/`warning`/`purple`), and animated titles
-- Frame pattern requires two nested divs: `<div style={{position:'relative'}}><FrameLines .../><div style={{position:'relative'}}>content</div></div>`
+- Reusable panel wrapper: `client/src/components/ArwesPanel.tsx` — use this for all new panels; it handles `FrameCorners` border, glow, color themes (`primary`/`danger`/`success`/`warning`/`purple`), and animated titles
+- Frame pattern requires two nested divs: `<div style={{position:'relative'}}><FrameCorners .../><div style={{position:'relative'}}>content</div></div>`
 - CSS variables for frame styling: `--arwes-frames-line-color`, `--arwes-frames-bg-color`, `--arwes-frames-line-filter`
 
 ## TypeScript

@@ -126,14 +126,14 @@ export const DASHBOARDS: DashboardConfig[] = [
         id: "TargetInfo",
         col: 2,
         row: 2,
-        scale: 1.25
+        scale: 1
       },
       {
         id: "SystemFlags",
         col: 1,
         row: 3,
         colSpan: 3,
-        scale: 1.6,
+        scale: 1.5,
         grow: true
       },
       {
@@ -141,7 +141,7 @@ export const DASHBOARDS: DashboardConfig[] = [
         col: 3,
         row: 1,
         rowSpan: 2,
-        scale: 2
+        scale: 1.75,
       }
     ]
   },

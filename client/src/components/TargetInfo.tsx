@@ -1,9 +1,17 @@
-import React from 'react'
+﻿import React from 'react'
 import { CombatTarget } from '../types/gameData'
 import { ArwesPanel } from './ArwesPanel'
 
 interface Props {
   target: CombatTarget
+}
+
+const TRACK_TICKS = Array.from({ length: 20 })
+
+function hullClass(pct: number): string {
+  if (pct > 60) return ''
+  if (pct > 30) return 'med'
+  return 'low'
 }
 
 function formatDist(m: number): string {
@@ -12,77 +20,81 @@ function formatDist(m: number): string {
 }
 
 export function TargetInfo({ target }: Props) {
-  const hullPct    = Math.max(0, Math.min(100, target.hull))
+  const hullPct = Math.max(0, Math.min(100, target.hull))
   const shieldsPct = Math.max(0, Math.min(100, target.shields))
+  const hullTone = hullClass(hullPct)
 
   return (
     <ArwesPanel
       title="Target Lock"
-      titleIcon="◎"
+      titleIcon="*"
       color={target.isHostile ? 'danger' : 'warning'}
+      style={{ minHeight: '220px' }}
     >
-      {/* Scan animation overlay */}
-      <div className="scan-overlay" />
+      <div className="target-v3-panel">
+        <header className="target-v3-header">
+          <div className="target-v3-name-wrap">
+            <div className="target-name">{target.name}</div>
+            {target.shipName && <div className="target-ship">{target.shipName}</div>}
+          </div>
 
-      <div className="target-name">{target.name}</div>
-      {target.shipName && <div className="target-ship">{target.shipName}</div>}
+          <div className="target-v3-facts">
+            <div className="target-v3-fact">
+              <span className="target-v3-fact-label">Distance</span>
+              <span className="target-v3-fact-value">{target.distance > 0 ? formatDist(target.distance) : '-'}</span>
+            </div>
+            <div className="target-v3-fact">
+              <span className="target-v3-fact-label">Faction</span>
+              <span className="target-v3-fact-value">{target.faction || '-'}</span>
+            </div>
+          </div>
+        </header>
 
-      {/* Target shields */}
-      <div className="status-bar-group" style={{ marginBottom: '6px' }}>
-        <div className="status-bar-header">
-          <span className="status-bar-label" style={{ fontSize: '9px' }}>Target Shields</span>
-          <span style={{ fontSize: '13px', color: 'var(--c-cyan)', fontFamily: 'var(--font-ui)', fontWeight: 600 }}>
-            {shieldsPct.toFixed(0)}%
-          </span>
-        </div>
-        <div className="status-bar-track" style={{ height: '12px' }}>
-          <div className="status-bar-fill shields" style={{ width: `${shieldsPct}%` }} />
-        </div>
-      </div>
+        <section className="target-v3-bars">
+          <div className="clean-health-row">
+            <div className="clean-health-head">
+              <span className="clean-health-label">Target Shields</span>
+              <span className="clean-health-value shields-val">{shieldsPct.toFixed(0)}%</span>
+            </div>
+            <div className="clean-health-track">
+              <div className="status-bar-fill shields" style={{ width: `${shieldsPct}%` }} />
+              <div className="clean-health-grid">
+                {TRACK_TICKS.map((_, i) => (
+                  <div key={i} className="clean-health-tick" />
+                ))}
+              </div>
+            </div>
+          </div>
 
-      {/* Target hull */}
-      <div className="status-bar-group" style={{ marginBottom: '6px' }}>
-        <div className="status-bar-header">
-          <span className="status-bar-label" style={{ fontSize: '9px' }}>Target Hull</span>
-          <span style={{
-            fontSize: '13px',
-            fontFamily: 'var(--font-ui)',
-            fontWeight: 600,
-            color: hullPct > 60 ? 'var(--c-green)' :
-                   hullPct > 30 ? 'var(--c-orange)' : 'var(--c-red)',
-          }}>
-            {hullPct.toFixed(0)}%
-          </span>
-        </div>
-        <div className="status-bar-track" style={{ height: '12px' }}>
-          <div
-            className={`status-bar-fill hull ${hullPct > 60 ? '' : hullPct > 30 ? 'med' : 'low'}`}
-            style={{ width: `${hullPct}%` }}
-          />
-        </div>
-      </div>
+          <div className="clean-health-row">
+            <div className="clean-health-head">
+              <span className="clean-health-label">Target Hull</span>
+              <span className={`clean-health-value hull-val ${hullTone}`}>{hullPct.toFixed(0)}%</span>
+            </div>
+            <div className="clean-health-track">
+              <div className={`status-bar-fill hull ${hullTone}`} style={{ width: `${hullPct}%` }} />
+              <div className="clean-health-grid">
+                {TRACK_TICKS.map((_, i) => (
+                  <div key={i} className="clean-health-tick" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <div className="target-meta">
-        {target.isHostile && <span className="target-badge hostile">HOSTILE</span>}
-        {target.legalStatus && (
-          <span className={`target-badge ${target.legalStatus.toLowerCase() === 'wanted' ? 'hostile' : 'neutral'}`}>
-            {target.legalStatus}
-          </span>
-        )}
-        {target.distance > 0 && (
-          <span className="target-badge distance">{formatDist(target.distance)}</span>
-        )}
-        {target.combatRank && (
-          <span className="target-badge rank">{target.combatRank}</span>
-        )}
-        {target.faction && (
-          <span className="target-badge neutral">{target.faction}</span>
-        )}
-        {target.bounty > 0 && (
-          <span className="target-badge hostile">
-            BOUNTY {target.bounty.toLocaleString()} Cr
-          </span>
-        )}
+        <footer className="target-v3-footer">
+          {target.isHostile && <span className="target-badge hostile">HOSTILE</span>}
+          {target.legalStatus && (
+            <span className={`target-badge ${target.legalStatus.toLowerCase() === 'wanted' ? 'hostile' : 'neutral'}`}>
+              {target.legalStatus}
+            </span>
+          )}
+          {target.combatRank && <span className="target-badge rank">{target.combatRank}</span>}
+          {target.bounty > 0 && <span className="target-badge hostile">Bounty {target.bounty.toLocaleString()} Cr</span>}
+          {!target.isHostile && !target.legalStatus && !target.combatRank && target.bounty <= 0 && (
+            <span className="target-badge neutral">No tactical flags</span>
+          )}
+        </footer>
       </div>
     </ArwesPanel>
   )

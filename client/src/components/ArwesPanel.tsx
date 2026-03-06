@@ -4,7 +4,7 @@
  * and an optional typewriter-animated title.
  */
 import React from 'react'
-import { Animator, Animated, Text, FrameLines } from '@arwes/react'
+import { Animator, Animated, Text, FrameCorners } from '@arwes/react'
 
 type PanelColor = 'primary' | 'danger' | 'success' | 'warning' | 'purple'
 
@@ -73,16 +73,15 @@ export function ArwesPanel({
         }}
       >
         {/* Arwes SVG frame border — absolutely fills the parent */}
-        <FrameLines
+        <FrameCorners
           style={{
             '--arwes-frames-line-color': c.line,
             '--arwes-frames-bg-color': c.bg,
             '--arwes-frames-line-filter': c.filter,
           } as React.CSSProperties}
           animated
-          largeLineWidth={1}
-          smallLineWidth={1}
-          smallLineLength={14}
+          strokeWidth={1}
+          cornerLength={14}
         />
 
         {/* Content sits on top of the SVG frame */}

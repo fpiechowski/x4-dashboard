@@ -1,4 +1,4 @@
-﻿import React from 'react'
+﻿import React, { useState } from 'react'
 import { Navigation as NavType, ShipStatus, SystemFlags } from '../types/gameData'
 import { ArwesPanel } from './ArwesPanel'
 
@@ -130,7 +130,157 @@ function RetroSpeedometer({
   )
 }
 
+function CircularSpeedometer({
+  speed,
+  maxSpeed,
+  maxBoost,
+  inTravel,
+}: {
+  speed: number
+  maxSpeed: number
+  maxBoost: number
+  inTravel: boolean
+}) {
+  const displayMax = Math.max(1, inTravel && maxBoost > 0 ? maxBoost : maxSpeed > 0 ? maxSpeed : speed)
+  const speedPct = clamp(speed / displayMax, 0, 1)
+
+  const cx = 100, cy = 108, R = 68
+  const START = 135 // degrees from 3-o'clock, clockwise (lower-left)
+  const SWEEP = 270
+
+  const accent = inTravel ? '#ea80fc' : '#00e5ff'
+  const accentRgb = inTravel ? '234,128,252' : '0,229,255'
+
+  const pt = (r: number, deg: number) => ({
+    x: cx + r * Math.cos((deg * Math.PI) / 180),
+    y: cy + r * Math.sin((deg * Math.PI) / 180),
+  })
+
+  const arcD = (r: number, a1: number, a2: number) => {
+    const s = pt(r, a1)
+    const e = pt(r, a2)
+    const sweep = ((a2 - a1) + 360) % 360 || 360
+    return `M${s.x.toFixed(2)},${s.y.toFixed(2)} A${r},${r} 0 ${sweep > 180 ? 1 : 0} 1 ${e.x.toFixed(2)},${e.y.toFixed(2)}`
+  }
+
+  const endAngle = START + SWEEP // 405 = same as 45°
+  const activeEnd = START + Math.max(speedPct, 0.001) * SWEEP
+
+  const ticks = Array.from({ length: 11 }, (_, i) => {
+    const a = START + (i / 10) * SWEEP
+    const major = i % 5 === 0
+    return { a, major, p1: pt(R + 4, a), p2: pt(R + (major ? 17 : 10), a) }
+  })
+
+  const scaleLabels = [
+    { t: 0, text: '0' },
+    { t: 1, text: displayMax >= 1000 ? `${(displayMax / 1000).toFixed(1)}k` : displayMax.toFixed(0) },
+  ].map(({ t, text }) => {
+    const a = START + t * SWEEP
+    const p = pt(R + 28, a)
+    return { x: p.x, y: p.y, text }
+  })
+
+  return (
+    <div className="nav-circ-speedometer" style={{
+      background: `radial-gradient(ellipse at 50% 40%, rgba(${accentRgb},0.05) 0%, rgba(0,4,8,0.88) 68%)`,
+    }}>
+      <svg viewBox="0 0 200 200" className="nav-circ-svg">
+        <defs>
+          <filter id="circ-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="circ-glow-soft" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Outer decorative ring */}
+        <circle cx={cx} cy={cy} r={R + 22} fill="none" stroke={`rgba(${accentRgb},0.05)`} strokeWidth={1} />
+        <circle cx={cx} cy={cy} r={R + 1} fill="none" stroke={`rgba(${accentRgb},0.08)`} strokeWidth={1} />
+
+        {/* Track arc background */}
+        <path d={arcD(R, START, endAngle)} fill="none" stroke={`rgba(${accentRgb},0.12)`} strokeWidth={8} />
+
+        {/* Active arc glow layer */}
+        {speedPct > 0.002 && (
+          <path d={arcD(R, START, activeEnd)} fill="none" stroke={`rgba(${accentRgb},0.3)`} strokeWidth={12}
+            filter="url(#circ-glow-soft)" />
+        )}
+
+        {/* Active arc crisp layer */}
+        {speedPct > 0.002 && (
+          <path d={arcD(R, START, activeEnd)} fill="none" stroke={accent} strokeWidth={3}
+            filter="url(#circ-glow)" />
+        )}
+
+        {/* Tick marks */}
+        {ticks.map((t, i) => (
+          <line key={i}
+            x1={t.p1.x.toFixed(2)} y1={t.p1.y.toFixed(2)}
+            x2={t.p2.x.toFixed(2)} y2={t.p2.y.toFixed(2)}
+            stroke={t.major ? `rgba(${accentRgb},0.65)` : `rgba(${accentRgb},0.25)`}
+            strokeWidth={t.major ? 1.5 : 0.8}
+          />
+        ))}
+
+        {/* Scale labels at arc ends */}
+        {scaleLabels.map((l, i) => (
+          <text key={i} x={l.x.toFixed(2)} y={l.y.toFixed(2)}
+            textAnchor="middle" dominantBaseline="middle"
+            fill={`rgba(${accentRgb},0.45)`} fontSize="8"
+            style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.5px' }}>
+            {l.text}
+          </text>
+        ))}
+
+        {/* Inner dark circle backdrop */}
+        <circle cx={cx} cy={cy} r={R - 14} fill="rgba(0,5,10,0.88)" />
+        <circle cx={cx} cy={cy} r={R - 14} fill="none" stroke={`rgba(${accentRgb},0.1)`} strokeWidth={1} />
+
+        {/* Speed value */}
+        <text x={cx} y={cy - 10} textAnchor="middle" dominantBaseline="middle"
+          fill={accent} fontSize="30"
+          style={{
+            fontFamily: 'var(--font-ui)',
+            fontWeight: 700,
+            filter: `drop-shadow(0 0 7px rgba(${accentRgb},0.6))`,
+          }}>
+          {speed.toFixed(0)}
+        </text>
+
+        {/* m/s unit */}
+        <text x={cx} y={cy + 14} textAnchor="middle" dominantBaseline="middle"
+          fill={`rgba(${accentRgb},0.45)`} fontSize="8"
+          style={{ fontFamily: 'var(--font-mono)', letterSpacing: '1.5px' }}>
+          m/s
+        </text>
+
+        {/* Percentage */}
+        <text x={cx} y={cy + 27} textAnchor="middle" dominantBaseline="middle"
+          fill={`rgba(${accentRgb},0.28)`} fontSize="7"
+          style={{ fontFamily: 'var(--font-mono)', letterSpacing: '1px' }}>
+          {Math.round(speedPct * 100)}%
+        </text>
+      </svg>
+
+      {inTravel && maxBoost > 0 && (
+        <div className="nav-retro-boost-note">Travel mode — boost max {maxBoost.toFixed(0)}</div>
+      )}
+    </div>
+  )
+}
+
 export function Navigation({ nav, ship, systems }: Props) {
+  const [speedMode, setSpeedMode] = useState<'bars' | 'gauge'>('bars')
   const heading = normalizeHeading(nav.heading)
   const compassDir = compassLabel(heading)
   const maxSpeed = ship?.maxSpeed ?? 0
@@ -150,6 +300,12 @@ export function Navigation({ nav, ship, systems }: Props) {
       style={{ aspectRatio: '3 / 4', minHeight: '320px' }}
     >
       <div className="nav-vertical">
+        <div className="nav-sector-under">
+          <div className="nav-sector-label">Sector</div>
+          <div className={`nav-sector-name ${nav.inTravelMode ? 'travel' : ''}`}>{nav.sector || '-'}</div>
+          {nav.cluster && nav.cluster !== nav.sector && <div className="nav-sector-cluster">{nav.cluster}</div>}
+        </div>
+
         <div className="nav-heading-compact">
           <div className="nav-heading-caption">Heading</div>
           <div className="nav-heading-main">
@@ -159,12 +315,23 @@ export function Navigation({ nav, ship, systems }: Props) {
           <HeadingLine heading={heading} inTravel={nav.inTravelMode} />
         </div>
 
-        <RetroSpeedometer speed={nav.speed} maxSpeed={maxSpeed} maxBoost={maxBoost} inTravel={nav.inTravelMode} />
-
-        <div className="nav-sector-under">
-          <div className="nav-sector-label">Sector</div>
-          <div className={`nav-sector-name ${nav.inTravelMode ? 'travel' : ''}`}>{nav.sector || '-'}</div>
-          {nav.cluster && nav.cluster !== nav.sector && <div className="nav-sector-cluster">{nav.cluster}</div>}
+        <div className="nav-speed-wrapper">
+          <div className="nav-speed-header">
+            <div className={`nav-speed-toggle${nav.inTravelMode ? ' travel' : ''}`}>
+              <button
+                className={`nav-speed-toggle-btn${speedMode === 'bars' ? ' active' : ''}`}
+                onClick={() => setSpeedMode('bars')}
+              >BAR</button>
+              <button
+                className={`nav-speed-toggle-btn${speedMode === 'gauge' ? ' active' : ''}`}
+                onClick={() => setSpeedMode('gauge')}
+              >ARC</button>
+            </div>
+          </div>
+          {speedMode === 'bars'
+            ? <RetroSpeedometer speed={nav.speed} maxSpeed={maxSpeed} maxBoost={maxBoost} inTravel={nav.inTravelMode} />
+            : <CircularSpeedometer speed={nav.speed} maxSpeed={maxSpeed} maxBoost={maxBoost} inTravel={nav.inTravelMode} />
+          }
         </div>
 
         <div className="nav-chips-row">

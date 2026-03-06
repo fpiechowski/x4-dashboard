@@ -47,6 +47,11 @@ interface LayoutProps {
 }
 
 function GridLayout({ config, state, onKeyPress }: LayoutProps & { config: GridDashboard }) {
+  const underAttackPlacement = config.widgets.find(w => w.id === 'UnderAttack')
+  const rowOffset = (underAttackPlacement && state.combat.underAttack)
+    ? (underAttackPlacement.rowSpan ?? 1)
+    : 0
+
   return (
     <div
       className="dashboard-grid"
@@ -55,13 +60,16 @@ function GridLayout({ config, state, onKeyPress }: LayoutProps & { config: GridD
       {config.widgets.map(w => {
         const content = renderWidget(w.id, state, onKeyPress)
         if (content === null) return null
+        const effectiveRow = (w.id !== 'UnderAttack' && rowOffset > 0 && w.row >= underAttackPlacement!.row)
+          ? w.row + rowOffset
+          : w.row
         return (
           <div
             key={w.id}
             className="dashboard-grid-cell"
             style={{
               gridColumn: w.colSpan ? `${w.col} / span ${w.colSpan}` : w.col,
-              gridRow:    w.rowSpan ? `${w.row} / span ${w.rowSpan}` : w.row,
+              gridRow:    w.rowSpan ? `${effectiveRow} / span ${w.rowSpan}` : effectiveRow,
               ...(w.scale && w.scale !== 1 ? { zoom: w.scale } : {}),
               ...(w.grow ? { alignSelf: 'stretch' } : {}),
               ...(w.height ? { height: w.height } : {}),

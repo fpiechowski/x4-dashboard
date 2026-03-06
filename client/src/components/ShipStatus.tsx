@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { ShipStatus as ShipStatusType } from '../types/gameData'
 import { ArwesPanel } from './ArwesPanel'
 
@@ -6,131 +6,108 @@ interface Props {
   ship: ShipStatusType
 }
 
-const TICKS = Array.from({ length: 10 })
+const TRACK_TICKS = Array.from({ length: 20 })
 
-function hullColorClass(pct: number): string {
+function hullClass(pct: number): string {
   if (pct > 60) return ''
   if (pct > 30) return 'med'
   return 'low'
 }
 
-export function ShipStatus({ ship }: Props) {
-  const { hull, shields, shieldsUp, boostEnergy, speed, overHeating } = ship
+function safeNum(value: number | null | undefined, digits = 0): string {
+  if (value === null || value === undefined) return '-'
+  return value.toFixed(digits)
+}
 
-  const hullPct    = Math.max(0, Math.min(100, hull))
-  const shieldsPct = Math.max(0, Math.min(100, shields))
-  const boostPct   = Math.max(0, Math.min(100, boostEnergy))
-  const hullCls    = hullColorClass(hullPct)
+export function ShipStatus({ ship }: Props) {
+  const hullPct = Math.max(0, Math.min(100, ship.hull))
+  const shieldsPct = Math.max(0, Math.min(100, ship.shields))
+  const boostPct = Math.max(0, Math.min(100, ship.boostEnergy))
+  const hullTone = hullClass(hullPct)
 
   return (
-    <ArwesPanel
-      title="Ship Status"
-      titleIcon="◉"
-      color="primary"
-    >
-      <div className="status-bars">
-        {/* ── Shields ─────────────────────────── */}
-        <div className="status-bar-group">
-          <div className="status-bar-header">
-            <span className="status-bar-label">
-              {shieldsUp ? '◈ Shields' : '◈ Shields — DOWN'}
-            </span>
-            <span
-              className="status-bar-value shields-val"
-              style={!shieldsUp ? { color: 'var(--c-text-dim)' } : undefined}
-            >
-              {shieldsPct.toFixed(0)}%
-            </span>
-          </div>
-          <div className="status-bar-track">
-            <div
-              className={`status-bar-fill shields${!shieldsUp ? ' off' : shieldsPct < 25 ? ' low' : ''}`}
-              style={{ width: `${shieldsPct}%` }}
-            />
-            <div className="status-bar-ticks">
-              {TICKS.map((_, i) => <div key={i} className="status-bar-tick" />)}
-            </div>
-          </div>
-        </div>
-
-        {/* ── Hull ────────────────────────────── */}
-        <div className="status-bar-group">
-          <div className="status-bar-header">
-            <span className="status-bar-label">◆ Hull Integrity</span>
-            <span className={`status-bar-value hull-val ${hullCls}`}>
-              {hullPct.toFixed(0)}%
-            </span>
-          </div>
-          <div className="status-bar-track">
-            <div
-              className={`status-bar-fill hull ${hullCls}`}
-              style={{ width: `${hullPct}%` }}
-            />
-            <div className="status-bar-ticks">
-              {TICKS.map((_, i) => <div key={i} className="status-bar-tick" />)}
-            </div>
-          </div>
-        </div>
-
-        {/* Heat Warning Strip */}
-        {overHeating && (
-          <div className="heat-warning-bar" title="⚠ OVERHEATING" />
-        )}
-
-        {/* ── Boost Energy + Speed ─────────────── */}
-        <div className="flex-row" style={{ gap: '16px', marginTop: '4px' }}>
-          <div style={{ flex: 1 }}>
-            <div className="status-bar-header">
-              <span className="status-bar-label" style={{ fontSize: '9px' }}>▲ Boost Energy</span>
-              <span style={{ fontSize: '12px', color: 'var(--c-cyan)', fontFamily: 'var(--font-ui)', fontWeight: 600 }}>
-                {boostPct.toFixed(0)}%
-              </span>
-            </div>
-            <div className="status-bar-track" style={{ height: '10px' }}>
-              <div className="status-bar-fill shields" style={{ width: `${boostPct}%` }} />
-            </div>
-          </div>
-
-          <div style={{ textAlign: 'right', minWidth: '90px' }}>
-            <div className="nav-cell-label">Speed</div>
-            <div className="nav-cell-value speed-val">
-              {speed.toFixed(0)}
-              <span className="nav-cell-unit">m/s</span>
-            </div>
-            {ship.maxSpeed > 0 && (
-              <div style={{ fontSize: '9px', color: 'var(--c-text-dim)' }}>
-                / {ship.maxSpeed.toFixed(0)} max
+    <ArwesPanel title="Ship Status" titleIcon="*" color="primary" style={{ minHeight: '220px' }}>
+      <div className="ship-status-panel">
+        <div className="ship-status-main">
+          <div className="clean-health-stack">
+            <div className="clean-health-row">
+              <div className="clean-health-head">
+                <span className="clean-health-label">Shields</span>
+                <span className="clean-health-value shields-val">{shieldsPct.toFixed(0)}%</span>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* ── Fuel / Cargo ─────────────────────── */}
-        {(ship.fuel !== null || ship.cargo > 0) && (
-          <div className="flex-row" style={{ gap: '20px', marginTop: '4px' }}>
-            {ship.fuel !== null && (
-              <div>
-                <div className="nav-cell-label">Fuel</div>
-                <div style={{ fontSize: '13px', color: 'var(--c-text)', fontFamily: 'var(--font-ui)', fontWeight: 600 }}>
-                  {ship.fuel.toFixed(1)}
-                  {ship.fuelReserve !== null && (
-                    <span style={{ fontSize: '9px', color: 'var(--c-text-dim)' }}>
-                      {' '}+{ship.fuelReserve.toFixed(1)}
-                    </span>
-                  )}
+              <div className="clean-health-track">
+                <div
+                  className={`status-bar-fill shields${!ship.shieldsUp ? ' off' : shieldsPct < 25 ? ' low' : ''}`}
+                  style={{ width: `${shieldsPct}%` }}
+                />
+                <div className="clean-health-grid">
+                  {TRACK_TICKS.map((_, i) => (
+                    <div key={i} className="clean-health-tick" />
+                  ))}
                 </div>
               </div>
-            )}
-            {ship.maxCargo > 0 && (
-              <div>
-                <div className="nav-cell-label">Cargo</div>
-                <div style={{ fontSize: '13px', color: 'var(--c-text)', fontFamily: 'var(--font-ui)', fontWeight: 600 }}>
-                  {ship.cargo}/{ship.maxCargo}<span className="nav-cell-unit">t</span>
+            </div>
+
+            <div className="clean-health-row">
+              <div className="clean-health-head">
+                <span className="clean-health-label">Hull</span>
+                <span className={`clean-health-value hull-val ${hullTone}`}>{hullPct.toFixed(0)}%</span>
+              </div>
+              <div className="clean-health-track">
+                <div className={`status-bar-fill hull ${hullTone}`} style={{ width: `${hullPct}%` }} />
+                <div className="clean-health-grid">
+                  {TRACK_TICKS.map((_, i) => (
+                    <div key={i} className="clean-health-tick" />
+                  ))}
                 </div>
               </div>
-            )}
+            </div>
+
+            <div className="clean-health-row compact">
+              <div className="clean-health-head">
+                <span className="clean-health-label">Boost Energy</span>
+                <span className="clean-health-value shields-val small">{boostPct.toFixed(0)}%</span>
+              </div>
+              <div className="clean-health-track compact">
+                <div className="status-bar-fill shields" style={{ width: `${boostPct}%` }} />
+                <div className="clean-health-grid">
+                  {TRACK_TICKS.map((_, i) => (
+                    <div key={i} className="clean-health-tick" />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        )}
+
+          <aside className="ship-status-aside">
+            <div className="ship-side-card">
+              <div className="ship-side-label">Fuel</div>
+              <div className="ship-side-value">
+                {safeNum(ship.fuel, 1)}
+                {ship.fuelReserve !== null && ship.fuelReserve !== undefined ? ` +${safeNum(ship.fuelReserve, 1)}` : ''}
+              </div>
+            </div>
+
+            <div className="ship-side-card">
+              <div className="ship-side-label">Cargo</div>
+              <div className="ship-side-value">
+                {ship.maxCargo > 0 ? `${ship.cargo}/${ship.maxCargo} t` : `${ship.cargo} t`}
+              </div>
+            </div>
+
+            <div className="ship-side-card">
+              <div className="ship-side-label">Status</div>
+              <div className="ship-side-pills">
+                {ship.isDockedOrLanded && <span className="ship-pill">Docked</span>}
+                {ship.landingGearDown && <span className="ship-pill">Gear Down</span>}
+                {ship.overHeating && <span className="ship-pill alert">Overheating</span>}
+                {!ship.isDockedOrLanded && !ship.landingGearDown && !ship.overHeating && (
+                  <span className="ship-pill dim">Nominal</span>
+                )}
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
     </ArwesPanel>
   )
