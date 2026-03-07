@@ -1713,76 +1713,51 @@ body {
   border-right: none;
 }
 
-/* ── Parallelogram cell health bar ─────────────────────────────── */
+/* ── SVG solid bar widgets ─────────────────────────────────────── */
 
-.para-bar-row {
-  padding: 8px 0 4px 0;
+.svg-bar-row {
+  padding: 4px 0;
 }
 
-.para-bar-head {
+.svg-bar-head {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
-.para-bar-label {
+.svg-bar-label {
   font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--c-text-dim);
 }
 
-.para-bar-value {
+.svg-bar-value {
   font-family: var(--font-ui);
   font-size: 18px;
   line-height: 1;
   font-weight: 700;
 }
 
-.para-bar-value.shields-val { color: var(--c-cyan); text-shadow: var(--glow-cyan); }
-.para-bar-value.hull-val    { color: var(--c-green); }
-.para-bar-value.hull-val.med { color: var(--c-orange); }
-.para-bar-value.hull-val.low { color: var(--c-red); text-shadow: var(--glow-red); }
+.svg-bar-value.shields-val { color: var(--c-cyan); text-shadow: var(--glow-cyan); }
+.svg-bar-value.hull-val    { color: var(--c-green); }
+.svg-bar-value.hull-val.med { color: var(--c-orange); }
+.svg-bar-value.hull-val.low { color: var(--c-red); text-shadow: var(--glow-red); }
 
-.para-bar-cells {
-  display: flex;
-  gap: 2px;
-  height: 18px;
-}
-
-.para-cell {
-  flex: 1;
-  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+.svg-bar-svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
 }
 
-/* Filled variants */
-.para-cell.filled.shields {
-  background: var(--c-cyan);
-  filter: drop-shadow(0 0 4px var(--c-cyan)) drop-shadow(0 0 8px hsl(191deg 100% 50% / 50%));
-}
-.para-cell.filled.hull-high {
-  background: var(--c-green);
-  filter: drop-shadow(0 0 4px var(--c-green)) drop-shadow(0 0 8px hsl(151deg 100% 45% / 50%));
-}
-.para-cell.filled.hull-med {
-  background: var(--c-orange);
-  filter: drop-shadow(0 0 4px var(--c-orange)) drop-shadow(0 0 8px hsl(26deg 100% 50% / 50%));
-}
-.para-cell.filled.hull-low {
-  background: var(--c-red);
-  filter: drop-shadow(0 0 5px var(--c-red)) drop-shadow(0 0 10px hsl(349deg 100% 55% / 60%));
-  animation: paraFlicker 0.5s ease-in-out infinite;
+.hull-svg-low {
+  animation: hullSvgPulse 1.2s ease-in-out infinite;
 }
 
-/* Empty variant */
-.para-cell.empty {
-  background: rgba(255, 255, 255, 0.07);
-}
-
-@keyframes paraFlicker {
+@keyframes hullSvgPulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.55; }
+  50%       { opacity: 0.7; }
 }
 
 .ship-status-aside {
