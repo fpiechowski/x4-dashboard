@@ -1743,27 +1743,25 @@ body {
 /* Filled variants */
 .para-cell.filled.shields {
   background: var(--c-cyan);
-  box-shadow: 0 0 6px var(--c-cyan), 0 0 12px hsl(191deg 100% 50% / 40%);
+  filter: drop-shadow(0 0 4px var(--c-cyan)) drop-shadow(0 0 8px hsl(191deg 100% 50% / 50%));
 }
 .para-cell.filled.hull-high {
   background: var(--c-green);
-  box-shadow: 0 0 6px var(--c-green), 0 0 12px hsl(151deg 100% 45% / 40%);
+  filter: drop-shadow(0 0 4px var(--c-green)) drop-shadow(0 0 8px hsl(151deg 100% 45% / 50%));
 }
 .para-cell.filled.hull-med {
   background: var(--c-orange);
-  box-shadow: 0 0 6px var(--c-orange), 0 0 12px hsl(26deg 100% 50% / 40%);
+  filter: drop-shadow(0 0 4px var(--c-orange)) drop-shadow(0 0 8px hsl(26deg 100% 50% / 50%));
 }
 .para-cell.filled.hull-low {
   background: var(--c-red);
-  box-shadow: 0 0 8px var(--c-red), 0 0 16px hsl(349deg 100% 55% / 50%);
+  filter: drop-shadow(0 0 5px var(--c-red)) drop-shadow(0 0 10px hsl(349deg 100% 55% / 60%));
   animation: paraFlicker 0.5s ease-in-out infinite;
 }
 
 /* Empty variant */
 .para-cell.empty {
-  background: rgba(255, 255, 255, 0.04);
-  outline: 1px solid rgba(255, 255, 255, 0.10);
-  outline-offset: -1px;
+  background: rgba(255, 255, 255, 0.07);
 }
 
 @keyframes paraFlicker {
