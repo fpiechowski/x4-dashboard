@@ -1697,6 +1697,80 @@ body {
   border-right: none;
 }
 
+/* ── Parallelogram cell health bar ─────────────────────────────── */
+
+.para-bar-row {
+  padding: 6px 0;
+}
+
+.para-bar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.para-bar-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+}
+
+.para-bar-value {
+  font-family: var(--font-ui);
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.para-bar-value.shields-val { color: var(--c-cyan); text-shadow: var(--glow-cyan); }
+.para-bar-value.hull-val    { color: var(--c-green); }
+.para-bar-value.hull-val.med { color: var(--c-orange); }
+.para-bar-value.hull-val.low { color: var(--c-red); text-shadow: var(--glow-red); }
+
+.para-bar-cells {
+  display: flex;
+  gap: 3px;
+  height: 18px;
+}
+
+.para-cell {
+  flex: 1;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+}
+
+/* Filled variants */
+.para-cell.filled.shields {
+  background: var(--c-cyan);
+  box-shadow: 0 0 6px var(--c-cyan), 0 0 12px hsl(191deg 100% 50% / 40%);
+}
+.para-cell.filled.hull-high {
+  background: var(--c-green);
+  box-shadow: 0 0 6px var(--c-green), 0 0 12px hsl(151deg 100% 45% / 40%);
+}
+.para-cell.filled.hull-med {
+  background: var(--c-orange);
+  box-shadow: 0 0 6px var(--c-orange), 0 0 12px hsl(26deg 100% 50% / 40%);
+}
+.para-cell.filled.hull-low {
+  background: var(--c-red);
+  box-shadow: 0 0 8px var(--c-red), 0 0 16px hsl(349deg 100% 55% / 50%);
+  animation: paraFlicker 0.5s ease-in-out infinite;
+}
+
+/* Empty variant */
+.para-cell.empty {
+  background: rgba(255, 255, 255, 0.04);
+  outline: 1px solid rgba(255, 255, 255, 0.10);
+  outline-offset: -1px;
+}
+
+@keyframes paraFlicker {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
 .ship-status-aside {
   display: flex;
   flex-direction: column;

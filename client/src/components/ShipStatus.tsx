@@ -5,7 +5,8 @@ interface Props {
   ship: ShipStatusType
 }
 
-const TRACK_TICKS = Array.from({ length: 20 })
+const CELL_COUNT = 30
+const CELLS = Array.from({ length: CELL_COUNT })
 
 function hullClass(pct: number): string {
   if (pct > 60) return ''
@@ -15,20 +16,20 @@ function hullClass(pct: number): string {
 
 export function ShipShieldsWidget({ ship }: Props) {
   const pct = Math.max(0, Math.min(100, ship.shields))
+  const filledCount = Math.round((pct / 100) * CELL_COUNT)
   return (
-    <div className="clean-health-row">
-      <div className="clean-health-head">
-        <span className="clean-health-label">Shields</span>
-        <span className="clean-health-value shields-val">{pct.toFixed(0)}%</span>
+    <div className="para-bar-row">
+      <div className="para-bar-head">
+        <span className="para-bar-label">Shields</span>
+        <span className="para-bar-value shields-val">{pct.toFixed(0)}%</span>
       </div>
-      <div className="clean-health-track">
-        <div
-          className={`status-bar-fill shields${pct < 25 ? ' low' : ''}`}
-          style={{ width: `${pct}%` }}
-        />
-        <div className="clean-health-grid">
-          {TRACK_TICKS.map((_, i) => <div key={i} className="clean-health-tick" />)}
-        </div>
+      <div className="para-bar-cells">
+        {CELLS.map((_, i) => (
+          <div
+            key={i}
+            className={`para-cell ${i < filledCount ? 'filled shields' : 'empty'}`}
+          />
+        ))}
       </div>
     </div>
   )
@@ -36,18 +37,22 @@ export function ShipShieldsWidget({ ship }: Props) {
 
 export function ShipHullWidget({ ship }: Props) {
   const pct = Math.max(0, Math.min(100, ship.hull))
+  const filledCount = Math.round((pct / 100) * CELL_COUNT)
   const tone = hullClass(pct)
+  const filledClass = tone === 'low' ? 'hull-low' : tone === 'med' ? 'hull-med' : 'hull-high'
   return (
-    <div className="clean-health-row">
-      <div className="clean-health-head">
-        <span className="clean-health-label">Hull</span>
-        <span className={`clean-health-value hull-val ${tone}`}>{pct.toFixed(0)}%</span>
+    <div className="para-bar-row">
+      <div className="para-bar-head">
+        <span className="para-bar-label">Hull</span>
+        <span className={`para-bar-value hull-val ${tone}`}>{pct.toFixed(0)}%</span>
       </div>
-      <div className="clean-health-track">
-        <div className={`status-bar-fill hull ${tone}`} style={{ width: `${pct}%` }} />
-        <div className="clean-health-grid">
-          {TRACK_TICKS.map((_, i) => <div key={i} className="clean-health-tick" />)}
-        </div>
+      <div className="para-bar-cells">
+        {CELLS.map((_, i) => (
+          <div
+            key={i}
+            className={`para-cell ${i < filledCount ? `filled ${filledClass}` : 'empty'}`}
+          />
+        ))}
       </div>
     </div>
   )
