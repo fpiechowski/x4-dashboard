@@ -14,15 +14,15 @@ function hullClass(pct: number): string {
 export function ShipShieldsWidget({ ship }: Props) {
   const pct = Math.max(0, Math.min(100, ship.shields))
   const clipId = React.useId()
-  // Hexagon points: pointed left and right ends
-  const points = '8,0 392,0 400,14 392,28 8,28 0,14'
+  // Hexagon points: pointed left and right ends (viewBox 400×12)
+  const points = '6,0 394,0 400,6 394,12 6,12 0,6'
   return (
     <div className="svg-bar-row">
       <div className="svg-bar-head">
         <span className="svg-bar-label">Shields</span>
         <span className="svg-bar-value shields-val">{pct.toFixed(0)}%</span>
       </div>
-      <svg className="svg-bar-svg" viewBox="0 0 400 28" preserveAspectRatio="none">
+      <svg className="svg-bar-svg shields-svg" viewBox="0 0 400 12" preserveAspectRatio="none">
         <defs>
           <clipPath id={clipId} clipPathUnits="objectBoundingBox">
             <rect x="0" y="0" width={pct / 100} height="1" />
@@ -51,8 +51,8 @@ export function ShipHullWidget({ ship }: Props) {
   const pct = Math.max(0, Math.min(100, ship.hull))
   const tone = hullClass(pct)
   const clipId = React.useId()
-  // Armour plate: diagonal top-right cut, angled lower-left corner
-  const points = '0,0 390,0 400,12 400,24 12,24 0,12'
+  // Armour plate: diagonal top-right cut, angled lower-left corner (viewBox 400×10)
+  const points = '0,0 392,0 400,5 400,10 8,10 0,5'
   const fillColour =
     tone === 'low' ? 'var(--c-red)' :
     tone === 'med' ? 'var(--c-orange)' :
@@ -71,7 +71,7 @@ export function ShipHullWidget({ ship }: Props) {
         <span className="svg-bar-label">Hull</span>
         <span className={`svg-bar-value hull-val ${tone}`}>{pct.toFixed(0)}%</span>
       </div>
-      <svg className="svg-bar-svg" viewBox="0 0 400 24" preserveAspectRatio="none">
+      <svg className="svg-bar-svg" viewBox="0 0 400 10" preserveAspectRatio="none">
         <defs>
           <clipPath id={clipId} clipPathUnits="objectBoundingBox">
             <rect x="0" y="0" width={pct / 100} height="1" />
