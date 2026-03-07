@@ -31,18 +31,18 @@ export function PlayerInfo({ player, ship }: Props) {
         </div>
       </div>
 
-      {player.sectorname && (
+      {player.sector && (
         <div className="player-location">
           <span>⌖</span>
-          <span className="location-sector">{player.sectorname}</span>
-          {player.sectorowner && (
-            <span className="location-owner">({player.sectorowner})</span>
+          <span className="location-sector">{player.sector}</span>
+          {player.sectorOwner && (
+            <span className="location-owner">({player.sectorOwner})</span>
           )}
         </div>
       )}
 
       {ship.name && (
-        <div className="ship-name-badge">◆ {ship.name}{ship.class ? ` · ${ship.class}` : ''}</div>
+        <div className="ship-name-badge">◆ {ship.name}{ship.type ? ` · ${ship.type}` : ''}</div>
       )}
 
       {!hasData && (

@@ -19,22 +19,41 @@ There are no tests and no linter configured.
 This is a single Node.js application (`server/`) that serves a built React frontend (`server/public/`). In dev mode, Vite runs separately on port 3000 and proxies `/api` to port 3001.
 
 **Data flow:**
-1. `server/x4ExternalApp.js` polls `http://localhost:8080/api/data` every 1s (X4 External App mod)
-2. `server/simpitReader.js` reads newline-delimited JSON from named pipe `\\.\pipe\x4simpit_out` (X4 Simpit mod)
-3. `server/dataAggregator.js` merges both sources into a unified state — External App has precedence, Simpit is fallback for hull/shields/navigation
-4. `server/index.js` broadcasts that state via WebSocket to all clients; also exposes REST endpoints for key presses and keybinding config
-5. `client/src/hooks/useGameData.ts` receives WebSocket messages and provides `state`, `wsConnected`, and `pressKey(action)` to React components
-6. Clicking a System Flag button calls `pressKey(action)` → `POST /api/keypress` → `server/keyPresser.js` → PowerShell `SendKeys` (Windows) or `xdotool` (Linux) → key reaches X4
+1. X4 Lua mod (`game-mods/mycu_external_app/`) POSTs game state JSON to `POST /api/data` on every tick
+2. `server/index.js` receives the POST, strips X4 color codes via `server/utils/normalizeData.js`, feeds data to the aggregator, and broadcasts via WebSocket
+3. `server/dataAggregator.js` builds unified state — partial updates are merged so ship-only ticks don't wipe mission/logbook data
+4. `client/src/hooks/useGameData.ts` receives WebSocket messages and provides `state`, `wsConnected`, and `pressKey(action)` to React components
+5. Clicking a System Flag button calls `pressKey(action)` → `POST /api/keypress` → `server/keyPresser.js` → PowerShell `SendKeys` (Windows) or `xdotool` (Linux) → key reaches X4
 
-**Mock mode** (`npm run mock` or `node server/index.js --mock`) bypasses both data sources and uses `server/mockData.js`, which generates an evolving simulated game state with periodic combat events.
+**Mock mode** (`npm run mock` or `node server/index.js --mock`) bypasses the Lua mod and uses `server/mockData.js`, which generates an evolving simulated game state.
+
+## Game State Model
+
+All frontend types are in `client/src/types/gameData.ts`. The unified `GameState` has these top-level fields:
+
+| Field | Type | Source |
+|-------|------|--------|
+| `_meta` | `ConnectionMeta` | Server (timestamp, externalConnected) |
+| `player` | `PlayerInfo` | `playerProfile` widget (name, faction, credits, sector, sectorOwner) |
+| `ship` | `ShipStatus` | `shipStatus` widget (name, type, hull, shields, isDockedOrLanded) |
+| `flight` | `FlightState` | `shipStatus` widget (speed, maxSpeed, boostEnergy, boosting, travelDrive, flightAssist, seta) |
+| `combat` | `CombatState` | Reserved — target always null currently |
+| `missionOffers` | `MissionOffers \| null` | `mission_offers` widget |
+| `activeMission` | `ActiveMission \| null` | `active_mission` widget |
+| `logbook` | `{ list: LogbookEntry[] } \| null` | `logbook` widget |
+| `currentResearch` | `CurrentResearch \| null` | `current_research` widget |
+| `factions` | `Record \| null` | `factions` widget |
+| `agents` | `any[] \| null` | `agents` widget |
+| `inventory` | `Record \| null` | `inventory` widget |
+| `transactionLog` | `{ list: any[] } \| null` | `transaction_log` widget |
+
+When adding new data fields, update both the TypeScript interface in `gameData.ts` **and** the `getState()` output in `server/dataAggregator.js`.
 
 ## Server Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3001` | Server port |
-| `X4_EXTERNAL_URL` | `http://localhost:8080` | X4 External App URL |
-| `SIMPIT_PIPE` | `\\.\pipe\x4simpit_out` | Named pipe path |
 
 ## Key Bindings
 
@@ -52,11 +71,19 @@ The frontend uses `@arwes/react` v1.0.0-next.25020502 — a sci-fi animation fra
 
 ## TypeScript
 
-All frontend types are defined in `client/src/types/gameData.ts`. `tsconfig.json` sets `strict: false`. When adding new data fields, update both the TypeScript interface and the aggregator output in `server/dataAggregator.js`.
+`tsconfig.json` sets `strict: false`. Run `npx tsc --noEmit` inside `client/` to check for type errors.
 
 ## Adding a New System Flag / Key Binding
 
 1. Add the action key to `server/config/keybindings.json`
-2. Add the button to `client/src/components/SystemFlags.tsx` — follow the existing pattern (reads `state.systems.*`, calls `pressKey(action)`)
-3. Add the corresponding field to `SystemFlags` interface in `client/src/types/gameData.ts`
-4. Map the Simpit flag bit in `server/dataAggregator.js` `parseFlags()` if it comes from Simpit
+2. Add an entry to `FLAG_CONFIG` in `client/src/components/SystemFlags.tsx` with the matching `key` from `FlightState`
+3. Add the field to `FlightState` in `client/src/types/gameData.ts` if it doesn't exist
+4. Map the field in `server/dataAggregator.js` `getState()` from `ext.shipStatus.*`
+
+## Lua Mod
+
+The mod lives in `game-mods/mycu_external_app/`. To deploy, copy the folder to your X4 extensions directory. Key config:
+
+- `ui/config.lua` — sets `host = 'localhost'`, `port = 3001`
+- `ui/widgets/ship_status.lua` — exposes hull, shields, speed, maxSpeed, boosting, travelMode, flightAssist, boostEnergy, docked, seta, shipSize, ship name
+- Each widget POSTs its data independently; the aggregator merges partial updates

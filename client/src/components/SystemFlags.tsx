@@ -1,30 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { SystemFlags as SystemFlagsType, KeyBinding, KeyBindings } from '../types/gameData'
+import { FlightState, KeyBinding, KeyBindings } from '../types/gameData'
 
 interface Props {
-  systems: SystemFlagsType
+  flight: FlightState
   onKeyPress: (action: string) => void
 }
 
 const FLAG_CONFIG: Array<{
-  key: keyof SystemFlagsType
+  key: keyof FlightState
   action: string
   icon: string
   label: string
 }> = [
-  { key: 'flightAssist',       action: 'flightAssist',  icon: '⊳', label: 'Flight Assist' },
-  { key: 'seta',               action: 'seta',           icon: '≫', label: 'SETA' },
-  { key: 'autopilot',          action: 'autopilot',      icon: '⊡', label: 'Autopilot' },
-  { key: 'travelDrive',        action: 'travelDrive',    icon: '△', label: 'Travel Drive' },
-  { key: 'shieldsUp',          action: 'shieldBoost',    icon: '⬡', label: 'Shield Boost' },
-  { key: 'hardpointsDeployed', action: 'hardpoints',     icon: '⊠', label: 'Weapons' },
-  { key: 'landingGearDown',    action: 'landingGear',    icon: '⊟', label: 'Landing Gear' },
-  { key: 'lightsOn',           action: 'lightsOn',       icon: '⊙', label: 'Lights' },
-  { key: 'boost',              action: 'boostEngine',    icon: '▲', label: 'Boost' },
-  { key: 'silentRunning',      action: 'silentRunning',  icon: '◌', label: 'Silent' },
+  { key: 'flightAssist', action: 'flightAssist', icon: '⊳', label: 'Flight Assist' },
+  { key: 'seta',         action: 'seta',          icon: '≫', label: 'SETA' },
+  { key: 'travelDrive',  action: 'travelDrive',   icon: '△', label: 'Travel Drive' },
+  { key: 'boosting',     action: 'boostEngine',   icon: '▲', label: 'Boost' },
 ]
 
-export function SystemFlags({ systems, onKeyPress }: Props) {
+export function SystemFlags({ flight, onKeyPress }: Props) {
   const [bindings, setBindings] = useState<Record<string, KeyBinding>>({})
   const [pressing, setPressing] = useState<string | null>(null)
 
@@ -47,7 +41,7 @@ export function SystemFlags({ systems, onKeyPress }: Props) {
     <>
       <div className="sysflags-grid">
         {FLAG_CONFIG.map(({ key, action, icon, label }) => {
-          const isOn = !!systems[key]
+          const isOn = !!flight[key]
           const binding = bindings[action]
           const isPressed = pressing === action
 

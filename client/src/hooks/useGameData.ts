@@ -2,25 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { GameState } from '../types/gameData';
 
 const DEFAULT_STATE: GameState = {
-  _meta: { timestamp: '', externalConnected: false, simpitConnected: false },
-  player: { name: '–', faction: '', credits: 0, sectorname: '', sectorowner: '' },
-  ship: {
-    name: '', class: '', hull: 100, shields: 100, shieldsUp: true,
-    speed: 0, boostEnergy: 100, isDockedOrLanded: false, landingGearDown: false,
-    overHeating: false, inDanger: false, maxSpeed: 0, maxBoostSpeed: 0,
-    fuel: null, fuelReserve: null, cargo: 0, maxCargo: 0, oxygen: null,
-  },
-  navigation: {
-    sector: '', cluster: '', speed: 0, heading: 0,
-    coordinates: { x: 0, y: 0, z: 0 }, inTravelMode: false, legalStatus: '',
-  },
-  systems: {
-    flightAssist: true, seta: false, autopilot: false, boost: false,
-    lightsOn: false, hardpointsDeployed: false, landingGearDown: false,
-    shieldsUp: true, massLocked: false, travelDrive: false, silentRunning: false,
-  },
-  combat: { underAttack: false, attackType: null, target: null },
-  docked: null,
+  _meta: { timestamp: '', externalConnected: false },
+  player: { name: '–', faction: '', credits: 0, sector: '', sectorOwner: '' },
+  ship: { name: '', type: '', hull: 100, shields: 100, isDockedOrLanded: false },
+  flight: { speed: 0, maxSpeed: 0, boostEnergy: 100, boosting: false, travelDrive: false, flightAssist: true, seta: false },
+  combat: { target: null },
   missionOffers: null,
   activeMission: null,
   logbook: null,
@@ -29,8 +15,6 @@ const DEFAULT_STATE: GameState = {
   agents: null,
   inventory: null,
   transactionLog: null,
-  comms: [],
-  loadout: null,
 };
 
 export function useGameData(wsUrl: string) {

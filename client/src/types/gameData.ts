@@ -1,60 +1,32 @@
 export interface ConnectionMeta {
   timestamp: string;
   externalConnected: boolean;
-  simpitConnected: boolean;
 }
 
 export interface PlayerInfo {
   name: string;
   faction: string;
   credits: number;
-  sectorname: string;
-  sectorowner: string;
+  sector: string;
+  sectorOwner: string;
 }
 
 export interface ShipStatus {
   name: string;
-  class: string;
+  type: string;         // ship_s / ship_m / ship_l / ship_xl
   hull: number;         // 0–100 %
   shields: number;      // 0–100 %
-  shieldsUp: boolean;
-  speed: number;        // m/s
-  boostEnergy: number;  // 0–100 %
   isDockedOrLanded: boolean;
-  landingGearDown: boolean;
-  overHeating: boolean;
-  inDanger: boolean;
-  maxSpeed: number;
-  maxBoostSpeed: number;
-  fuel: number | null;
-  fuelReserve: number | null;
-  cargo: number;
-  maxCargo: number;
-  oxygen: number | null;
 }
 
-export interface Navigation {
-  sector: string;
-  cluster: string;
-  speed: number;
-  heading: number;
-  coordinates: { x: number; y: number; z: number };
-  inTravelMode: boolean;
-  legalStatus: string;
-}
-
-export interface SystemFlags {
+export interface FlightState {
+  speed: number;        // current m/s
+  maxSpeed: number;     // speed hardcap m/s
+  boostEnergy: number;  // 0–100 %
+  boosting: boolean;
+  travelDrive: boolean;
   flightAssist: boolean;
   seta: boolean;
-  autopilot: boolean;
-  boost: boolean;
-  lightsOn: boolean;
-  hardpointsDeployed: boolean;
-  landingGearDown: boolean;
-  shieldsUp: boolean;
-  massLocked: boolean;
-  travelDrive: boolean;
-  silentRunning: boolean;
 }
 
 export interface CombatTarget {
@@ -71,25 +43,7 @@ export interface CombatTarget {
 }
 
 export interface CombatState {
-  underAttack: boolean;
-  attackType: string | null;
   target: CombatTarget | null;
-}
-
-export interface DockedStation {
-  stationName: string;
-  stationType: string;
-  faction: string;
-  sector: string;
-  services: string[];
-}
-
-export interface CommMessage {
-  sender: string;
-  content: string;
-  channel: string;
-  timestamp: string;
-  source: string;
 }
 
 export interface MissionEntry {
@@ -148,10 +102,8 @@ export interface GameState {
   _meta: ConnectionMeta;
   player: PlayerInfo;
   ship: ShipStatus;
-  navigation: Navigation;
-  systems: SystemFlags;
+  flight: FlightState;
   combat: CombatState;
-  docked: DockedStation | null;
   missionOffers: MissionOffers | null;
   activeMission: ActiveMission | null;
   logbook: { list: LogbookEntry[] } | null;
@@ -160,8 +112,6 @@ export interface GameState {
   agents: any[] | null;
   inventory: Record<string, any> | null;
   transactionLog: { list: any[] } | null;
-  comms: CommMessage[];
-  loadout: any | null;
 }
 
 export interface KeyBinding {

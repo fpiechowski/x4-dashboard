@@ -3,7 +3,6 @@ import { Animator, Text } from '@arwes/react'
 import { GameState } from '../types/gameData'
 import { DASHBOARDS, getDashboard, WidgetId, PanelDisplay, GridDashboard, ColumnsDashboard } from '../dashboards'
 import { ArwesPanel } from './ArwesPanel'
-import { UnderAttackAlert } from './UnderAttackAlert'
 import { PlayerInfo } from './PlayerInfo'
 import { ShipShieldsWidget, ShipHullWidget, ShipCargoWidget, ShipStatusWidget } from './ShipStatus'
 import { TargetInfoWidget, TargetShieldsWidget, TargetHullWidget } from './TargetInfo'
@@ -37,14 +36,14 @@ function renderWidget(
     case 'TargetShields':  return state.combat.target ? <TargetShieldsWidget target={state.combat.target} /> : null
     case 'TargetHull':     return state.combat.target ? <TargetHullWidget target={state.combat.target} /> : null
     case 'TargetInfo':     return state.combat.target ? <TargetInfoWidget target={state.combat.target} /> : null
-    case 'NavHeading':     return <NavHeadingWidget nav={state.navigation} systems={state.systems} />
-    case 'NavSpeedometer': return <NavSpeedometerWidget nav={state.navigation} ship={state.ship} />
-    case 'SystemFlags':    return <SystemFlags systems={state.systems} onKeyPress={onKeyPress} />
+    case 'NavHeading':     return <NavHeadingWidget player={state.player} flight={state.flight} />
+    case 'NavSpeedometer': return <NavSpeedometerWidget flight={state.flight} />
+    case 'SystemFlags':    return <SystemFlags flight={state.flight} onKeyPress={onKeyPress} />
     case 'ActiveMission':  return <ActiveMission mission={state.activeMission} />
     case 'MissionOffers':  return <MissionOffers offers={state.missionOffers} />
-    case 'Comms':          return <Comms comms={state.comms} logbook={state.logbook} />
+    case 'Comms':          return <Comms logbook={state.logbook} />
     case 'Research':       return <Research research={state.currentResearch} />
-    case 'UnderAttack':    return state.combat.underAttack ? <UnderAttackAlert attackType={state.combat.attackType} /> : null
+    case 'UnderAttack':    return null
   }
 }
 
@@ -130,11 +129,6 @@ interface LayoutProps {
 }
 
 function GridLayout({ config, state, onKeyPress }: LayoutProps & { config: GridDashboard }) {
-  const underAttackPlacement = config.panels.find(p => p.id === 'underAttack')
-  const rowOffset = (underAttackPlacement && state.combat.underAttack)
-    ? (underAttackPlacement.rowSpan ?? 1)
-    : 0
-
   return (
     <div
       className="dashboard-grid"
@@ -143,16 +137,13 @@ function GridLayout({ config, state, onKeyPress }: LayoutProps & { config: GridD
       {config.panels.map(item => {
         const content = renderPanel(item, state, onKeyPress)
         if (content === null) return null
-        const effectiveRow = (item.id !== 'underAttack' && rowOffset > 0 && item.row >= underAttackPlacement!.row)
-          ? item.row + rowOffset
-          : item.row
         return (
           <div
             key={`${item.col}-${item.row}`}
             className="dashboard-grid-cell"
             style={{
               gridColumn: item.colSpan ? `${item.col} / span ${item.colSpan}` : item.col,
-              gridRow:    item.rowSpan ? `${effectiveRow} / span ${item.rowSpan}` : effectiveRow,
+              gridRow:    item.rowSpan ? `${item.row} / span ${item.rowSpan}` : item.row,
               ...(item.scale && item.scale !== 1 ? { zoom: item.scale } : {}),
               ...(item.grow ? { alignSelf: 'stretch' } : {}),
               ...(item.height ? { height: item.height } : {}),
@@ -229,13 +220,6 @@ export function Dashboard({ state, wsConnected, dashboardId, onKeyPress, onOpenS
               EXT APP
             </div>
           )}
-          {_meta.simpitConnected && (
-            <div className="conn-badge active">
-              <span className="conn-dot" />
-              SIMPIT
-            </div>
-          )}
-
           {/* ── Dashboard selector ── */}
           <select
             className="dashboard-selector"
@@ -255,10 +239,7 @@ export function Dashboard({ state, wsConnected, dashboardId, onKeyPress, onOpenS
 
       {/* ── Docked/Landed banner — full width, conditional ── */}
       {ship.isDockedOrLanded && (
-        <div className="docked-banner">
-          {ship.landingGearDown ? '⊟ DOCKED' : '▼ LANDED'}
-          {state.docked?.stationName && ` · ${state.docked.stationName}`}
-        </div>
+        <div className="docked-banner">▼ DOCKED</div>
       )}
 
       {/* ── Config-driven layout ────────────────── */}

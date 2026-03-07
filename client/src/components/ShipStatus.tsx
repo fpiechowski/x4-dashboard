@@ -23,7 +23,7 @@ export function ShipShieldsWidget({ ship }: Props) {
       </div>
       <div className="clean-health-track">
         <div
-          className={`status-bar-fill shields${!ship.shieldsUp ? ' off' : pct < 25 ? ' low' : ''}`}
+          className={`status-bar-fill shields${pct < 25 ? ' low' : ''}`}
           style={{ width: `${pct}%` }}
         />
         <div className="clean-health-grid">
@@ -53,15 +53,8 @@ export function ShipHullWidget({ ship }: Props) {
   )
 }
 
-export function ShipCargoWidget({ ship }: Props) {
-  return (
-    <div className="ship-side-card">
-      <div className="ship-side-label">Cargo</div>
-      <div className="ship-side-value">
-        {ship.maxCargo > 0 ? `${ship.cargo}/${ship.maxCargo} t` : `${ship.cargo} t`}
-      </div>
-    </div>
-  )
+export function ShipCargoWidget(_props: Props) {
+  return null
 }
 
 export function ShipStatusWidget({ ship }: Props) {
@@ -70,11 +63,7 @@ export function ShipStatusWidget({ ship }: Props) {
       <div className="ship-side-label">Status</div>
       <div className="ship-side-pills">
         {ship.isDockedOrLanded && <span className="ship-pill">Docked</span>}
-        {ship.landingGearDown && <span className="ship-pill">Gear Down</span>}
-        {ship.overHeating && <span className="ship-pill alert">Overheating</span>}
-        {!ship.isDockedOrLanded && !ship.landingGearDown && !ship.overHeating && (
-          <span className="ship-pill dim">Nominal</span>
-        )}
+        {!ship.isDockedOrLanded && <span className="ship-pill dim">Nominal</span>}
       </div>
     </div>
   )

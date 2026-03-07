@@ -163,7 +163,7 @@ export const DASHBOARDS: DashboardConfig[] = [
             },
             {
                 title: 'Navigation', titleIcon: '*',
-                colorFn: (s) => s.navigation.legalStatus?.toLowerCase() === 'wanted' ? 'danger' : 'primary',
+                color: 'primary',
                 internal: {
                     layout: 'columns', columns: [{
                         widgets: [
@@ -207,7 +207,7 @@ export const DASHBOARDS: DashboardConfig[] = [
             {
                 title: 'Navigation',
                 titleIcon: '*',
-                colorFn: (s) => s.navigation.legalStatus?.toLowerCase() === 'wanted' ? 'danger' : 'primary',
+                color: 'primary',
                 internal: {
                     layout: 'columns', columns: [{
                         widgets: [

@@ -1,70 +1,59 @@
 # X4 Foundations Dashboard
 
-A real-time cockpit dashboard for X4: Foundations built with React + [Arwes](https://arwes.dev/) sci-fi framework.
+A real-time cockpit dashboard for X4: Foundations built with React + [Arwes](https://arwes.dev/) sci-fi UI framework.
 
-## Data Sources
-
-| Source | What it provides |
-|--------|-----------------|
-| [X4 External App](https://github.com/mycumycu/X4-External-App) | Player profile, missions, logbook, factions, research, agents, inventory |
-| [X4 Simpit](https://github.com/bekopharm/x4-simpit) | Ship hull/shields, navigation, combat alerts, system flags, comms |
-
-The dashboard merges both sources — overlapping data (player name, credits, sector) uses X4 External App as the primary source with Simpit as fallback.
+Game data is pushed directly from a custom Lua mod — no external tools or middleware required.
 
 ## Features
 
-- **Ship Status panel** — large hull and shield bars with color-coded health levels
-- **Under Attack alert** — full-width red flashing banner with attack type (missile / unknown)
-- **System Flags** — clickable toggle buttons (Flight Assist, SETA, Autopilot, Travel Drive, Weapons, Landing Gear, Lights, Boost, Silent Running)
-- **Configurable key bindings** — each system button can trigger a configurable key press on the server host, so clicking in the browser sends the key to the game
-- **Navigation panel** — sector, speed, heading compass, legal status
-- **Target lock panel** — target hull/shields + faction/legal/distance info
-- **Mission Offers** (left column) — grouped by type, expandable with description
-- **Active Mission** — current mission with reward and time remaining
-- **Comms / Logbook** (right column) — in-game messages and logbook events
+- **Ship Status** — hull and shield bars with color-coded health levels
+- **Navigation** — sector name, speed graph (bar or arc gauge), boost energy, travel drive indicator
+- **System Flags** — clickable buttons for Flight Assist, SETA, Travel Drive, Boost with live on/off state
+- **Configurable key bindings** — each system button triggers a configurable key press sent to the game window
+- **Target info** — target hull/shields and faction details
+- **Mission Offers** — grouped by type (plot / guild / coalition / other), expandable
+- **Active Mission** — current mission name, reward, and time remaining
+- **Comms / Logbook** — in-game logbook events
 - **Research tracker** — current research progress and resource requirements
-- **Connection status** — live indicators for WebSocket, X4 External App, and Simpit
+- **Connection status** — live indicators for WebSocket and game data stream
 
 ## Quick Start — Preview with Mock Data
 
-No game required. Just run:
+No game required:
 
 ```bash
 npm run mock
 ```
 
-Then open **http://localhost:3001** in your browser.
-
-The mock mode generates a realistic evolving game state:
-- Ship hull/shields that take damage during periodic combat events (every 45s)
-- Speed, heading, and boost energy that change over time
-- A flashing "UNDER ATTACK — MISSILE" alert every 45 seconds
-- Mock missions, research progress, logbook entries, comms
-- Credits slowly increasing (simulated mining income)
+Open **http://localhost:3001** in your browser. Mock mode generates an evolving game state: fluctuating hull/shields, changing speed, periodic combat events, missions, logbook, and research.
 
 ---
 
 ## Architecture
 
-This is **one Node.js application** (`server/`). The `client/` folder is just the React source code — it gets compiled into `server/public/` and served by the same server.
+One Node.js application. The `client/` folder is React source that compiles into `server/public/` and is served by the same server.
 
 ```
-┌─────────────────────────────────────────────┐
-│  Node.js server (server/index.js, port 3001) │
-│                                             │
-│  • Serves static frontend (server/public/)  │
-│  • WebSocket → pushes data to browser       │
-│  • REST API → key press commands            │
-│  • Polls X4 External App every 1s           │
-│  • Reads X4 Simpit named pipe               │
-└─────────────────────────────────────────────┘
-         ▲ serves           ▲ WebSocket
-         │                  │
-   browser opens       dashboard UI
-   localhost:3001      (React/Arwes)
+┌──────────────────────────────────────────────────┐
+│  Node.js server (server/index.js, port 3001)      │
+│                                                   │
+│  POST /api/data  ← X4 Lua mod pushes on each tick │
+│  WebSocket       → pushes state to browser        │
+│  POST /api/keypress ← browser → key sent to game  │
+│  Static files    → serves built React frontend    │
+└──────────────────────────────────────────────────┘
+         ▲ serves          ▲ WebSocket
+         │                 │
+   browser opens      dashboard UI
+   localhost:3001     (React/Arwes)
 ```
 
-The `client/` folder only exists to hold the React/TypeScript source. In development you run both the Vite dev server (for hot-reloading) and the Node server simultaneously. In production, you build once and run only the Node server.
+**Data flow:**
+1. X4 Lua mod POSTs JSON game state to `POST /api/data` on every tick
+2. Server strips X4 color codes (`server/utils/normalizeData.js`), feeds to aggregator
+3. `server/dataAggregator.js` merges partial updates into unified state (ship-only ticks don't wipe mission data)
+4. State broadcast via WebSocket to all connected browser clients
+5. Browser clicks → `POST /api/keypress` → PowerShell `SendKeys` (Windows) or `xdotool` (Linux) → key reaches X4
 
 ---
 
@@ -73,10 +62,7 @@ The `client/` folder only exists to hold the React/TypeScript source. In develop
 ### Prerequisites
 
 - Node.js v18+
-- X4: Foundations with:
-  - [X4 External App](https://github.com/mycumycu/X4-External-App) (provides REST API on `localhost:8080`)
-  - [X4 Simpit](https://github.com/bekopharm/x4-simpit) (optional, provides real-time flight data via named pipe)
-  - On Windows: [X4_Python_Pipe_Server](https://github.com/SirNukes/X4-Python-Pipe-Server) if using Simpit
+- X4: Foundations
 
 ### Install
 
@@ -84,119 +70,116 @@ The `client/` folder only exists to hold the React/TypeScript source. In develop
 npm run install:all
 ```
 
-Or manually:
-```bash
-cd server && npm install
-cd ../client && npm install
-```
-
 ### Run — Mock preview (no game needed)
 
 ```bash
 npm run mock
-# → opens http://localhost:3001 with fake evolving data
+# open http://localhost:3001
 ```
 
-### Run — With real game (production)
+### Run — With real game
 
 ```bash
-npm run build    # compile React → server/public/ (only needed once after changes)
-npm start        # start Node server — serves dashboard + connects to game
-# → open http://localhost:3001
+npm run build    # compile React → server/public/ (once after source changes)
+npm start        # start server on port 3001
+# open http://localhost:3001
 ```
 
 ### Run — Development (hot-reload)
 
 ```bash
 npm run dev
-# starts both: Node server (port 3001) + Vite dev server (port 3000)
-# → open http://localhost:3000 for hot-reloading
+# Node server on port 3001, Vite on port 3000
+# open http://localhost:3000
 ```
+
+---
+
+## Lua Mod Setup
+
+The custom Lua mod lives in `game-mods/mycu_external_app/`. Copy the folder to your X4 extensions directory:
+
+```
+X4 Foundations/extensions/mycu_external_app/
+```
+
+The mod POSTs game state directly to `http://localhost:3001/api/data` on every game tick. No additional software is needed — just the dashboard server and the mod.
+
+Configuration is in `game-mods/mycu_external_app/ui/config.lua`:
+
+```lua
+host = 'localhost'
+port = 3001
+```
+
+---
 
 ## Configuration
 
-### Environment Variables (server)
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `3001` | Server port |
-| `X4_EXTERNAL_URL` | `http://localhost:8080` | X4 External App URL |
-| `SIMPIT_PIPE` | `\\.\pipe\x4simpit_out` | X4 Simpit named pipe path |
-
 ### Key Bindings
 
-Click the **⚙ KEY BINDINGS** button in the header to configure which key each system button triggers.
+Click **⎔ KEY BINDINGS** in the dashboard header to configure which key each system button triggers.
 
 Bindings are stored in `server/config/keybindings.json`.
 
 **Key format** (Windows SendKeys notation):
-- `{F1}` through `{F12}` — function keys
-- `a` through `z`, `0` through `9` — regular keys
-- `{ENTER}`, `{ESC}`, `{SPACE}`, `{TAB}` — special keys
-- `{UP}`, `{DOWN}`, `{LEFT}`, `{RIGHT}` — arrow keys
-- `^a` — Ctrl+A
-- `+a` — Shift+A
-- `%a` — Alt+A
-- `^+{F1}` — Ctrl+Shift+F1
 
-**How it works:** When you click a system button in the browser, it sends a `POST /api/keypress` request to the backend server. The server uses PowerShell `SendKeys` (Windows) or `xdotool` (Linux) to simulate the key press on the host machine. The game must be in the foreground (or use borderless windowed mode on a secondary screen) to receive the key press.
+| Format | Example | Meaning |
+|--------|---------|---------|
+| Function keys | `{F1}` – `{F12}` | F1 through F12 |
+| Regular keys | `a`, `1` | Letters and digits |
+| Special keys | `{ENTER}`, `{ESC}`, `{SPACE}` | Special keys |
+| Arrow keys | `{UP}`, `{DOWN}`, `{LEFT}`, `{RIGHT}` | Arrow keys |
+| Ctrl | `^a` | Ctrl+A |
+| Shift | `+a` | Shift+A |
+| Alt | `%a` | Alt+A |
+| Combo | `^+{F1}` | Ctrl+Shift+F1 |
 
-**Recommended setup:** Run X4 in borderless windowed mode on your main screen, and open the dashboard on a secondary screen or tablet/phone. This way you can click buttons and they'll go to X4.
+**How it works:** Clicking a button sends `POST /api/keypress` to the backend, which uses PowerShell `SendKeys` (Windows) or `xdotool` (Linux) to simulate the key press on the host machine. The game must be the foreground window or in borderless windowed mode to receive the key.
 
-## Dashboard Layout
+### Environment Variables
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  X4 FOUNDATIONS · COMMAND INTERFACE            [LIVE] [EXT] [⚙]    │
-├──────────────────── UNDER ATTACK ── ⚠ MISSILE ⚠ ────────────────────┤ (conditional)
-│                     │                         │                     │
-│  ACTIVE MISSION     │  COMMANDER NAME         │  RESEARCH           │
-│                     │  Faction · Credits      │  Progress bar       │
-│  MISSION OFFERS     │  ⌖ Sector               │                     │
-│                     │                         │  COMMS / LOGBOOK    │
-│  ■ Plot missions    │  ◈ SHIELDS ████ 85%     │                     │
-│  ■ Guild missions   │  ◆ HULL    ████ 92%     │  Messages from game │
-│  ■ Other missions   │  ⚡ Boost  ████ 60%     │  and NPC comms      │
-│                     │                         │                     │
-│                     │  TARGET LOCK            │                     │
-│                     │  Target shields/hull    │                     │
-│                     │                         │                     │
-│                     │  ◈ NAVIGATION           │                     │
-│                     │  Sector / Speed / HDG   │                     │
-│                     │                         │                     │
-│                     │  ⚙ SYSTEMS              │                     │
-│                     │  [FLIGHT ASSIST] [SETA] │                     │
-│                     │  [AUTOPILOT] [WEAPONS]  │                     │
-└─────────────────────┴─────────────────────────┴─────────────────────┘
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3001` | Server port |
 
-## Architecture
+---
+
+## Project Structure
 
 ```
 x4-dashboard/
-├── server/               Node.js backend
-│   ├── index.js          Express + WebSocket server
-│   ├── x4ExternalApp.js  Polls X4 External App REST API every 1s
-│   ├── simpitReader.js   Reads from X4 Simpit named pipe
-│   ├── dataAggregator.js Merges both sources into unified state
-│   ├── keyPresser.js     Key press simulation (PowerShell/xdotool)
+├── server/                   Node.js backend
+│   ├── index.js              Express + WebSocket server, POST /api/data receiver
+│   ├── dataAggregator.js     Merges Lua widget data into unified GameState
+│   ├── keyPresser.js         Key press simulation (PowerShell / xdotool)
+│   ├── mockData.js           Simulated game state for development
+│   ├── utils/
+│   │   └── normalizeData.js  Strips X4 color codes from game strings
 │   └── config/
 │       └── keybindings.json  User-configurable key bindings
-└── client/               React frontend (Vite + TypeScript)
-    └── src/
-        ├── App.tsx
-        ├── hooks/useGameData.ts    WebSocket connection + key press API
-        └── components/
-            ├── Dashboard.tsx       Main 3-column layout
-            ├── UnderAttackAlert    Red flashing alert banner
-            ├── PlayerInfo          Commander name, faction, credits, sector
-            ├── ShipStatus          Hull + shield bars (most prominent)
-            ├── TargetInfo          Target hull/shields/faction
-            ├── Navigation          Speed, heading, sector
-            ├── SystemFlags         Clickable system toggle buttons
-            ├── MissionOffers       Left column — available missions
-            ├── ActiveMission       Current active mission
-            ├── Comms               Right column — comms + logbook
-            ├── Research            Research progress
-            └── KeyBindingsModal    Key binding configuration UI
+├── client/                   React frontend (Vite + TypeScript)
+│   └── src/
+│       ├── App.tsx
+│       ├── dashboards.ts         Dashboard/panel/widget layout config
+│       ├── types/gameData.ts     All TypeScript interfaces for game state
+│       ├── hooks/useGameData.ts  WebSocket connection + key press API
+│       └── components/
+│           ├── Dashboard.tsx         Layout engine (grid / columns)
+│           ├── ArwesPanel.tsx        Reusable sci-fi panel wrapper
+│           ├── PlayerInfo.tsx        Name, faction, credits, sector
+│           ├── ShipStatus.tsx        Hull + shield bars
+│           ├── Navigation.tsx        Speed graph, sector, travel drive
+│           ├── SystemFlags.tsx       Clickable system toggle buttons
+│           ├── TargetInfo.tsx        Target hull/shields/faction
+│           ├── MissionOffers.tsx     Available missions list
+│           ├── ActiveMission.tsx     Current active mission
+│           ├── Comms.tsx             Logbook entries
+│           ├── Research.tsx          Research progress
+│           └── KeyBindingsModal.tsx  Key binding configuration UI
+└── game-mods/
+    └── mycu_external_app/    Custom X4 Lua mod
+        └── ui/
+            ├── config.lua    host/port configuration
+            └── widgets/      One file per data widget (ship_status, logbook, etc.)
 ```

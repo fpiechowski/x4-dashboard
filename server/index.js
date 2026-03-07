@@ -1,7 +1,7 @@
 /**
  * X4 Dashboard Server
- * Aggregates data from X4 External App and X4 Simpit,
- * broadcasts unified state via WebSocket, and handles key press commands.
+ * Aggregates data from X4 External App, broadcasts unified state via WebSocket,
+ * and handles key press commands.
  */
 
 const express = require('express');
@@ -11,15 +11,12 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 
-const X4ExternalApp = require('./x4ExternalApp');
-const SimpitReader = require('./simpitReader');
 const DataAggregator = require('./dataAggregator');
 const MockDataSource = require('./mockData');
 const keyPresser = require('./keyPresser');
+const { normalizeData } = require('./utils/normalizeData');
 
 const PORT = process.env.PORT || 3001;
-const EXTERNAL_APP_URL = process.env.X4_EXTERNAL_URL || 'http://localhost:8080';
-const SIMPIT_PIPE = process.env.SIMPIT_PIPE || '\\\\.\\pipe\\x4simpit_out';
 const KEYBINDINGS_PATH = path.join(__dirname, 'config', 'keybindings.json');
 
 const MOCK_MODE = process.argv.includes('--mock') || process.env.MOCK === 'true';
@@ -55,7 +52,6 @@ function broadcast(data) {
 
 wss.on('connection', (ws, req) => {
   console.log(`[WS] Client connected from ${req.socket.remoteAddress}`);
-  // Send current state immediately on connect
   ws.send(JSON.stringify(aggregator.getState()));
   ws.on('error', (err) => console.log(`[WS] Client error: ${err.message}`));
   ws.on('close', () => console.log('[WS] Client disconnected'));
@@ -69,37 +65,25 @@ function onExternalData(data) {
   broadcast(aggregator.getState());
 }
 
-function onSimpitEvent(event) {
-  aggregator.updateSimpit(event);
-  broadcast(aggregator.getState());
-}
-
-let x4App = null;
-let simpit = null;
 let mock = null;
 
 if (MOCK_MODE) {
-  // ── Mock mode: generated fake evolving data ──────────────────────────────
   mock = new MockDataSource();
-  mock.on('data',  onExternalData);
-  mock.on('event', onSimpitEvent);
+  mock.on('data', onExternalData);
   mock.start();
-} else {
-  // ── Live mode: real data sources ─────────────────────────────────────────
-  x4App = new X4ExternalApp({ baseUrl: EXTERNAL_APP_URL });
-  x4App.on('data', onExternalData);
-  x4App.start();
-
-  simpit = new SimpitReader({ pipePath: SIMPIT_PIPE });
-  simpit.on('event', onSimpitEvent);
-  simpit.on('connected',    () => broadcast(aggregator.getState()));
-  simpit.on('disconnected', () => broadcast(aggregator.getState()));
-  simpit.start();
 }
 
 // === REST API ===
 
-// Trigger a key press for a named action
+// Receives game data pushed directly from the X4 Lua mod (mycu_external_app)
+app.post('/api/data', (req, res) => {
+  if (!MOCK_MODE) {
+    const data = normalizeData(req.body || {});
+    onExternalData({ ...data, _connected: true });
+  }
+  res.send('ok');
+});
+
 app.post('/api/keypress', (req, res) => {
   const { action } = req.body || {};
   if (!action) return res.status(400).json({ error: 'action is required' });
@@ -120,7 +104,6 @@ app.post('/api/keypress', (req, res) => {
   res.json({ ok: true, action, key: binding.key });
 });
 
-// Get all key bindings
 app.get('/api/keybindings', (req, res) => {
   try {
     const data = JSON.parse(fs.readFileSync(KEYBINDINGS_PATH, 'utf8'));
@@ -130,7 +113,6 @@ app.get('/api/keybindings', (req, res) => {
   }
 });
 
-// Update key bindings (merge with existing)
 app.put('/api/keybindings', (req, res) => {
   try {
     const current = JSON.parse(fs.readFileSync(KEYBINDINGS_PATH, 'utf8'));
@@ -147,18 +129,12 @@ app.put('/api/keybindings', (req, res) => {
   }
 });
 
-// Get current aggregated state (for debugging)
 app.get('/api/state', (req, res) => {
   res.json(aggregator.getState());
 });
 
-// Health check
 app.get('/api/health', (req, res) => {
-  res.json({
-    ok: true,
-    externalConnected: aggregator.externalConnected,
-    simpitConnected: aggregator.simpitConnected,
-  });
+  res.json({ ok: true, externalConnected: aggregator.externalConnected });
 });
 
 // === Start server ===
@@ -172,18 +148,13 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('========================================');
   console.log(`  Open:   http://localhost:${PORT}`);
   if (lan) console.log(`  LAN:    http://${lan.address}:${PORT}`);
-  if (!MOCK_MODE) {
-    console.log(`  Data:   ${EXTERNAL_APP_URL}/api/data`);
-    console.log(`  Pipe:   ${SIMPIT_PIPE}`);
-  }
+  if (!MOCK_MODE) console.log(`  Data:   POST http://localhost:${PORT}/api/data`);
   console.log('========================================\n');
 });
 
 // Graceful shutdown
 process.on('SIGINT', () => {
   console.log('\nShutting down...');
-  x4App?.stop();
-  simpit?.stop();
   mock?.stop();
   server.close(() => process.exit(0));
 });

@@ -1,27 +1,8 @@
 import React, { useState } from 'react'
-import { Navigation as NavType, ShipStatus, SystemFlags } from '../types/gameData'
-
-const DIRS_16 = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
-
-function compassLabel(deg: number): string {
-  return DIRS_16[Math.round(deg / 22.5) % 16]
-}
+import { PlayerInfo, FlightState } from '../types/gameData'
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value))
-}
-
-function normalizeHeading(deg: number): number {
-  return ((deg % 360) + 360) % 360
-}
-
-function cardinalFromDeg(deg: number): string {
-  const d = normalizeHeading(deg)
-  if (d === 0) return 'N'
-  if (d === 90) return 'E'
-  if (d === 180) return 'S'
-  if (d === 270) return 'W'
-  return `${d}`
 }
 
 function Chip({ label, color, bg, border }: { label: string; color: string; bg: string; border: string }) {
@@ -40,31 +21,6 @@ function Chip({ label, color, bg, border }: { label: string; color: string; bg: 
     >
       {label}
     </span>
-  )
-}
-
-function HeadingLine({ heading, inTravel }: { heading: number; inTravel: boolean }) {
-  const marks = Array.from({ length: 13 }, (_, i) => {
-    const offset = (i - 6) * 15
-    const value = normalizeHeading(heading + offset)
-    const major = offset % 30 === 0
-    return {
-      left: `${(i / 12) * 100}%`,
-      major,
-      label: major ? cardinalFromDeg(value) : '',
-    }
-  })
-
-  return (
-    <div className="nav-heading-line">
-      {marks.map((m, idx) => (
-        <div key={idx} className="nav-heading-mark" style={{ left: m.left }}>
-          <div className={`nav-heading-tick ${m.major ? 'major' : 'minor'}`} />
-          {m.label && <div className="nav-heading-mark-label">{m.label}</div>}
-        </div>
-      ))}
-      <div className="nav-heading-caret" style={{ borderTopColor: inTravel ? '#ea80fc' : '#00e5ff' }} />
-    </div>
   )
 }
 
@@ -345,83 +301,39 @@ function CircularSpeedometer({
 }
 
 // ── NavHeadingWidget ──────────────────────────────────────────────────────────
-// Sector name (left) + heading value (right) share the same row above the tape.
 
-export function NavHeadingWidget({ nav, systems }: { nav: NavType; systems?: SystemFlags }) {
-  const heading = normalizeHeading(nav.heading)
-  const compassDir = compassLabel(heading)
-  const isWanted = nav.legalStatus?.toLowerCase() === 'wanted'
-  const isClean = nav.legalStatus?.toLowerCase() === 'clean'
-
+export function NavHeadingWidget({ player, flight }: { player: PlayerInfo; flight: FlightState }) {
   return (
     <>
       <div className="nav-heading-compact">
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <div>
-            <div className={`nav-sector-name ${nav.inTravelMode ? 'travel' : ''}`} style={{ fontSize: '13px', marginTop: 0 }}>
-              {nav.sector || '–'}
-            </div>
-            {nav.cluster && nav.cluster !== nav.sector && (
-              <div className="nav-sector-cluster">{nav.cluster}</div>
-            )}
-          </div>
-          <div className="nav-heading-main" style={{ marginBottom: 0 }}>
-            <span>{heading.toFixed(0)}°</span>
-            <span className="nav-heading-main-dir">{compassDir}</span>
-          </div>
+        <div className={`nav-sector-name ${flight.travelDrive ? 'travel' : ''}`} style={{ fontSize: '13px', marginTop: 0 }}>
+          {player.sector || '–'}
         </div>
-        <HeadingLine heading={heading} inTravel={nav.inTravelMode} />
       </div>
 
-      <div className="nav-chips-row">
-        {nav.inTravelMode && (
+      {flight.travelDrive && (
+        <div className="nav-chips-row">
           <Chip
             label="Travel Drive"
             color="#ea80fc"
             bg="rgba(234,128,252,0.08)"
             border="rgba(234,128,252,0.35)"
           />
-        )}
-        {systems?.autopilot && (
-          <Chip
-            label="Autopilot"
-            color="var(--c-cyan)"
-            bg="rgba(0,229,255,0.08)"
-            border="rgba(0,229,255,0.35)"
-          />
-        )}
-        {systems?.massLocked && (
-          <Chip
-            label="Mass Lock"
-            color="var(--c-orange)"
-            bg="rgba(255,109,0,0.08)"
-            border="rgba(255,109,0,0.35)"
-          />
-        )}
-        {nav.legalStatus && (
-          <Chip
-            label={nav.legalStatus}
-            color={isClean ? 'var(--c-green)' : isWanted ? 'var(--c-red)' : 'var(--c-text-dim)'}
-            bg={isClean ? 'rgba(0,230,118,0.06)' : isWanted ? 'rgba(255,23,68,0.08)' : 'transparent'}
-            border={isClean ? 'rgba(0,230,118,0.3)' : isWanted ? 'rgba(255,23,68,0.4)' : 'var(--c-border)'}
-          />
-        )}
-      </div>
+        </div>
+      )}
     </>
   )
 }
 
 // ── NavSpeedometerWidget ──────────────────────────────────────────────────────
 
-export function NavSpeedometerWidget({ nav, ship }: { nav: NavType; ship?: ShipStatus }) {
+export function NavSpeedometerWidget({ flight }: { flight: FlightState }) {
   const [speedMode, setSpeedMode] = useState<'bars' | 'gauge'>('bars')
-  const maxSpeed = ship?.maxSpeed ?? 0
-  const maxBoost = ship?.maxBoostSpeed ?? 0
 
   return (
     <div className="nav-speed-wrapper">
       <div className="nav-speed-header">
-        <div className={`nav-speed-toggle${nav.inTravelMode ? ' travel' : ''}`}>
+        <div className={`nav-speed-toggle${flight.travelDrive ? ' travel' : ''}`}>
           <button
             className={`nav-speed-toggle-btn${speedMode === 'bars' ? ' active' : ''}`}
             onClick={() => setSpeedMode('bars')}
@@ -433,8 +345,8 @@ export function NavSpeedometerWidget({ nav, ship }: { nav: NavType; ship?: ShipS
         </div>
       </div>
       {speedMode === 'bars'
-        ? <RetroSpeedometer speed={nav.speed} maxSpeed={maxSpeed} maxBoost={maxBoost} inTravel={nav.inTravelMode} boostEnergy={ship?.boostEnergy ?? 0} />
-        : <CircularSpeedometer speed={nav.speed} maxSpeed={maxSpeed} maxBoost={maxBoost} inTravel={nav.inTravelMode} boostEnergy={ship?.boostEnergy ?? 0} />
+        ? <RetroSpeedometer speed={flight.speed} maxSpeed={flight.maxSpeed} maxBoost={0} inTravel={flight.travelDrive} boostEnergy={flight.boostEnergy} />
+        : <CircularSpeedometer speed={flight.speed} maxSpeed={flight.maxSpeed} maxBoost={0} inTravel={flight.travelDrive} boostEnergy={flight.boostEnergy} />
       }
     </div>
   )
