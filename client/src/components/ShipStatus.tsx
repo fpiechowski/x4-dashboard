@@ -13,7 +13,7 @@ function hullClass(pct: number): string {
 
 export function ShipShieldsWidget({ ship }: Props) {
   const pct = Math.max(0, Math.min(100, ship.shields))
-  const clipId = 'shields-clip'
+  const clipId = React.useId()
   // Hexagon points: pointed left and right ends
   const points = '8,0 392,0 400,14 392,28 8,28 0,14'
   return (
@@ -24,8 +24,8 @@ export function ShipShieldsWidget({ ship }: Props) {
       </div>
       <svg className="svg-bar-svg" viewBox="0 0 400 28" preserveAspectRatio="none">
         <defs>
-          <clipPath id={clipId}>
-            <rect x="0" y="0" width={`${pct}%`} height="100%" />
+          <clipPath id={clipId} clipPathUnits="objectBoundingBox">
+            <rect x="0" y="0" width={pct / 100} height="1" />
           </clipPath>
         </defs>
         {/* Frame — always full width */}
@@ -50,7 +50,7 @@ export function ShipShieldsWidget({ ship }: Props) {
 export function ShipHullWidget({ ship }: Props) {
   const pct = Math.max(0, Math.min(100, ship.hull))
   const tone = hullClass(pct)
-  const clipId = 'hull-clip'
+  const clipId = React.useId()
   // Armour plate: diagonal top-right cut, angled lower-left corner
   const points = '0,0 390,0 400,12 400,24 12,24 0,12'
   const fillColour =
@@ -73,8 +73,8 @@ export function ShipHullWidget({ ship }: Props) {
       </div>
       <svg className="svg-bar-svg" viewBox="0 0 400 24" preserveAspectRatio="none">
         <defs>
-          <clipPath id={clipId}>
-            <rect x="0" y="0" width={`${pct}%`} height="100%" />
+          <clipPath id={clipId} clipPathUnits="objectBoundingBox">
+            <rect x="0" y="0" width={pct / 100} height="1" />
           </clipPath>
         </defs>
         {/* Frame — always full width */}
