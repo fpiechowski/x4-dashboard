@@ -5,6 +5,10 @@ interface Props {
   target: CombatTarget
 }
 
+interface TargetInfoProps {
+  target: CombatTarget | null
+}
+
 const TRACK_TICKS = Array.from({ length: 20 })
 
 function hullClass(pct: number): string {
@@ -55,7 +59,45 @@ export function TargetHullWidget({ target }: Props) {
   )
 }
 
-export function TargetInfoWidget({ target }: Props) {
+export function TargetInfoWidget({ target }: TargetInfoProps) {
+  const showPlaceholder = !target || !(
+    target.name?.trim() ||
+    target.shipName?.trim() ||
+    target.faction?.trim() ||
+    target.legalStatus?.trim() ||
+    target.combatRank?.trim() ||
+    target.isHostile ||
+    target.bounty > 0 ||
+    target.distance > 0
+  )
+
+  if (showPlaceholder) {
+    return (
+      <div className="target-placeholder">
+        <header className="target-v3-header">
+          <div className="target-v3-name-wrap">
+            <div className="target-name">NO TARGET LOCK</div>
+            <div className="target-ship">Scanning for contacts</div>
+          </div>
+          <div className="target-v3-facts">
+            <div className="target-v3-fact">
+              <span className="target-v3-fact-label">Distance</span>
+              <span className="target-v3-fact-value">--</span>
+            </div>
+            <div className="target-v3-fact">
+              <span className="target-v3-fact-label">Faction</span>
+              <span className="target-v3-fact-value">--</span>
+            </div>
+          </div>
+        </header>
+        <div className="target-placeholder-center">Standby scanner active</div>
+        <footer className="target-v3-footer">
+          <span className="target-badge neutral">Standby</span>
+        </footer>
+      </div>
+    )
+  }
+
   return (
     <>
       <header className="target-v3-header">

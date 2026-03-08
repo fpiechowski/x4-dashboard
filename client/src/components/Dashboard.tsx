@@ -23,21 +23,37 @@ interface Props {
   onChangeDashboard: (id: string) => void
 }
 
+function hasCombatTarget(target: GameState['combat']['target']): boolean {
+  if (!target) return false
+  return Boolean(
+    target.name?.trim() ||
+    target.shipName?.trim() ||
+    target.faction?.trim() ||
+    target.legalStatus?.trim() ||
+    target.combatRank?.trim() ||
+    target.isHostile ||
+    target.bounty > 0 ||
+    target.distance > 0,
+  )
+}
+
 function renderWidget(
   id: WidgetId,
   state: GameState,
   onKeyPress: (action: string) => void,
   scale: number = 1,
 ): React.ReactNode {
+  const target = hasCombatTarget(state.combat.target) ? state.combat.target : null
+
   switch (id) {
     case 'PlayerInfo':     return <PlayerInfo player={state.player} ship={state.ship} />
     case 'ShipShields':    return <ShipShieldsWidget ship={state.ship} />
     case 'ShipHull':       return <ShipHullWidget ship={state.ship} />
     case 'ShipCargo':      return <ShipCargoWidget ship={state.ship} />
     case 'ShipStatus':     return <ShipStatusWidget ship={state.ship} />
-    case 'TargetShields':  return state.combat.target ? <TargetShieldsWidget target={state.combat.target} /> : null
-    case 'TargetHull':     return state.combat.target ? <TargetHullWidget target={state.combat.target} /> : null
-    case 'TargetInfo':     return state.combat.target ? <TargetInfoWidget target={state.combat.target} /> : null
+    case 'TargetShields':  return target ? <TargetShieldsWidget target={target} /> : null
+    case 'TargetHull':     return target ? <TargetHullWidget target={target} /> : null
+    case 'TargetInfo':     return <TargetInfoWidget target={target} />
     case 'NavHeading':     return <NavHeadingWidget player={state.player} flight={state.flight} />
     case 'NavSpeedometer': return <NavSpeedometerWidget flight={state.flight} scale={scale} />
     case 'SystemFlags':    return <SystemFlags flight={state.flight} onKeyPress={onKeyPress} />

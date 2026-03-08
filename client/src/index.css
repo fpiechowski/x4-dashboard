@@ -2045,6 +2045,28 @@ body {
   margin-top: auto;
 }
 
+.target-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+  height: 100%;
+}
+
+.target-placeholder-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border: 1px dashed var(--c-border-dim);
+  background: rgba(0, 229, 255, 0.04);
+  color: var(--c-text-dim);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
 @media (max-width: 900px) {
   .target-v3-header {
     flex-direction: column;
