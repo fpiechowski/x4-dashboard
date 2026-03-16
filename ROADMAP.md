@@ -14,6 +14,7 @@ This roadmap is a lightweight public planning document for the next release cycl
 - Add a dedicated settings and diagnostics surface
 - Improve empty, loading, and disconnected states across widgets
 - Make dashboard scaling and layout behavior more predictable on different screens
+- Audit the current dashboard presets and remove unused or low-value dashboards to keep the shipped set intentional
 
 ### 3. Data model and widget coverage
 - Expand typed support for remaining game data areas still treated loosely
@@ -24,6 +25,15 @@ This roadmap is a lightweight public planning document for the next release cycl
 - Add app icons and release screenshots for GitHub releases
 - Improve issue labeling and contributor onboarding for first contributions
 - Keep CI and release automation current as GitHub Actions platform requirements evolve
+
+## Next major version vision
+
+### v2.0.0 candidate: user-defined dashboards
+- Move beyond editing `client/src/dashboards.ts` as the only way to define layouts
+- Let users create, edit, duplicate, reorder, and delete dashboards from the app UI
+- Persist dashboard definitions in user-managed storage instead of hardcoded source only
+- Keep a built-in set of curated default dashboards while allowing custom user presets
+- Design the widget/layout model so custom dashboards stay compatible with future widgets and data fields
 
 ## How this is managed
 
