@@ -10,6 +10,12 @@
 npm run release:check
 ```
 
+To generate the distributable runtime bundle locally:
+
+```bash
+npm run release:bundle
+```
+
 4. Smoke test:
 - `npm run dev:mock`
 - `npm start` after `npm run build`
@@ -25,6 +31,7 @@ npm run release:check
 2. Finalize changelog notes
 3. Tag the release with `vX.Y.Z`
 4. Publish GitHub release notes based on `CHANGELOG.md`
+5. Let `.github/workflows/release.yml` attach the generated `.zip` and `.tar.gz` assets
 
 ## Distribution notes
 

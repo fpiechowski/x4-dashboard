@@ -110,6 +110,14 @@ Release validation:
 npm run release:check
 ```
 
+Build a distributable runtime bundle:
+
+```bash
+npm run release:bundle
+```
+
+The bundle is written to `dist/` and contains the built frontend, server runtime files, and bundled X4 mod.
+
 ## Environment variables
 
 | Variable | Default | Description |

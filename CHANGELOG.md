@@ -6,6 +6,16 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-03-16
+
+### Added
+- Release bundle generator for shipping the built dashboard, server runtime, and X4 mod together
+- GitHub release workflow that uploads `.zip` and `.tar.gz` assets for tagged versions
+
+### Changed
+- Package versions bumped to `1.0.1`
+- Release documentation updated with bundle generation steps
+
 ## [1.0.0] - 2026-03-16
 
 ### Added

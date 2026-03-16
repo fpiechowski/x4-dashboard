@@ -1,6 +1,6 @@
 {
   "name": "x4-dashboard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "X4: Foundations cockpit dashboard",
   "license": "MIT",
   "repository": {
@@ -35,7 +35,9 @@
     "start": "node server/index.js",
     "typecheck": "npm --prefix client run typecheck",
     "check": "npm run typecheck",
-    "release:check": "npm run typecheck && npm run build"
+    "release:check": "npm run typecheck && npm run build",
+    "dist:bundle": "node scripts/create-release-bundle.js",
+    "release:bundle": "npm run release:check && npm run dist:bundle"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
