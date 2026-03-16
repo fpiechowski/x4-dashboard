@@ -30,6 +30,9 @@ export interface FlightState {
   travelDrive: boolean;
   flightAssist: boolean;
   seta: boolean;
+  autopilot: boolean;
+  scanMode: boolean;
+  longRangeScan: boolean;
 }
 
 export interface CombatTarget {

@@ -18,10 +18,10 @@ const FLAG_CONFIG: Record<string, FlagConfig> = {
   flightAssist: { key: 'flightAssist', action: 'flightAssist', icon: '⊳', label: 'Flight Assist' },
   seta: { key: 'seta', action: 'seta', icon: '≫', label: 'SETA' },
   travelDrive: { key: 'travelDrive', action: 'travelDrive', icon: '△', label: 'Travel Drive' },
-  autopilot: { action: 'autopilot', icon: '◈', label: 'Autopilot', stateless: true },
+  autopilot: { key: 'autopilot', action: 'autopilot', icon: '◈', label: 'Autopilot' },
   map: { action: 'openMap', icon: '⌖', label: 'Map', stateless: true },
-  scanMode: { action: 'scanMode', icon: '◌', label: 'Scan Mode', stateless: true },
-  longRangeScan: { action: 'longRangeScan', icon: '◎', label: 'Long-Range', stateless: true },
+  scanMode: { key: 'scanMode', action: 'scanMode', icon: '◌', label: 'Scan Mode' },
+  longRangeScan: { key: 'longRangeScan', action: 'longRangeScan', icon: '◎', label: 'Long-Range' },
   missionManager: { action: 'openMissionManager', icon: '▤', label: 'Missions', stateless: true },
 }
 

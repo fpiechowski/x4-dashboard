@@ -48,6 +48,7 @@ pcall(ffi.cdef, [[
     bool IsShipAtExternalDock(UniverseID shipid);
     float GetBoostEnergyPercentage(void);
     bool IsSetaActive(void);
+    bool IsAutoPilotActive(void);
     const char* GetPlayerShipSize(void);
     UILoadoutStatistics3 GetCurrentLoadoutStatistics3(UniverseID shipid);
     int GetAlertLevel(UniverseID componentid);
@@ -77,11 +78,14 @@ function output.handle()
     local alertLevel       = 0
     local attackerCount    = 0
     local incomingMissiles = 0
+    local autopilot = false
     pcall(function() alertLevel       = C.GetAlertLevel(shipId) end)
     pcall(function() attackerCount    = C.GetNumAllAttackers(shipId) end)
     pcall(function() incomingMissiles = C.GetNumIncomingMissiles(shipId) end)
+    pcall(function() autopilot        = C.IsAutoPilotActive() end)
 
     local shipName = GetComponentData(ConvertStringTo64Bit(tostring(shipId)), "name") or ""
+    local playerActivity = GetPlayerActivity() or "none"
 
     return {
         name         = shipName,
@@ -97,6 +101,9 @@ function output.handle()
         boostEnergy  = math.floor(C.GetBoostEnergyPercentage()),
         docked       = C.IsShipAtExternalDock(C.GetPlayerControlledShipID()),
         seta         = C.IsSetaActive(),
+        autopilot    = autopilot,
+        scanMode     = playerActivity == "scan",
+        longRangeScan = playerActivity == "scan_longrange",
         shipSize     = ffi.string(C.GetPlayerShipSize()),
         alertLevel        = tonumber(alertLevel)       or 0,
         attackerCount     = tonumber(attackerCount)    or 0,

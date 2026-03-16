@@ -93,6 +93,9 @@ class MockDataSource extends EventEmitter {
     this.flightAssist = true;
     this.seta         = false;
     this.travelDrive  = false;
+    this.autopilot    = false;
+    this.scanMode     = false;
+    this.longRangeScan = false;
     this.boosting     = false;
 
     // Flight phase — driven by mock buttons only (no auto-transitions into boost/travel)
@@ -148,6 +151,9 @@ class MockDataSource extends EventEmitter {
         boostEnergy:   Math.round(this.boostEnergy),
         docked:        false,
         seta:          this.seta,
+        autopilot:     this.autopilot,
+        scanMode:      this.scanMode,
+        longRangeScan: this.longRangeScan,
         shipSize:      'ship_s',
         alertLevel:       this.inCombat ? 2 : 0,
         attackerCount:    this.inCombat ? 1 : 0,

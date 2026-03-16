@@ -175,7 +175,7 @@ export const DASHBOARDS: DashboardConfig[] = [
                 col: 1, row: 2, rowSpan: 2, scale: 1.43
             },
             {
-                title: 'Systems', titleIcon: '⎔',
+                titleIcon: '⎔',
                 internal: {
                     layout: 'grid',
                     columns: '1fr 1fr',

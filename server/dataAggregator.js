@@ -4,7 +4,7 @@
  *
  * Sources:
  * - playerProfile  → player name, credits, sector
- * - shipStatus     → hull, shields, speed, boost, travel drive, flight assist, docked, seta
+ * - shipStatus     → hull, shields, speed, boost, travel drive, flight assist, docked, seta, scan states
  * - missionOffers, activeMission, logbook, currentResearch, factions, agents, inventory, transactionLog
  */
 
@@ -92,6 +92,9 @@ class DataAggregator {
       travelDrive:   es?.travelMode    ?? false,
       flightAssist:  es?.flightAssist  ?? true,
       seta:          es?.seta          ?? false,
+      autopilot:     es?.autopilot     ?? false,
+      scanMode:      es?.scanMode      ?? false,
+      longRangeScan: es?.longRangeScan ?? false,
     };
 
     const ti = ext.targetInfo;
