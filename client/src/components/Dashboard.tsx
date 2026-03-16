@@ -23,10 +23,14 @@ interface Props {
   state: GameState
   wsConnected: boolean
   dashboardId: string
+  dashboardScale: number
   onKeyPress: (action: string) => void
   onOpenSettings: () => void
   onChangeDashboard: (id: string) => void
+  onChangeDashboardScale: (scale: number) => void
 }
+
+const DASHBOARD_SCALE_OPTIONS = [0.5, 0.6, 0.75, 0.85, 1, 1.1, 1.25, 1.4, 1.6, 1.8, 2]
 
 function hasCombatTarget(target: GameState['combat']['target']): boolean {
   if (!target) return false
@@ -242,12 +246,24 @@ function toggleMockBoost() {
   fetch('/api/mock/boost', { method: 'POST' }).catch(() => {})
 }
 
-export function Dashboard({ state, wsConnected, dashboardId, onKeyPress, onOpenSettings, onChangeDashboard }: Props) {
+export function Dashboard({
+  state,
+  wsConnected,
+  dashboardId,
+  dashboardScale,
+  onKeyPress,
+  onOpenSettings,
+  onChangeDashboard,
+  onChangeDashboardScale,
+}: Props) {
   const { _meta, ship } = state
   const config = getDashboard(dashboardId)
   const inCombat     = state.combat.alertLevel > 0
   const inTravel     = state.flight.travelDrive
   const inBoost      = state.flight.boosting
+  const scaledLayoutStyle: React.CSSProperties = {
+    '--dashboard-scale': String(dashboardScale),
+  } as React.CSSProperties
 
   return (
     <div className="dashboard">
@@ -309,22 +325,39 @@ export function Dashboard({ state, wsConnected, dashboardId, onKeyPress, onOpenS
             ))}
           </select>
 
+          <label className="dashboard-scale-control">
+            <span className="dashboard-scale-label">Scale</span>
+            <select
+              className="dashboard-selector dashboard-scale-selector"
+              value={String(dashboardScale)}
+              onChange={e => onChangeDashboardScale(Number(e.target.value))}
+            >
+              {DASHBOARD_SCALE_OPTIONS.map(scale => (
+                <option key={scale} value={String(scale)}>{Math.round(scale * 100)}%</option>
+              ))}
+            </select>
+          </label>
+
           <button className="header-settings-btn" onClick={onOpenSettings}>
             ⎔ KEY BINDINGS
           </button>
         </div>
       </header>
 
-      {/* ── Docked/Landed banner — full width, conditional ── */}
-      {ship.isDockedOrLanded && (
-        <div className="docked-banner">▼ DOCKED</div>
-      )}
+      <div className="dashboard-scale-frame">
+        <div className="dashboard-scale-content" style={scaledLayoutStyle}>
+          {/* ── Docked/Landed banner — full width, conditional ── */}
+          {ship.isDockedOrLanded && (
+            <div className="docked-banner">▼ DOCKED</div>
+          )}
 
-      {/* ── Config-driven layout ────────────────── */}
-      {config.layout === 'grid'
-        ? <GridLayout config={config} state={state} onKeyPress={onKeyPress} />
-        : <ColumnsLayout config={config} state={state} onKeyPress={onKeyPress} />
-      }
+          {/* ── Config-driven layout ────────────────── */}
+          {config.layout === 'grid'
+            ? <GridLayout config={config} state={state} onKeyPress={onKeyPress} />
+            : <ColumnsLayout config={config} state={state} onKeyPress={onKeyPress} />
+          }
+        </div>
+      </div>
     </div>
   )
 }

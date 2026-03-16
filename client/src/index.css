@@ -75,10 +75,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
   padding: 4px 14px;
   border-bottom: 1px solid var(--c-border);
   flex-shrink: 0;
-  height: 34px;
+  min-height: 34px;
 }
 
 .header-logo {
@@ -94,6 +96,8 @@ body {
 .header-right {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 16px;
   font-size: 10px;
   letter-spacing: 2px;
@@ -229,6 +233,36 @@ body {
   text-transform: none;
 }
 
+.dashboard-scale-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-scale-label {
+  color: var(--c-text-dim);
+}
+
+.dashboard-scale-selector {
+  min-width: 78px;
+}
+
+.dashboard-scale-frame {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dashboard-scale-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--gap);
+  height: 100%;
+  width: 100%;
+  zoom: var(--dashboard-scale, 1);
+}
+
 /* â”€â”€ Main Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .dashboard-grid {
   display: grid;
@@ -236,7 +270,6 @@ body {
   gap: var(--gap);
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
   align-content: start;
 }
 
@@ -247,7 +280,6 @@ body {
   gap: var(--gap);
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
   align-items: flex-start;
   width: 100%;
 }

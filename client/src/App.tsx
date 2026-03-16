@@ -5,21 +5,38 @@ import { Dashboard } from './components/Dashboard'
 import { KeyBindingsModal } from './components/KeyBindingsModal'
 
 const WS_URL = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}:3001`
+const DASHBOARD_SCALE_STORAGE_KEY = 'dashboardScale'
 
 function getInitialDashboard(): string {
   return new URLSearchParams(window.location.search).get('dashboard') ?? 'full'
+}
+
+function getInitialDashboardScale(): number {
+  const savedScale = Number(window.localStorage.getItem(DASHBOARD_SCALE_STORAGE_KEY))
+
+  if (Number.isFinite(savedScale) && savedScale > 0) {
+    return savedScale
+  }
+
+  return 1
 }
 
 export function App() {
   const { state, wsConnected, pressKey } = useGameData(WS_URL)
   const [showBindings, setShowBindings] = useState(false)
   const [dashboardId, setDashboardId] = useState(getInitialDashboard)
+  const [dashboardScale, setDashboardScale] = useState(getInitialDashboardScale)
 
   function handleChangeDashboard(id: string) {
     const url = new URL(window.location.href)
     url.searchParams.set('dashboard', id)
     window.history.pushState({}, '', url)
     setDashboardId(id)
+  }
+
+  function handleChangeDashboardScale(scale: number) {
+    window.localStorage.setItem(DASHBOARD_SCALE_STORAGE_KEY, String(scale))
+    setDashboardScale(scale)
   }
 
   return (
@@ -54,9 +71,11 @@ export function App() {
             state={state}
             wsConnected={wsConnected}
             dashboardId={dashboardId}
+            dashboardScale={dashboardScale}
             onKeyPress={pressKey}
             onOpenSettings={() => setShowBindings(true)}
             onChangeDashboard={handleChangeDashboard}
+            onChangeDashboardScale={handleChangeDashboardScale}
           />
         </div>
 
