@@ -6,6 +6,8 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-03-16
+
 ### Added
 - Public repo hygiene files: `SECURITY.md`, `CONTRIBUTING.md`, `.editorconfig`, `.gitattributes`
 - GitHub templates and CI automation
