@@ -2,6 +2,25 @@
   "name": "x4-dashboard",
   "version": "1.0.0",
   "description": "X4: Foundations cockpit dashboard",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fpiechowski/x4-dashboard.git"
+  },
+  "homepage": "https://github.com/fpiechowski/x4-dashboard#readme",
+  "bugs": {
+    "url": "https://github.com/fpiechowski/x4-dashboard/issues"
+  },
+  "keywords": [
+    "x4-foundations",
+    "dashboard",
+    "react",
+    "nodejs",
+    "arwes"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "install:all": "cd server && npm install && cd ../client && npm install",
 
@@ -13,7 +32,9 @@
     "dev:mock": "concurrently -n server,client -c cyan,magenta \"node server/index.js --mock\" \"npm run dev:client\"",
 
     "build": "cd client && npm run build",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "typecheck": "cd client && npx tsc --noEmit",
+    "check": "npm run typecheck"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"

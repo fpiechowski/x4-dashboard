@@ -56,7 +56,6 @@ pcall(ffi.cdef, [[
 ]])
 
 local output = {}
-
 function output.handle()
     local shipId = C.GetPlayerOccupiedShipID()
     if shipId == 0 then

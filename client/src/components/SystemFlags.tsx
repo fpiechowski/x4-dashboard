@@ -7,15 +7,16 @@ interface Props {
 }
 
 const FLAG_CONFIG: Array<{
-  key: keyof FlightState
+  key?: keyof FlightState
   action: string
   icon: string
   label: string
+  stateless?: boolean
 }> = [
   { key: 'flightAssist', action: 'flightAssist', icon: '⊳', label: 'Flight Assist' },
   { key: 'seta',         action: 'seta',          icon: '≫', label: 'SETA' },
   { key: 'travelDrive',  action: 'travelDrive',   icon: '△', label: 'Travel Drive' },
-  { key: 'boosting',     action: 'boostEngine',   icon: '▲', label: 'Boost' },
+  { action: 'autopilot', icon: '◈', label: 'Autopilot', stateless: true },
 ]
 
 export function SystemFlags({ flight, onKeyPress }: Props) {
@@ -40,28 +41,29 @@ export function SystemFlags({ flight, onKeyPress }: Props) {
   return (
     <>
       <div className="sysflags-grid">
-        {FLAG_CONFIG.map(({ key, action, icon, label }) => {
-          const isOn = !!flight[key]
+        {FLAG_CONFIG.map(({ key, action, icon, label, stateless }) => {
+          const isOn = key ? !!flight[key] : false
           const binding = bindings[action]
           const isPressed = pressing === action
+          const stateLabel = stateless ? '◌ CMD' : isOn ? '● ON' : '○ OFF'
 
           return (
             <button
-              key={key}
+              key={action}
               className={`sysflag-btn ${isOn ? 'on' : 'off'} ${!binding ? 'no-binding' : ''}`}
               onClick={() => handlePress(action)}
               disabled={!binding}
               title={
                 binding
-                  ? `${label}: ${isOn ? 'ON' : 'OFF'} — Press: ${binding.key}`
+                  ? `${label}: ${stateless ? 'COMMAND' : isOn ? 'ON' : 'OFF'} — Press: ${binding.key}`
                   : `${label}: No key binding. Configure in ⎔ KEY BINDINGS.`
               }
               style={isPressed ? { transform: 'scale(0.92)', opacity: 0.65 } : undefined}
             >
               <span className="sysflag-icon">{icon}</span>
               <span className="sysflag-name">{label}</span>
-              <span className={`sysflag-state ${isOn ? 'state-on' : 'state-off'}`}>
-                {isOn ? '● ON' : '○ OFF'}
+              <span className={`sysflag-state ${!stateless && isOn ? 'state-on' : 'state-off'}`}>
+                {stateLabel}
               </span>
               {binding && (
                 <span className="sysflag-key">{binding.key}</span>

@@ -34,7 +34,6 @@ export function useGameData(wsUrl: string) {
         ws.onopen = () => {
           if (!active) return ws?.close();
           setWsConnected(true);
-          console.log('[WS] Connected to X4 Dashboard server');
         };
 
         ws.onmessage = (e) => {

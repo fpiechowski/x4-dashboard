@@ -2,6 +2,7 @@
   "name": "x4-dashboard-server",
   "version": "1.0.0",
   "description": "X4 Dashboard backend - data aggregation and key press server",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
