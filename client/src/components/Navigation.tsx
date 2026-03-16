@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { PlayerInfo, FlightState } from '../types/gameData'
 
 function clamp(value: number, min: number, max: number): number {
@@ -392,7 +392,18 @@ export function NavHeadingWidget({ player, flight }: { player: PlayerInfo; fligh
 // ── NavSpeedometerWidget ──────────────────────────────────────────────────────
 
 export function NavSpeedometerWidget({ flight, scale = 1 }: { flight: FlightState; scale?: number }) {
-  const [speedMode, setSpeedMode] = useState<'bars' | 'gauge'>('bars')
+  const [speedMode, setSpeedMode] = useState<'bars' | 'gauge'>(() => {
+    if (typeof window === 'undefined') {
+      return 'bars'
+    }
+
+    const storedMode = window.localStorage.getItem('navSpeedometerMode')
+    return storedMode === 'gauge' ? 'gauge' : 'bars'
+  })
+
+  useEffect(() => {
+    window.localStorage.setItem('navSpeedometerMode', speedMode)
+  }, [speedMode])
 
   return (
     <div className="nav-speed-wrapper">
