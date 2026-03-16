@@ -10,7 +10,10 @@ import { NavHeadingWidget, NavSpeedometerWidget } from './Navigation'
 import {
   AutopilotToggleWidget,
   FlightAssistToggleWidget,
+  LongRangeScanToggleWidget,
   MapToggleWidget,
+  MissionManagerToggleWidget,
+  ScanModeToggleWidget,
   SetaToggleWidget,
   TravelDriveToggleWidget,
 } from './SystemFlags'
@@ -71,6 +74,9 @@ function renderWidget(
     case 'TravelDriveToggle':  return <TravelDriveToggleWidget flight={state.flight} onKeyPress={onKeyPress} />
     case 'AutopilotToggle':    return <AutopilotToggleWidget flight={state.flight} onKeyPress={onKeyPress} />
     case 'MapToggle':          return <MapToggleWidget flight={state.flight} onKeyPress={onKeyPress} />
+    case 'ScanModeToggle':     return <ScanModeToggleWidget flight={state.flight} onKeyPress={onKeyPress} />
+    case 'LongRangeScanToggle': return <LongRangeScanToggleWidget flight={state.flight} onKeyPress={onKeyPress} />
+    case 'MissionManagerToggle': return <MissionManagerToggleWidget flight={state.flight} onKeyPress={onKeyPress} />
     case 'ActiveMission':  return <ActiveMission mission={state.activeMission} />
     case 'MissionOffers':  return <MissionOffers offers={state.missionOffers} />
     case 'Comms':          return <Comms logbook={state.logbook} />
@@ -92,6 +98,7 @@ function renderPanelContent(
       <div style={{
         display: 'grid',
         gridTemplateColumns: internal.columns,
+        gridTemplateRows: internal.rows,
         gap: internal.gap ?? '6px',
         justifyContent: internal.justifyContent,
         justifyItems: internal.justifyItems,
@@ -108,6 +115,7 @@ function renderPanelContent(
               display: 'flex', flexDirection: 'column',
               gridColumn: w.colSpan ? `${w.col} / span ${w.colSpan}` : w.col,
               gridRow: w.rowSpan ? `${w.row} / span ${w.rowSpan}` : w.row,
+              minHeight: 0,
               ...(w.scale && w.scale !== 1 ? { zoom: w.scale } : {}),
               ...(w.grow ? { alignSelf: 'stretch' } : {}),
               ...(w.height ? { height: w.height } : {}),

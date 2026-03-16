@@ -32,6 +32,9 @@ export type WidgetId =
     | 'TravelDriveToggle'
     | 'AutopilotToggle'
     | 'MapToggle'
+    | 'ScanModeToggle'
+    | 'LongRangeScanToggle'
+    | 'MissionManagerToggle'
     | 'ActiveMission'
     | 'MissionOffers'
     | 'Comms'
@@ -62,6 +65,7 @@ export type PanelInternalLayout =
     | {
         layout: 'grid'
         columns: string
+        rows?: string
         widgets: PanelWidgetGrid[]
         gap?: string
         justifyContent?: CSSProperties['justifyContent']
@@ -175,15 +179,18 @@ export const DASHBOARDS: DashboardConfig[] = [
                 internal: {
                     layout: 'grid',
                     columns: '1fr 1fr',
+                    rows: 'repeat(4, minmax(0, 1fr))',
                     gap: '6px',
-                    alignContent: 'start',
                     width: '100%',
                     widgets: [
-                        {id: 'FlightAssistToggle', col: 1, row: 1},
+                        {id: 'TravelDriveToggle', col: 1, row: 1},
                         {id: 'SetaToggle', col: 2, row: 1},
-                        {id: 'TravelDriveToggle', col: 1, row: 2},
+                        {id: 'FlightAssistToggle', col: 1, row: 2},
                         {id: 'AutopilotToggle', col: 2, row: 2},
-                        {id: 'MapToggle', col: 1, row: 3, colSpan: 2},
+                        {id: 'ScanModeToggle', col: 1, row: 3},
+                        {id: 'LongRangeScanToggle', col: 2, row: 3},
+                        {id: 'MapToggle', col: 1, row: 4},
+                        {id: 'MissionManagerToggle', col: 2, row: 4},
                     ]
                 },
                 col: 3, row: 2, rowSpan: 2, grow: true, scale: 1.43
@@ -243,12 +250,15 @@ export const DASHBOARDS: DashboardConfig[] = [
             {
                 title: 'Systems', titleIcon: '⎔',
                 internal: {
-                    layout: 'grid', columns: '1fr 1fr', gap: '6px', alignContent: 'start', width: '100%', widgets: [
-                        {id: 'FlightAssistToggle', col: 1, row: 1},
+                    layout: 'grid', columns: '1fr 1fr', rows: 'repeat(4, minmax(0, 1fr))', gap: '6px', alignContent: 'start', width: '100%', widgets: [
+                        {id: 'TravelDriveToggle', col: 1, row: 1},
                         {id: 'SetaToggle', col: 2, row: 1},
-                        {id: 'TravelDriveToggle', col: 1, row: 2},
+                        {id: 'FlightAssistToggle', col: 1, row: 2},
                         {id: 'AutopilotToggle', col: 2, row: 2},
-                        {id: 'MapToggle', col: 1, row: 3, colSpan: 2},
+                        {id: 'ScanModeToggle', col: 1, row: 3},
+                        {id: 'LongRangeScanToggle', col: 2, row: 3},
+                        {id: 'MapToggle', col: 1, row: 4},
+                        {id: 'MissionManagerToggle', col: 2, row: 4},
                     ]
                 },
                 col: 1, row: 3, colSpan: 2, grow: true, scale: 1.43

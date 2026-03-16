@@ -26,11 +26,29 @@
       "label": "Travel Drive",
       "description": "Toggle travel drive"
     },
+    "scanMode": {
+      "key": "+2",
+      "modifiers": [],
+      "label": "Scan Mode",
+      "description": "Toggle short-range scan mode"
+    },
+    "longRangeScan": {
+      "key": "+3",
+      "modifiers": [],
+      "label": "Long-Range Scan",
+      "description": "Toggle long-range scan mode"
+    },
     "openMap": {
       "key": "m",
       "modifiers": [],
       "label": "Map",
       "description": "Open the in-game map"
+    },
+    "openMissionManager": {
+      "key": "+m",
+      "modifiers": [],
+      "label": "Mission Manager",
+      "description": "Open the mission manager using your configured in-game shortcut"
     }
   }
 }

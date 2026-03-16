@@ -20,6 +20,9 @@ const FLAG_CONFIG: Record<string, FlagConfig> = {
   travelDrive: { key: 'travelDrive', action: 'travelDrive', icon: '△', label: 'Travel Drive' },
   autopilot: { action: 'autopilot', icon: '◈', label: 'Autopilot', stateless: true },
   map: { action: 'openMap', icon: '⌖', label: 'Map', stateless: true },
+  scanMode: { action: 'scanMode', icon: '◌', label: 'Scan Mode', stateless: true },
+  longRangeScan: { action: 'longRangeScan', icon: '◎', label: 'Long-Range', stateless: true },
+  missionManager: { action: 'openMissionManager', icon: '▤', label: 'Missions', stateless: true },
 }
 
 let bindingsCache: Record<string, KeyBinding> | null = null
@@ -74,19 +77,24 @@ function SystemFlagToggle({ flight, onKeyPress, config }: Props & { config: Flag
 
   const isOn = key ? !!flight[key] : false
   const binding = bindings[action]
+  const hasBinding = Boolean(binding?.key)
   const isPressed = pressing === action
   const stateLabel = stateless ? '◌ CMD' : isOn ? '● ON' : '○ OFF'
 
+  function getTitle(): string {
+    if (!hasBinding) {
+      return `${label}: No key binding. Configure in KEY BINDINGS.`
+    }
+
+    return `${label}: ${stateless ? 'COMMAND' : isOn ? 'ON' : 'OFF'} - Press: ${binding?.key}`
+  }
+
   return (
     <button
-      className={`sysflag-btn ${isOn ? 'on' : 'off'} ${stateless ? 'stateless' : ''} ${!binding ? 'no-binding' : ''}`}
+      className={`sysflag-btn ${isOn ? 'on' : 'off'} ${stateless ? 'stateless' : ''} ${!hasBinding ? 'no-binding' : ''}`}
       onClick={handlePress}
-      disabled={!binding}
-      title={
-        binding
-          ? `${label}: ${stateless ? 'COMMAND' : isOn ? 'ON' : 'OFF'} - Press: ${binding.key}`
-          : `${label}: No key binding. Configure in KEY BINDINGS.`
-      }
+      disabled={!hasBinding}
+      title={getTitle()}
       style={isPressed ? { transform: 'scale(0.92)', opacity: 0.65 } : undefined}
     >
       <span className="sysflag-icon">{icon}</span>
@@ -94,7 +102,7 @@ function SystemFlagToggle({ flight, onKeyPress, config }: Props & { config: Flag
       <span className={`sysflag-state ${!stateless && isOn ? 'state-on' : 'state-off'}`}>
         {stateLabel}
       </span>
-      {binding && <span className="sysflag-key">{binding.key}</span>}
+      {hasBinding && <span className="sysflag-key">{binding?.key}</span>}
     </button>
   )
 }
@@ -117,4 +125,16 @@ export function AutopilotToggleWidget(props: Props) {
 
 export function MapToggleWidget(props: Props) {
   return <SystemFlagToggle {...props} config={FLAG_CONFIG.map} />
+}
+
+export function ScanModeToggleWidget(props: Props) {
+  return <SystemFlagToggle {...props} config={FLAG_CONFIG.scanMode} />
+}
+
+export function LongRangeScanToggleWidget(props: Props) {
+  return <SystemFlagToggle {...props} config={FLAG_CONFIG.longRangeScan} />
+}
+
+export function MissionManagerToggleWidget(props: Props) {
+  return <SystemFlagToggle {...props} config={FLAG_CONFIG.missionManager} />
 }
