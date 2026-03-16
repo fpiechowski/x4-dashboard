@@ -7,12 +7,17 @@ Guidance for agentic coding assistants working in this repository.
 ```bash
 npm run install:all   # Install all dependencies (server + client)
 npm run dev           # Dev mode: Node (port 3001) + Vite (port 3000) with hot-reload
+npm run desktop:dev   # Dev mode with Electron + Node + Vite
 npm run dev:mock      # Dev mode with mock data (no X4 game needed)
 npm run mock          # Server only with mock data at http://localhost:3001
 npm run build         # Compile React → server/public/ (required before npm start)
 npm start             # Production: Node serves built client at port 3001
+npm run desktop:start # Run the Electron desktop shell against the built app
+npm run desktop:dist  # Build Windows desktop artifacts into release/
 npm run typecheck     # Run the only validation step from repo root
 npm run check         # Alias for typecheck
+npm run release:check # Typecheck + frontend build
+npm run release:bundle # Create runtime bundle in dist/
 ```
 
 **There are no tests and no linter configured.**
@@ -25,11 +30,13 @@ npm run typecheck
 
 This is the sole validation tool. Run it after editing any TypeScript file.
 Do not edit files in `server/public/` directly; they are build output from `client/`.
+If you change desktop packaging or release automation, validate with the relevant command (`npm run desktop:dist`, `npm run release:bundle`) when practical.
 
 ## Architecture Overview
 
 Single Node.js server (`server/`) that serves a built React frontend (`server/public/`).
 In dev mode, Vite runs on port 3000 and proxies `/api` to port 3001.
+The Electron desktop wrapper (`electron/`) starts the bundled server and loads the local app URL.
 
 **Data flow:**
 1. X4 Lua mod (`game-mods/mycu_external_app/`) POSTs JSON to `POST /api/data` each tick
@@ -89,7 +96,8 @@ export interface FlightState {
 ## Dashboard Layout System
 
 - Dashboard layouts are config-driven in `client/src/dashboards.ts`
-- `Dashboard.tsx` is the widget registry and layout renderer; add new widget cases there when introducing a new widget ID
+- `client/src/components/Dashboard.tsx` is the top-level shell only; widget registration now lives in `client/src/components/dashboard/widgetRegistry.tsx`
+- Layout rendering helpers live in `client/src/components/dashboard/DashboardLayouts.tsx`
 - Widget components should render content only; panel chrome belongs in `ArwesPanel` and dashboard config
 - Panel definitions live inline inside each dashboard config; there is no shared panel registry
 - `frameless: true` panels return raw content and skip `ArwesPanel`
@@ -183,6 +191,18 @@ Lives in `game-mods/mycu_external_app/`. Deploy by copying the folder to the X4 
 |----------|---------|-------------|
 | `PORT` | `3001` | Server port |
 | `MOCK` | unset | Set to `true` to force mock mode |
+| `AUTOHOTKEY_PATH` | unset | Explicit path to `AutoHotkey64.exe` |
+| `X4_FORCE_ACTIVATE` | `false` | Try to focus the game window before sending keys |
+| `X4_WINDOW_TITLE` | `X4` | Window title fragment used for focus matching |
+| `ALLOW_REMOTE_CONTROLS` | `false` | Allows remote access to control endpoints |
+
+## Release / Distribution
+
+- Runtime release bundles are created by `scripts/create-release-bundle.js`
+- Electron entry points live in `electron/main.cjs` and `electron/preload.cjs`
+- GitHub CI workflows are in `.github/workflows/ci.yml` and `.github/workflows/release.yml`
+- Desktop installers and portable executables are written to `release/`
+- Source bundles are written to `dist/`
 
 ## What NOT to Do
 
