@@ -79,7 +79,7 @@ function SystemFlagToggle({ flight, onKeyPress, config }: Props & { config: Flag
 
   return (
     <button
-      className={`sysflag-btn ${isOn ? 'on' : 'off'} ${!binding ? 'no-binding' : ''}`}
+      className={`sysflag-btn ${isOn ? 'on' : 'off'} ${stateless ? 'stateless' : ''} ${!binding ? 'no-binding' : ''}`}
       onClick={handlePress}
       disabled={!binding}
       title={
