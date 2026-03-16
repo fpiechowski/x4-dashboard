@@ -4,6 +4,8 @@ A playable real-time cockpit dashboard for X4: Foundations.
 
 It combines a React + Arwes frontend, a small Node.js bridge server, and an X4 Lua mod that pushes game state straight into the browser. The project is already usable as a second-screen control panel and live status display, even though it is still evolving.
 
+The bundled Lua mod is a modified version of the X4 External App mod by Mycu. `x4-dashboard` keeps the game-side data export idea, but replaces the original frontend with its own Node.js server and React dashboard.
+
 ## What it does
 
 - Shows live ship, navigation, combat, mission, research, and logbook data.
@@ -97,6 +99,8 @@ There is no dedicated test suite yet; TypeScript checking is the main validation
 
 The Lua integration lives in `game-mods/mycu_external_app/`.
 
+This Lua mod is a modified version of X4 External App. The original X4 External App Node application is not required for `x4-dashboard` to work, because this project ships its own Node.js app that replaces the original frontend/backend flow.
+
 Copy that folder into your X4 extensions directory so the final path looks like this:
 
 ```text
@@ -111,6 +115,10 @@ port = 3001
 ```
 
 If your dashboard server runs on another machine on your LAN, update `host` accordingly.
+
+## Credits
+
+Special thanks to Mycu, the author of X4 External App, for the original mod that made this integration path possible.
 
 ## Key bindings
 
