@@ -40,7 +40,7 @@ This app can simulate local key presses on the machine where the server is runni
 
 Platform notes for key simulation:
 
-- Windows: PowerShell `System.Windows.Forms.SendKeys`
+- Windows: AutoHotkey v2 is recommended for reliable in-game key presses; PowerShell `SendKeys` is used as a fallback when AutoHotkey is unavailable
 - Linux: `xdotool`
 - macOS: `osascript`
 
@@ -75,6 +75,12 @@ npm start
 ```
 
 Open `http://localhost:3001` in your browser.
+
+Windows note:
+
+- Install AutoHotkey v2 on the same machine as the dashboard server if you want dashboard buttons to work reliably in X4.
+- The server will auto-detect common AutoHotkey install paths.
+- If needed, set `AUTOHOTKEY_PATH` to the full `AutoHotkey64.exe` path.
 
 ## Development
 
@@ -123,6 +129,8 @@ Special thanks to Mycu, the author of X4 External App, for the original mod that
 ## Key bindings
 
 Bindings are stored in `server/config/keybindings.json` and editable from the dashboard UI.
+
+On Windows, these bindings are sent through AutoHotkey when it is available, which is more reliable for games than plain `SendKeys`.
 
 Supported key format uses SendKeys-style notation:
 
