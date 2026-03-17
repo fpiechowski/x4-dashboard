@@ -55,6 +55,7 @@
   "build": {
     "appId": "com.fpiechowski.x4dashboard",
     "productName": "X4 Dashboard Server",
+    "compression": "store",
     "directories": {
       "output": "release"
     },
@@ -75,7 +76,11 @@
       },
       {
         "from": "server/node_modules",
-        "to": "server/node_modules"
+        "to": "server/node_modules",
+        "filter": [
+          "**/*",
+          "!x4-dashboard"
+        ]
       },
       {
         "from": "server/public",
@@ -92,12 +97,8 @@
     "win": {
       "signAndEditExecutable": false,
       "target": [
-        "portable",
         "nsis"
       ]
-    },
-    "portable": {
-      "artifactName": "x4-dashboard-server-launcher-${version}-portable.${ext}"
     },
     "nsis": {
       "artifactName": "x4-dashboard-server-launcher-${version}-setup.${ext}",
