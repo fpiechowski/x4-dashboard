@@ -2,226 +2,174 @@
 
 Guidance for agentic coding assistants working in this repository.
 
+## Project Snapshot
+
+- `x4-dashboard` is a React + Node.js dashboard for X4: Foundations.
+- The repo has four main parts:
+  - `client/` - Vite + React + TypeScript frontend
+  - `server/` - Express + WebSocket backend in CommonJS
+  - `electron/` - desktop wrapper for packaged app builds
+  - `game-mods/mycu_external_app/` - Lua mod that sends game data
+- `server/public/` is generated build output from `client/` and must not be edited directly.
+
 ## Commands
 
+Run from the repository root.
+
 ```bash
-npm run install:all   # Install all dependencies (server + client)
-npm run dev           # Dev mode: Node (port 3001) + Vite (port 3000) with hot-reload
-npm run desktop:dev   # Dev mode with Electron + Node + Vite
-npm run dev:mock      # Dev mode with mock data (no X4 game needed)
-npm run mock          # Server only with mock data at http://localhost:3001
-npm run build         # Compile React → server/public/ (required before npm start)
-npm start             # Production: Node serves built client at port 3001
-npm run desktop:start # Run the Electron desktop shell against the built app
-npm run desktop:dist  # Build Windows desktop artifacts into release/
-npm run typecheck     # Run the only validation step from repo root
-npm run check         # Alias for typecheck
-npm run release:check # Typecheck + frontend build
-npm run release:bundle # Create runtime bundle in dist/
+npm run install:all    # install client and server dependencies
+npm run dev            # Vite + server in dev mode
+npm run desktop:dev    # Vite + server + Electron
+npm run dev:mock       # Vite + server mock mode
+npm run mock           # mock server only at http://localhost:3001
+npm run build          # build client into server/public/
+npm start              # start production server
+npm run desktop:start  # run Electron against built app
+npm run desktop:dist   # build Windows desktop artifacts
+npm run typecheck      # main validation command
+npm run check          # alias for typecheck
+npm run release:check  # typecheck + frontend build
+npm run release:bundle # create runtime bundle in dist/
 ```
 
-**There are no tests and no linter configured.**
+## Validation
 
-Type-check only:
+- There is no test suite, no linter, and no single-test command.
+- The main validation step is:
+
 ```bash
 npm run typecheck
-# or: cd client && npx tsc --noEmit
 ```
 
-This is the sole validation tool. Run it after editing any TypeScript file.
-Do not edit files in `server/public/` directly; they are build output from `client/`.
-If you change desktop packaging or release automation, validate with the relevant command (`npm run desktop:dist`, `npm run release:bundle`) when practical.
+- Client-only equivalent:
 
-## Architecture Overview
-
-Single Node.js server (`server/`) that serves a built React frontend (`server/public/`).
-In dev mode, Vite runs on port 3000 and proxies `/api` to port 3001.
-The Electron desktop wrapper (`electron/`) starts the bundled server and loads the local app URL.
-
-**Data flow:**
-1. X4 Lua mod (`game-mods/mycu_external_app/`) POSTs JSON to `POST /api/data` each tick
-2. `server/index.js` strips X4 color codes (`server/utils/normalizeData.js`) and feeds data to the aggregator, then broadcasts via WebSocket
-3. `server/dataAggregator.js` merges partial updates into a unified `GameState` (ship-only ticks don't wipe mission/logbook data)
-4. `client/src/hooks/useGameData.ts` receives WebSocket messages and exposes `{ state, wsConnected, pressKey }` to components
-5. `pressKey(action)` → `POST /api/keypress` → `server/keyPresser.js` → PowerShell `SendKeys` (Windows) / `xdotool` (Linux) / `osascript` (macOS) → key reaches X4
-
-**When adding a new data field:** update both `client/src/types/gameData.ts` **and** `getState()` in `server/dataAggregator.js`. If the field should appear in preview mode too, update `server/mockData.js`.
-
-## Module Systems
-
-| Layer | System | Style |
-|-------|--------|-------|
-| `server/` | CommonJS | `require()` / `module.exports` |
-| `client/` | ESM | `import` / `export` |
-
-Never mix the two. Server files use `.js`, client source files use `.ts` / `.tsx`.
-
-## TypeScript Conventions
-
-- `strict: false` in `client/tsconfig.json` — lenient type checking is intentional
-- Use **interfaces** for object shapes, not `type` aliases or `enum`s
-- Use `T | null` for nullable fields, not `T | undefined`
-- Prefer `Record<string, any>` for loosely-shaped external data
-- All types live in `client/src/types/gameData.ts`; add new interfaces there
-- Named exports only — no default exports anywhere in the client
-
-```ts
-// Correct
-export interface FlightState {
-  speed: number;       // current m/s
-  boostEnergy: number; // 0–100 %
-  boosting: boolean;
-  seta: boolean | null;
-}
+```bash
+npm --prefix client run typecheck
 ```
 
-## React / Component Conventions
+- After TypeScript changes, run `npm run typecheck`.
+- After packaging or release changes, run the relevant validation when practical:
+  - `npm run release:check`
+  - `npm run desktop:dist`
+  - `npm run release:bundle`
 
-- **Functional components only**, named exports: `export function MyWidget({ ... }: Props) {`
-- Define the `Props` interface directly above the component in the same file
-- Use destructuring with defaults for optional props: `color = 'primary'`
-- Hooks: `useState`, `useEffect`, `useCallback` — follow the existing pattern in `useGameData.ts`
-- **Never enable React StrictMode** — it breaks Arwes animations
-- Keep components presentational where possible; lift state into hooks
+## External Rules
 
-## Frontend Architecture
+- No `.cursor/rules/` directory is present.
+- No `.cursorrules` file is present.
+- No `.github/copilot-instructions.md` file is present.
 
-- Frontend structure is `Dashboard -> Panel -> Widget`
-- Dashboards are the top-level screen presets selected from the UI list (for example `Flight`, `Flight Horizontal`, `Missions & Comms`)
-- Dashboards define the outer page layout and place panels in either grid or column arrangements
-- Panels are the dashboard sections; most render through `ArwesPanel` and provide the frame, title, color, and panel-level layout
-- Panels define their internal widget layout with either a grid or columns config; `frameless: true` panels skip `ArwesPanel` and render raw content
-- Widgets are the actual views inside panels; they render content only and do not own panel chrome or top-level dashboard layout
+## Architecture
 
-## Dashboard Layout System
+- The Node server serves the built React app from `server/public/`.
+- In dev mode, Vite runs on port `3000` and proxies `/api` to port `3001`.
+- The Electron wrapper starts the bundled server and loads the local app URL.
 
-- Dashboard layouts are config-driven in `client/src/dashboards.ts`
-- `client/src/components/Dashboard.tsx` is the top-level shell only; widget registration now lives in `client/src/components/dashboard/widgetRegistry.tsx`
-- Layout rendering helpers live in `client/src/components/dashboard/DashboardLayouts.tsx`
-- Widget components should render content only; panel chrome belongs in `ArwesPanel` and dashboard config
-- Panel definitions live inline inside each dashboard config; there is no shared panel registry
-- `frameless: true` panels return raw content and skip `ArwesPanel`
+Data flow:
+1. The Lua mod posts widget payloads to `POST /api/data`.
+2. `server/utils/normalizeData.js` strips X4 formatting codes.
+3. `server/dataAggregator.js` merges partial payloads into durable game state.
+4. `client/src/hooks/useGameData.ts` receives updates over WebSocket.
+5. UI actions call `POST /api/keypress`, which forwards key presses to the OS.
 
-## Arwes UI Framework
+When adding a new exported game field:
+1. Update `client/src/types/gameData.ts`.
+2. Update `getState()` in `server/dataAggregator.js`.
+3. Update `server/mockData.js` if the field should exist in mock mode.
 
-Version `@arwes/react@1.0.0-next.25020502`. This is a sci-fi animation framework with strict rules:
+## Module and File Rules
 
-- Every `<Text>` must have a parent `<Animator>` node
-- **Always use `<ArwesPanel>`** (`client/src/components/ArwesPanel.tsx`) for new panels — it handles `FrameCorners`, glow, color themes, and animated titles
-- Frame pattern requires two nested `<div>`s:
-  ```tsx
-  <div style={{ position: 'relative' }}>
-    <FrameCorners ... />
-    <div style={{ position: 'relative' }}>content</div>
-  </div>
-  ```
-- Available panel color themes: `'primary'` | `'danger'` | `'success'` | `'warning'` | `'purple'`
-- Arwes CSS variables: `--arwes-frames-line-color`, `--arwes-frames-bg-color`, `--arwes-frames-line-filter`
-- Use inline `style` objects with `as React.CSSProperties` when setting custom CSS variables dynamically
+- `server/` uses CommonJS and `.js`.
+- `client/` uses ESM and `.ts` / `.tsx`.
+- Do not mix module systems.
+- Keep generated assets out of source edits.
 
-## Styling
+## TypeScript Style
 
-- Global styles are in `client/src/index.css` (monolithic — do not split it)
-- CSS custom properties for the design system: `--c-cyan`, `--font-mono`, etc.
-- Use CSS classes (from `index.css`) for static visual states
-- Use inline `style` objects only for values that must be computed at runtime
-- Class names follow BEM-ish conventions matching existing component patterns
+- `client/tsconfig.json` uses `strict: false`; do not tighten it casually.
+- Prefer `interface` for object shapes instead of `type` aliases or `enum`s.
+- Use `T | null` instead of `T | undefined` for nullable state.
+- Prefer named exports; do not introduce default exports in client code.
+- Keep shared game-state types in `client/src/types/gameData.ts`.
+- For loosely shaped external data, `Record<string, any>` is acceptable in this repo.
 
-## Server-Side Conventions
+## Naming and Structure
 
-- No async/await on the server — use synchronous `fs.readFileSync` for config, callbacks otherwise
-- Route handlers use inline try/catch: `res.status(N).json({ error: '...' })`
-- Silent WebSocket send errors: `try { client.send(msg); } catch { /* ignore */ }`
-- Data aggregator uses defensive nullish coalescing: `es?.hull ?? 100`
-- Clamp numeric values: `Math.max(0, Math.min(100, value))`
-- Section comments in server files: `// === WebSocket server ===`
+- Use descriptive names; prefer product terms already used in the repo.
+- React components: PascalCase filenames and component names.
+- Helper functions and variables: camelCase.
+- Interfaces and props types: PascalCase.
+- Keep `Props` interfaces directly above the component that uses them.
+- Keep components focused; move reusable logic to hooks or utilities.
 
-## Error Handling Patterns
+## React and Frontend Conventions
 
-| Context | Pattern |
-|---------|---------|
-| WebSocket / JSON parse | Silent `catch {}` |
-| `pressKey` API failure | `console.error(...)` |
-| HTTP route errors | `res.status(N).json({ error: 'message' })` |
-| Config file missing | `fs.readFileSync` throws — let it crash loudly |
-| Aggregator missing data | Nullish coalescing with sensible defaults |
+- Functional components only.
+- Use named exports: `export function MyWidget(...)`.
+- Use destructuring with defaults for optional props when helpful.
+- Follow existing hook patterns from `useGameData.ts`.
+- Never enable React StrictMode; it breaks Arwes animations.
 
-## Key Bindings System
+Frontend layout model:
+- `Dashboard -> Panel -> Widget`
+- Dashboard configs live in `client/src/dashboards.ts`.
+- `client/src/components/Dashboard.tsx` is the shell.
+- Widget registration lives in `client/src/components/dashboard/widgetRegistry.tsx`.
+- Layout helpers live in `client/src/components/dashboard/DashboardLayouts.tsx`.
+- Widget components render content only; panel chrome belongs in `ArwesPanel`.
 
-Key bindings are stored in `server/config/keybindings.json` (user-editable).
+## Arwes and Styling
 
-**SendKeys notation:** `{F1}`–`{F12}`, `^a` (Ctrl+A), `+a` (Shift+A), `%a` (Alt+A), `{ENTER}`, `{ESC}`, `{SPACE}`, arrow keys.
+- Use `client/src/components/ArwesPanel.tsx` for new framed panels.
+- Every Arwes `<Text>` must have a parent `<Animator>`.
+- Available panel colors: `primary`, `danger`, `success`, `warning`, `purple`.
+- Global CSS lives in `client/src/index.css`; do not split it into modules.
+- Use CSS classes for static states and inline styles for computed values.
 
-**Adding a new System Flag / key binding:**
-1. Add the action key to `server/config/keybindings.json`
-2. Add an entry to `FLAG_CONFIG` in `client/src/components/SystemFlags.tsx` with the matching `key` from `FlightState`
-3. Add the field to `FlightState` in `client/src/types/gameData.ts` if it doesn't exist
-4. Map the field in `server/dataAggregator.js` `getState()` from `ext.shipStatus.*`
+## Server Conventions
 
-## Game State Model
+- Do not introduce `async/await` in `server/`; follow existing callback/sync style.
+- Use synchronous config reads where the code already expects them.
+- Route handlers should return JSON errors with explicit status codes.
+- WebSocket send failures should remain silent where the repo already does that.
+- Use defensive nullish coalescing and clamp numeric values where appropriate.
+- Keep section comments in the existing style, for example `// === WebSocket server ===`.
 
-All frontend types are in `client/src/types/gameData.ts`. Top-level `GameState` fields:
+Error-handling patterns:
+- WebSocket / JSON parse: silent `catch {}` when already used that way
+- HTTP routes: `res.status(...).json({ error: '...' })`
+- Key press failures: `console.error(...)`
+- Missing config files may crash loudly if the current code expects that
 
-| Field | Type | Source widget |
-|-------|------|---------------|
-| `_meta` | `ConnectionMeta` | Server |
-| `player` | `PlayerInfo` | `playerProfile` |
-| `ship` | `ShipStatus` | `shipStatus` |
-| `flight` | `FlightState` | `shipStatus` |
-| `combat` | `CombatState` | `targetInfo` + `shipStatus` alert fields |
-| `missionOffers` | `MissionOffers \| null` | `mission_offers` |
-| `activeMission` | `ActiveMission \| null` | `active_mission` |
-| `logbook` | `{ list: LogbookEntry[] } \| null` | `logbook` |
-| `currentResearch` | `CurrentResearch \| null` | `current_research` |
-| `factions` | `Record \| null` | `factions` |
-| `agents` | `any[] \| null` | `agents` |
-| `inventory` | `Record \| null` | `inventory` |
-| `transactionLog` | `{ list: any[] } \| null` | `transaction_log` |
+## Key Bindings and Runtime Config
 
-## Lua Mod
+- Key bindings are stored in `server/config/keybindings.json`.
+- When adding a new system flag or action, update both client and server mappings.
+- Current env vars include `PORT`, `MOCK`, `AUTOHOTKEY_PATH`, `X4_FORCE_ACTIVATE`, `X4_WINDOW_TITLE`, and `ALLOW_REMOTE_CONTROLS`.
+- Prefer preserving current behavior unless the user asks for config model changes.
 
-Lives in `game-mods/mycu_external_app/`. Deploy by copying the folder to the X4 extensions directory.
-- `ui/config.lua` — `host = 'localhost'`, `port = 3001`
-- Each widget POSTs its data independently; the aggregator merges partial updates
-- Do not expect all fields to be present on every tick
+## Release and Distribution
 
-## Environment Variables
+- Runtime bundles are created by `scripts/create-release-bundle.js`.
+- GitHub workflows live in `.github/workflows/ci.yml` and `.github/workflows/release.yml`.
+- Desktop artifacts are written to `release/`; runtime/source bundles to `dist/`.
+- If you change packaging, ensure the build still includes server runtime dependencies.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `3001` | Server port |
-| `MOCK` | unset | Set to `true` to force mock mode |
-| `AUTOHOTKEY_PATH` | unset | Explicit path to `AutoHotkey64.exe` |
-| `X4_FORCE_ACTIVATE` | `false` | Try to focus the game window before sending keys |
-| `X4_WINDOW_TITLE` | `X4` | Window title fragment used for focus matching |
-| `ALLOW_REMOTE_CONTROLS` | `false` | Allows remote access to control endpoints |
+## Roadmap and GitHub Planning
 
-## Release / Distribution
+- Treat `ROADMAP.md` as the source of truth for product planning.
+- Keep roadmap, milestones, and open issues aligned.
+- Use milestones for release-sized groupings such as `v1.2.0` and `v2.0.0`.
+- Prefer updating existing issues before creating new ones.
+- New planning issues should use `Goal`, `Scope`, and `Why`.
+- Do not create releases, tags, or close milestones unless the user explicitly asks.
 
-- Runtime release bundles are created by `scripts/create-release-bundle.js`
-- Electron entry points live in `electron/main.cjs` and `electron/preload.cjs`
-- GitHub CI workflows are in `.github/workflows/ci.yml` and `.github/workflows/release.yml`
-- Desktop installers and portable executables are written to `release/`
-- Source bundles are written to `dist/`
+## Do Not
 
-## Roadmap / GitHub Planning
-
-- Treat `ROADMAP.md` as the source of truth for near-term and major-version planning
-- When the roadmap changes materially, reflect it in GitHub milestones and issues
-- Use milestones for release-sized groupings (for example `v1.2.0`, `v2.0.0`)
-- Create focused GitHub issues for roadmap items instead of leaving roadmap bullets untracked
-- Prefer updating existing issues when a roadmap item is already covered; create new issues only for missing scope
-- When adding new issues, write them as user- or product-facing work items with `Goal`, `Scope`, and `Why`
-- Keep roadmap, milestones, and open issues aligned so the public backlog stays understandable
-- Do not create a release, tag, or milestone closeout unless the user explicitly asks for it
-
-## What NOT to Do
-
-- Do not enable React StrictMode — it breaks Arwes animations
-- Do not add a linter or test framework without explicit user request
-- Do not split `index.css` into modules
-- Do not hand-edit files in `server/public/`; rebuild from `client/` instead
-- Do not use `enum` or `type` aliases where an `interface` works
-- Do not use `export default` in client source files
-- Do not use async/await in `server/` files
-- Do not create new files when editing an existing one is sufficient
+- Do not edit `server/public/` directly.
+- Do not add a linter or test framework without explicit request.
+- Do not enable React StrictMode.
+- Do not introduce default exports in client code.
+- Do not use `enum` where an `interface` is sufficient.
+- Do not mix CommonJS and ESM.
+- Do not use destructive git commands unless explicitly requested.
