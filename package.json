@@ -97,8 +97,12 @@
     "win": {
       "signAndEditExecutable": false,
       "target": [
+        "portable",
         "nsis"
       ]
+    },
+    "portable": {
+      "artifactName": "x4-dashboard-server-launcher-${version}-portable.${ext}"
     },
     "nsis": {
       "artifactName": "x4-dashboard-server-launcher-${version}-setup.${ext}",
