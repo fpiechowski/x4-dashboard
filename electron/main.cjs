@@ -48,6 +48,34 @@ function getRuntimeConfigStore() {
   return require(storePath)
 }
 
+function getKeybindingsStorePath() {
+  if (IS_DEV) {
+    return path.join(__dirname, '..', 'server', 'keybindingsStore.js')
+  }
+
+  return path.join(process.resourcesPath, 'server', 'keybindingsStore.js')
+}
+
+function getKeybindingsStore() {
+  const storePath = getKeybindingsStorePath()
+  delete require.cache[storePath]
+  return require(storePath)
+}
+
+function getKeyPresserPath() {
+  if (IS_DEV) {
+    return path.join(__dirname, '..', 'server', 'keyPresser.js')
+  }
+
+  return path.join(process.resourcesPath, 'server', 'keyPresser.js')
+}
+
+function getKeyPresser() {
+  const modulePath = getKeyPresserPath()
+  delete require.cache[modulePath]
+  return require(modulePath)
+}
+
 function getLanAddress() {
   return Object.values(os.networkInterfaces())
     .flat()
@@ -57,6 +85,7 @@ function getLanAddress() {
 function getLauncherState(serverRunning) {
   const lanAddress = getLanAddress()
   const runtimeConfigStore = getRuntimeConfigStore()
+  const keybindingsStore = getKeybindingsStore()
 
   return {
     serverRunning,
@@ -64,6 +93,7 @@ function getLauncherState(serverRunning) {
     lanUrl: lanAddress ? `http://${lanAddress}:${SERVER_PORT}` : null,
     logPath: getLogPath(),
     runtimeConfig: runtimeConfigStore.readRuntimeConfig(),
+    keybindings: keybindingsStore.readKeybindings(),
     startup: {
       port: Number(SERVER_PORT),
       mockMode: process.argv.includes('--mock') || process.env.MOCK === 'true',
@@ -183,6 +213,27 @@ function registerIpc() {
 
     runtimeConfigStore.writeRuntimeConfig(next)
     return next
+  })
+  ipcMain.handle('launcher:update-keybindings', async (_event, updates) => {
+    const keybindingsStore = getKeybindingsStore()
+    const current = keybindingsStore.readKeybindings()
+    const next = keybindingsStore.mergeKeybindingUpdates(current, updates || {})
+
+    keybindingsStore.writeKeybindings(next)
+    return next
+  })
+  ipcMain.handle('launcher:test-keybinding', async (_event, action) => {
+    const keybindingsStore = getKeybindingsStore()
+    const keyPresser = getKeyPresser()
+    const current = keybindingsStore.readKeybindings()
+    const binding = current.bindings?.[action]
+
+    if (!binding) {
+      throw new Error(`Unknown action: ${action}`)
+    }
+
+    keyPresser.press(binding.key, binding.modifiers || [])
+    return { ok: true }
   })
   ipcMain.handle('launcher:show-log-location', async () => {
     const logPath = getLogPath()

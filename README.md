@@ -156,6 +156,7 @@ The most important host-side runtime controls now live in the Electron `Server L
 - AutoHotkey executable path
 - force-activate game window
 - game window title matching
+- key bindings used for host-side key press simulation
 
 These settings are persisted on the server side and are the preferred configuration path for the machine running the server.
 

@@ -143,10 +143,3 @@ export interface KeyBindings {
   note: string;
   bindings: Record<string, KeyBinding>;
 }
-
-export interface RuntimeConfig {
-  allowRemoteControls: boolean;
-  autoHotkeyPath: string;
-  forceActivateGameWindow: boolean;
-  gameWindowTitle: string;
-}

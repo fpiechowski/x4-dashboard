@@ -95,6 +95,30 @@
         </div>
       </section>
 
+      <section class="panel config-panel">
+        <div class="config-header">
+          <div>
+            <p class="label">Key Bindings</p>
+            <p class="muted">These control mappings belong to the host machine that sends key presses to X4.</p>
+          </div>
+        </div>
+
+        <pre class="config-note">Key format (Windows SendKeys):
+{F1}-{F12} function keys, ^a Ctrl+A, +a Shift+A, %a Alt+A, {ESC}, {ENTER}, {SPACE}, {UP}/{DOWN}/{LEFT}/{RIGHT}</pre>
+
+        <div class="keybinding-header">
+          <span>Action</span>
+          <span>Key combo</span>
+          <span>Test</span>
+        </div>
+        <div id="keybindings-list" class="keybindings-list"></div>
+
+        <div class="button-row">
+          <button id="save-keybindings">Save Key Bindings</button>
+          <span id="keybindings-feedback" class="muted">-</span>
+        </div>
+      </section>
+
       <section class="panel footer-panel">
         <div>
           <p class="label">Server Log</p>

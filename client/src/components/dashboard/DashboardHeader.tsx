@@ -10,7 +10,6 @@ interface Props {
   dashboardScale: number
   flight: FlightState
   inCombat: boolean
-  onOpenSettings: () => void
   onChangeDashboard: (id: string) => void
   onChangeDashboardScale: (scale: number) => void
 }
@@ -28,7 +27,6 @@ export function DashboardHeader({
   dashboardScale,
   flight,
   inCombat,
-  onOpenSettings,
   onChangeDashboard,
   onChangeDashboardScale,
 }: Props) {
@@ -104,10 +102,6 @@ export function DashboardHeader({
             ))}
           </select>
         </label>
-
-        <button className="header-settings-btn" onClick={onOpenSettings}>
-          SETTINGS
-        </button>
       </div>
     </header>
   )

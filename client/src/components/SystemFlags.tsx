@@ -83,7 +83,7 @@ function SystemFlagToggle({ flight, onKeyPress, config }: Props & { config: Flag
 
   function getTitle(): string {
     if (!hasBinding) {
-      return `${label}: No key binding. Configure in KEY BINDINGS.`
+      return `${label}: No key binding. Configure it in the Server Launcher.`
     }
 
     return `${label}: ${stateless ? 'COMMAND' : isOn ? 'ON' : 'OFF'} - Press: ${binding?.key}`

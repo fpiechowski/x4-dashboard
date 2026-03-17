@@ -2,6 +2,55 @@ function getInput(id) {
   return document.getElementById(id)
 }
 
+function renderKeybindings(keybindings) {
+  const listNode = document.getElementById('keybindings-list')
+  listNode.innerHTML = ''
+
+  for (const [action, binding] of Object.entries(keybindings || {})) {
+    const row = document.createElement('div')
+    row.className = 'keybinding-row'
+
+    const meta = document.createElement('div')
+    meta.className = 'keybinding-meta'
+
+    const label = document.createElement('div')
+    label.className = 'keybinding-label'
+    label.textContent = binding.label
+
+    const description = document.createElement('div')
+    description.className = 'keybinding-description'
+    description.textContent = binding.description
+
+    meta.append(label, description)
+
+    const input = document.createElement('input')
+    input.className = 'keybinding-input'
+    input.type = 'text'
+    input.value = binding.key || ''
+    input.placeholder = 'e.g. {F1}'
+    input.spellcheck = false
+    input.dataset.action = action
+
+    const testButton = document.createElement('button')
+    testButton.className = 'secondary-button keybinding-test'
+    testButton.textContent = 'Test'
+    testButton.addEventListener('click', async () => {
+      const feedbackNode = document.getElementById('keybindings-feedback')
+      feedbackNode.textContent = `Testing ${binding.label}...`
+
+      try {
+        await window.x4Desktop.testKeybinding(action)
+        feedbackNode.textContent = `${binding.label} sent.`
+      } catch (error) {
+        feedbackNode.textContent = error instanceof Error ? error.message : 'Failed to test keybinding.'
+      }
+    })
+
+    row.append(meta, input, testButton)
+    listNode.appendChild(row)
+  }
+}
+
 async function loadState() {
   const state = await window.x4Desktop.getState()
 
@@ -26,7 +75,11 @@ async function loadState() {
   getInput('force-activate-game-window').checked = Boolean(state.runtimeConfig.forceActivateGameWindow)
   getInput('game-window-title').value = state.runtimeConfig.gameWindowTitle || ''
   getInput('autohotkey-path').value = state.runtimeConfig.autoHotkeyPath || ''
+
+  renderKeybindings(state.keybindings?.bindings)
+
   document.getElementById('settings-feedback').textContent = 'Host settings are applied locally on this machine.'
+  document.getElementById('keybindings-feedback').textContent = 'Key bindings are stored on the host machine.'
 }
 
 function bindAction(id, handler) {
@@ -77,6 +130,24 @@ bindAction('save-settings', async () => {
     await loadState()
   } catch (error) {
     feedbackNode.textContent = error instanceof Error ? error.message : 'Failed to save settings.'
+  }
+})
+
+bindAction('save-keybindings', async () => {
+  const feedbackNode = document.getElementById('keybindings-feedback')
+  feedbackNode.textContent = 'Saving...'
+
+  try {
+    const updates = {}
+    document.querySelectorAll('.keybinding-input').forEach((input) => {
+      updates[input.dataset.action] = { key: input.value }
+    })
+
+    await window.x4Desktop.updateKeybindings(updates)
+    feedbackNode.textContent = 'Key bindings saved.'
+    await loadState()
+  } catch (error) {
+    feedbackNode.textContent = error instanceof Error ? error.message : 'Failed to save key bindings.'
   }
 })
 

@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { AnimatorGeneralProvider, Animator, GridLines, Dots } from '@arwes/react'
 import { useGameData } from './hooks/useGameData'
 import { Dashboard } from './components/Dashboard'
-import { SettingsModal } from './components/SettingsModal'
 import { DASHBOARDS, getDashboard } from './dashboards'
 
 const DASHBOARD_SCALE_STORAGE_KEY = 'dashboardScale'
@@ -36,7 +35,6 @@ function getInitialDashboardScale(): number {
 
 export function App() {
   const { state, wsConnected, pressKey } = useGameData(getWebSocketUrl())
-  const [showSettings, setShowSettings] = useState(false)
   const [dashboardId, setDashboardId] = useState(getInitialDashboard)
   const [dashboardScale, setDashboardScale] = useState(getInitialDashboardScale)
 
@@ -86,18 +84,10 @@ export function App() {
             dashboardId={dashboardId}
             dashboardScale={dashboardScale}
             onKeyPress={pressKey}
-            onOpenSettings={() => setShowSettings(true)}
             onChangeDashboard={handleChangeDashboard}
             onChangeDashboardScale={handleChangeDashboardScale}
           />
         </div>
-
-        {showSettings && (
-          <SettingsModal
-            onClose={() => setShowSettings(false)}
-            onTestKey={pressKey}
-          />
-        )}
       </Animator>
     </AnimatorGeneralProvider>
   )

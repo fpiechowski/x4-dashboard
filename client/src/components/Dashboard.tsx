@@ -10,7 +10,6 @@ interface Props {
   dashboardId: string
   dashboardScale: number
   onKeyPress: (action: string) => void
-  onOpenSettings: () => void
   onChangeDashboard: (id: string) => void
   onChangeDashboardScale: (scale: number) => void
 }
@@ -21,7 +20,6 @@ export function Dashboard({
   dashboardId,
   dashboardScale,
   onKeyPress,
-  onOpenSettings,
   onChangeDashboard,
   onChangeDashboardScale,
 }: Props) {
@@ -41,7 +39,6 @@ export function Dashboard({
         dashboardScale={dashboardScale}
         flight={state.flight}
         inCombat={inCombat}
-        onOpenSettings={onOpenSettings}
         onChangeDashboard={onChangeDashboard}
         onChangeDashboardScale={onChangeDashboardScale}
       />
