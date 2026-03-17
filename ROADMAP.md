@@ -25,6 +25,7 @@ This roadmap is a lightweight public planning document for the next release cycl
 
 ### 4. Release and contributor experience
 - Add app icons and release screenshots for GitHub releases
+- Improve `README.md` with cleaner formatting, stronger visual structure, emoji where helpful, and screenshots/gifs for key flows
 - Improve issue labeling and contributor onboarding for first contributions
 - Keep CI and release automation current as GitHub Actions platform requirements evolve
 - Move important runtime configuration into the app UI instead of relying only on environment variables
