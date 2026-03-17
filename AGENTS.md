@@ -29,7 +29,7 @@ npm run desktop:dist   # build Windows desktop artifacts
 npm run typecheck      # main validation command
 npm run check          # alias for typecheck
 npm run release:check  # typecheck + frontend build
-npm run release:bundle # create runtime bundle in dist/
+npm run release:bundle # create server and Lua bundles in dist/
 ```
 
 ## Validation
@@ -150,9 +150,9 @@ Error-handling patterns:
 
 ## Release and Distribution
 
-- Runtime bundles are created by `scripts/create-release-bundle.js`.
+- Release bundles are created by `scripts/create-server-bundle.js` and `scripts/create-lua-mod-bundle.js`.
 - GitHub workflows live in `.github/workflows/ci.yml` and `.github/workflows/release.yml`.
-- Desktop artifacts are written to `release/`; runtime/source bundles to `dist/`.
+- Desktop artifacts are written to `release/`; server/Lua bundles to `dist/`.
 - If you change packaging, ensure the build still includes server runtime dependencies.
 
 ## Roadmap and GitHub Planning

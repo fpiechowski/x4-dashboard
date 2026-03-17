@@ -1,7 +1,7 @@
 {
   "name": "x4-dashboard",
   "version": "1.1.1",
-  "description": "X4: Foundations cockpit dashboard",
+  "description": "X4: Foundations server launcher and cockpit dashboard",
   "main": "electron/main.cjs",
   "author": "Filip Piechowski",
   "license": "MIT",
@@ -41,8 +41,9 @@
     "typecheck": "npm --prefix client run typecheck",
     "check": "npm run typecheck",
     "release:check": "npm run typecheck && npm run build",
-    "dist:bundle": "node scripts/create-release-bundle.js",
-    "release:bundle": "npm run release:check && npm run dist:bundle",
+    "dist:server-bundle": "node scripts/create-server-bundle.js",
+    "dist:lua-mod": "node scripts/create-lua-mod-bundle.js",
+    "release:bundle": "npm run release:check && npm run dist:server-bundle && npm run dist:lua-mod",
     "desktop:dist": "npm run release:check && electron-builder --publish never"
   },
   "devDependencies": {
@@ -53,7 +54,7 @@
   },
   "build": {
     "appId": "com.fpiechowski.x4dashboard",
-    "productName": "X4 Dashboard",
+    "productName": "X4 Dashboard Server",
     "directories": {
       "output": "release"
     },
@@ -81,10 +82,6 @@
         "to": "server/public"
       },
       {
-        "from": "game-mods/mycu_external_app",
-        "to": "game-mods/mycu_external_app"
-      },
-      {
         "from": "SECURITY.md",
         "to": "SECURITY.md"
       }
@@ -100,10 +97,10 @@
       ]
     },
     "portable": {
-      "artifactName": "x4-dashboard-${version}-portable.${ext}"
+      "artifactName": "x4-dashboard-server-launcher-${version}-portable.${ext}"
     },
     "nsis": {
-      "artifactName": "x4-dashboard-${version}-setup.${ext}",
+      "artifactName": "x4-dashboard-server-launcher-${version}-setup.${ext}",
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true

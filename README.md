@@ -2,7 +2,7 @@
 
 A playable real-time cockpit dashboard for X4: Foundations.
 
-It combines a React + Arwes frontend, a small Node.js bridge server, and an X4 Lua mod that pushes game state straight into the browser. The project is already usable as a second-screen control panel and live status display, even though it is still evolving.
+It combines a React + Arwes frontend, a small Node.js bridge server, and an X4 Lua mod that pushes game state straight into browsers on the same machine or other devices on your LAN. The project is already usable as a second-screen control panel and live status display, even though it is still evolving.
 
 The bundled Lua mod is a modified version of the X4 External App mod by Mycu. `x4-dashboard` keeps the game-side data export idea, but replaces the original frontend with its own Node.js server and React dashboard.
 
@@ -79,15 +79,17 @@ npm start
 
 Open `http://localhost:3001` in your browser.
 
-## Desktop app
+## Server launcher
 
-Run the Electron desktop shell in development:
+The Windows Electron build is now a server launcher, not a separate dashboard client. It starts the local server and shows the local/LAN URLs you can open from browsers.
+
+Run the launcher in development:
 
 ```bash
 npm run desktop:dev
 ```
 
-Run the desktop shell against the locally built production frontend:
+Run the launcher against the locally built production frontend:
 
 ```bash
 npm run build
@@ -100,7 +102,7 @@ Build Windows desktop artifacts:
 npm run desktop:dist
 ```
 
-Generated installers are written to `release/`.
+Generated launcher artifacts are written to `release/`.
 
 Windows note:
 
@@ -133,13 +135,16 @@ Release validation:
 npm run release:check
 ```
 
-Build a distributable runtime bundle:
+Build distributable server and Lua mod bundles:
 
 ```bash
 npm run release:bundle
 ```
 
-The bundle is written to `dist/` and contains the built frontend, server runtime files, and bundled X4 mod.
+Artifacts are written to `dist/` and split into:
+
+- a standalone server package for browser-based clients
+- a standalone Lua mod package
 
 ## Environment variables
 
@@ -154,17 +159,17 @@ The bundle is written to `dist/` and contains the built frontend, server runtime
 
 ## X4 mod setup
 
-The Lua integration lives in `game-mods/mycu_external_app/`.
+The Lua integration source lives in `game-mods/mycu_external_app/`.
 
 This Lua mod is a modified version of X4 External App. The original X4 External App Node application is not required for `x4-dashboard` to work, because this project ships its own Node.js app that replaces the original frontend/backend flow.
 
-Copy that folder into your X4 extensions directory so the final path looks like this:
+For releases, use the dedicated Lua mod zip and copy the included folder into your X4 extensions directory so the final path looks like this:
 
 ```text
-X4 Foundations/extensions/mycu_external_app/
+X4 Foundations/extensions/x4_dashboard_bridge/
 ```
 
-The mod posts data to the dashboard server on every tick. Configuration is in `game-mods/mycu_external_app/ui/config.lua`:
+The mod posts data to the dashboard server on every tick. Configuration is in `ui/config.lua` inside the packaged extension folder:
 
 ```lua
 host = '127.0.0.1'
@@ -172,6 +177,8 @@ port = 3001
 ```
 
 If your dashboard server runs on another machine on your LAN, update `host` accordingly.
+
+The packaged extension uses a dedicated X4 content id so it does not conflict with the original Mycu mod.
 
 ## Credits
 
@@ -212,7 +219,7 @@ Data flow:
 ```text
 x4-dashboard/
 |- client/                      React + TypeScript source
-|- game-mods/mycu_external_app/ X4 Lua extension
+|- game-mods/mycu_external_app/ source for the packaged Lua extension
 |- server/                      Express, WebSocket, keypress bridge
 |- server/public/               Local build output (generated, ignored by Git)
 |- README.md

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>X4 Dashboard Server</title>
+    <link rel="stylesheet" href="./launcher.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">X4 DASHBOARD</p>
+        <h1>Server Launcher</h1>
+        <p class="lede">
+          Start the dashboard server, then open the cockpit UI from browsers on this machine or other devices on your LAN.
+        </p>
+      </section>
+
+      <section class="panel status-panel">
+        <div>
+          <p class="label">Server Status</p>
+          <p id="server-status" class="status-pill">Checking...</p>
+        </div>
+        <button id="refresh-status" class="secondary-button">Refresh</button>
+      </section>
+
+      <section class="grid">
+        <article class="panel url-panel">
+          <p class="label">Local URL</p>
+          <code id="local-url">-</code>
+          <div class="button-row">
+            <button id="open-local">Open Dashboard</button>
+            <button id="copy-local" class="secondary-button">Copy</button>
+          </div>
+        </article>
+
+        <article class="panel url-panel">
+          <p class="label">LAN URL</p>
+          <code id="lan-url">Detecting...</code>
+          <div class="button-row">
+            <button id="open-lan">Open in Browser</button>
+            <button id="copy-lan" class="secondary-button">Copy</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel notes-panel">
+        <p class="label">How to use this</p>
+        <ul>
+          <li>Use the local URL on the same PC.</li>
+          <li>Use the LAN URL on tablets, laptops, or extra screens on the same trusted network.</li>
+          <li>The X4 Lua mod should point to the host machine running this launcher.</li>
+        </ul>
+      </section>
+
+      <section class="panel footer-panel">
+        <div>
+          <p class="label">Server Log</p>
+          <p id="log-path" class="muted">-</p>
+        </div>
+        <div class="button-row">
+          <button id="open-log" class="secondary-button">Open Log Location</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="./launcher.js"></script>
+  </body>
+</html>

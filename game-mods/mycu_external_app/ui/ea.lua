@@ -21,14 +21,14 @@ local apiUrl = "http://" .. host .. ":" .. port .. "/api/data"
 local function breadcrumb(message, always)
     if always or external.debugMessages < external.debugLimit then
         external.debugMessages = external.debugMessages + 1
-        DebugError("ExternalApp: " .. tostring(message))
+        DebugError("X4DashboardBridge: " .. tostring(message))
     end
 end
 
 local function pumpHttpClient(reason)
     local ok, err = pcall(httpClient.update)
     if not ok then
-        DebugError("ExternalApp: http client update failed" .. (reason and (" during " .. tostring(reason)) or "") .. ": " .. tostring(err))
+        DebugError("X4DashboardBridge: http client update failed" .. (reason and (" during " .. tostring(reason)) or "") .. ": " .. tostring(err))
     end
 end
 
@@ -36,7 +36,7 @@ end
 
 local function init ()
     breadcrumb("init start host=" .. tostring(host) .. " port=" .. tostring(port), true)
-    package.path = package.path .. ";extensions/mycu_external_app/ui/?.lua";
+    package.path = package.path .. ";extensions/x4_dashboard_bridge/ui/?.lua";
     widgets = require("widgets")
     breadcrumb("widgets loaded", true)
 
@@ -44,8 +44,8 @@ local function init ()
     breadcrumb("map menu=" .. tostring(mapMenu ~= nil), true)
 
     -- Main event
-    RegisterEvent("externalapp.getMessages", external.send)
-    breadcrumb("registered event externalapp.getMessages", true)
+    RegisterEvent("x4dashboardbridge.getMessages", external.send)
+    breadcrumb("registered event x4dashboardbridge.getMessages", true)
 
     -- Reputations and Professions mod event triggered after all available guild missions offers are created AFTER the player clicks on the "Connect to the Guild Network" button
     RegisterEvent("kProfs.guildNetwork_onLoaded", external.send)
@@ -74,7 +74,7 @@ function external.send (_, param)
            :send(
              function(response, err)
                  if err then
-                     DebugError("Error occured while sending data to External App Server: " .. tostring(err))
+        DebugError("Error occured while sending data to X4 Dashboard Server: " .. tostring(err))
                  elseif external.cycleCounter <= 6 then
                      breadcrumb("http send ok cycle=" .. tostring(external.cycleCounter))
                  end
@@ -82,7 +82,7 @@ function external.send (_, param)
     )
 
     if not response and requestErr then
-        DebugError("ExternalApp: request send failed: " .. tostring(requestErr))
+        DebugError("X4DashboardBridge: request send failed: " .. tostring(requestErr))
     elseif external.cycleCounter <= 6 then
         breadcrumb("request queued cycle=" .. tostring(external.cycleCounter))
     end

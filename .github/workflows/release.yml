@@ -9,7 +9,7 @@ on:
       - 'v*'
 
 jobs:
-  bundle:
+  packages:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -43,21 +43,26 @@ jobs:
       - name: Validate release
         run: npm run release:check
 
-      - name: Build release bundle
-        run: npm run dist:bundle -- ${{ env.RELEASE_VERSION }}
+      - name: Build server bundle
+        run: npm run dist:server-bundle -- ${{ env.RELEASE_VERSION }}
 
-      - name: Archive release bundle
+      - name: Build Lua mod bundle
+        run: npm run dist:lua-mod -- ${{ env.RELEASE_VERSION }}
+
+      - name: Archive release packages
         run: |
           cd dist
-          tar -czf x4-dashboard-${{ env.RELEASE_VERSION }}.tar.gz x4-dashboard-${{ env.RELEASE_VERSION }}
-          zip -qr x4-dashboard-${{ env.RELEASE_VERSION }}.zip x4-dashboard-${{ env.RELEASE_VERSION }}
+          tar -czf x4-dashboard-server-${{ env.RELEASE_VERSION }}.tar.gz x4-dashboard-server-${{ env.RELEASE_VERSION }}
+          zip -qr x4-dashboard-server-${{ env.RELEASE_VERSION }}.zip x4-dashboard-server-${{ env.RELEASE_VERSION }}
+          zip -qr x4-dashboard-lua-mod-${{ env.RELEASE_VERSION }}.zip x4-dashboard-lua-mod-${{ env.RELEASE_VERSION }}
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/x4-dashboard-${{ env.RELEASE_VERSION }}.tar.gz
-            dist/x4-dashboard-${{ env.RELEASE_VERSION }}.zip
+            dist/x4-dashboard-server-${{ env.RELEASE_VERSION }}.tar.gz
+            dist/x4-dashboard-server-${{ env.RELEASE_VERSION }}.zip
+            dist/x4-dashboard-lua-mod-${{ env.RELEASE_VERSION }}.zip
 
   desktop-windows:
     runs-on: windows-latest

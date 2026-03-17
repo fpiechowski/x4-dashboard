@@ -1,10 +1,11 @@
-const { app, BrowserWindow, dialog, shell } = require('electron')
+const { app, BrowserWindow, clipboard, dialog, ipcMain, shell } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const os = require('os')
 const { spawn } = require('child_process')
 
 const SERVER_PORT = process.env.PORT || '3001'
-const SERVER_URL = `http://127.0.0.1:${SERVER_PORT}`
+const LOCAL_SERVER_URL = `http://localhost:${SERVER_PORT}`
 const DEV_RENDERER_URL = process.env.ELECTRON_RENDERER_URL || ''
 const IS_DEV = Boolean(DEV_RENDERER_URL)
 const LOG_FILE_NAME = 'server.log'
@@ -12,20 +13,6 @@ const LOG_FILE_NAME = 'server.log'
 let mainWindow = null
 let serverProcess = null
 let isQuitting = false
-let serverLogBuffer = ''
-
-function appendServerLog(chunk) {
-  serverLogBuffer += chunk
-
-  if (IS_DEV) {
-    return
-  }
-
-  try {
-    const logPath = path.join(app.getPath('userData'), LOG_FILE_NAME)
-    fs.appendFileSync(logPath, chunk)
-  } catch {}
-}
 
 function getServerEntry() {
   if (IS_DEV) {
@@ -43,23 +30,62 @@ function getServerCwd() {
   return process.resourcesPath
 }
 
+function getLogPath() {
+  return path.join(app.getPath('userData'), LOG_FILE_NAME)
+}
+
+function getLanAddress() {
+  return Object.values(os.networkInterfaces())
+    .flat()
+    .find((iface) => iface && iface.family === 'IPv4' && !iface.internal)?.address || null
+}
+
+function getLauncherState(serverRunning) {
+  const lanAddress = getLanAddress()
+
+  return {
+    serverRunning,
+    localUrl: IS_DEV ? DEV_RENDERER_URL : LOCAL_SERVER_URL,
+    lanUrl: lanAddress ? `http://${lanAddress}:${SERVER_PORT}` : null,
+    logPath: getLogPath(),
+  }
+}
+
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function waitForServerReady(url, retries = 80) {
+async function isServerReachable() {
+  const healthUrl = IS_DEV ? `http://localhost:${SERVER_PORT}/api/health` : `${LOCAL_SERVER_URL}/api/health`
+
+  try {
+    const response = await fetch(healthUrl)
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
+async function waitForServerReady(retries = 80) {
   for (let index = 0; index < retries; index += 1) {
-    try {
-      const response = await fetch(`${url}/api/health`)
-      if (response.ok) {
-        return
-      }
-    } catch {}
+    if (await isServerReachable()) {
+      return
+    }
 
     await wait(500)
   }
 
-  throw new Error(`Timed out waiting for server at ${url}`)
+  throw new Error(`Timed out waiting for server on port ${SERVER_PORT}`)
+}
+
+function appendServerLog(chunk) {
+  if (IS_DEV) {
+    return
+  }
+
+  try {
+    fs.appendFileSync(getLogPath(), chunk)
+  } catch {}
 }
 
 function startServerProcess() {
@@ -68,15 +94,12 @@ function startServerProcess() {
   }
 
   const serverEntry = getServerEntry()
-  const logPath = path.join(app.getPath('userData'), LOG_FILE_NAME)
   if (!fs.existsSync(serverEntry)) {
     throw new Error(`Cannot find packaged server entry: ${serverEntry}`)
   }
 
-  serverLogBuffer = ''
-
   try {
-    fs.writeFileSync(logPath, '')
+    fs.writeFileSync(getLogPath(), '')
   } catch {}
 
   serverProcess = spawn(process.execPath, [serverEntry], {
@@ -102,18 +125,22 @@ function startServerProcess() {
     process.stderr.write(`[server] ${text}`)
   })
 
-  serverProcess.on('exit', (code) => {
+  serverProcess.on('exit', async (code) => {
     if (!isQuitting && code !== 0) {
-      const logPath = path.join(app.getPath('userData'), LOG_FILE_NAME)
       dialog.showErrorBox(
-        'X4 Dashboard',
-        `Bundled server stopped unexpectedly (exit code ${code ?? 'unknown'}).\n\nCheck: ${logPath}`,
+        'X4 Dashboard Server',
+        `Bundled server stopped unexpectedly (exit code ${code ?? 'unknown'}).\n\nCheck: ${getLogPath()}`,
       )
       app.quit()
+      return
+    }
+
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('launcher:state', getLauncherState(await isServerReachable()))
     }
   })
 
-  return waitForServerReady(SERVER_URL)
+  return waitForServerReady()
 }
 
 function stopServerProcess() {
@@ -125,15 +152,30 @@ function stopServerProcess() {
   serverProcess = null
 }
 
+function registerIpc() {
+  ipcMain.handle('launcher:get-state', async () => getLauncherState(await isServerReachable()))
+  ipcMain.handle('launcher:open-url', async (_event, url) => shell.openExternal(url))
+  ipcMain.handle('launcher:copy-text', async (_event, text) => clipboard.writeText(text))
+  ipcMain.handle('launcher:show-log-location', async () => {
+    const logPath = getLogPath()
+
+    if (!fs.existsSync(logPath)) {
+      fs.writeFileSync(logPath, '')
+    }
+
+    shell.showItemInFolder(logPath)
+  })
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1600,
-    height: 960,
-    minWidth: 1280,
-    minHeight: 720,
+    width: 980,
+    height: 760,
+    minWidth: 820,
+    minHeight: 620,
     autoHideMenuBar: true,
-    backgroundColor: '#000d12',
-    title: 'X4 Dashboard',
+    backgroundColor: '#071218',
+    title: 'X4 Dashboard Server',
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
@@ -141,8 +183,7 @@ function createWindow() {
     },
   })
 
-  const targetUrl = IS_DEV ? DEV_RENDERER_URL : SERVER_URL
-  mainWindow.loadURL(targetUrl)
+  mainWindow.loadFile(path.join(__dirname, 'launcher', 'index.html'))
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
@@ -155,11 +196,13 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
+  registerIpc()
+
   try {
     await startServerProcess()
     createWindow()
   } catch (error) {
-    dialog.showErrorBox('X4 Dashboard', error instanceof Error ? error.message : 'Failed to start the application.')
+    dialog.showErrorBox('X4 Dashboard Server', error instanceof Error ? error.message : 'Failed to start the launcher.')
     app.quit()
   }
 

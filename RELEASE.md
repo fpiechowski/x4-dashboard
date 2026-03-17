@@ -16,6 +16,11 @@ To generate the distributable runtime bundle locally:
 npm run release:bundle
 ```
 
+This now creates separate release inputs in `dist/` for:
+
+- the standalone server package
+- the standalone Lua mod package
+
 To build Windows desktop installers locally:
 
 ```bash
@@ -37,7 +42,7 @@ npm run desktop:dist
 2. Finalize changelog notes
 3. Tag the release with `vX.Y.Z`
 4. Publish GitHub release notes based on `CHANGELOG.md`
-5. Let `.github/workflows/release.yml` attach the generated `.zip` and `.tar.gz` assets
+5. Let `.github/workflows/release.yml` attach the generated server and Lua assets
 6. Let `.github/workflows/release.yml` build and attach Windows desktop installers
 
 ## Distribution notes
@@ -45,4 +50,4 @@ npm run desktop:dist
 - `server/public/` is generated locally and should not be committed
 - The project is intended for trusted local environments
 - Remote control should stay disabled unless explicitly required
-- Desktop packaging uses Electron and bundles the built frontend plus server runtime
+- Desktop packaging now acts as a server launcher and convenience entry point for browser-based clients

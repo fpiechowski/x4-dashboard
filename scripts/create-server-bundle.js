@@ -5,7 +5,7 @@ const rootDir = path.resolve(__dirname, '..');
 const versionArg = process.argv[2];
 const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
 const version = (versionArg || packageJson.version).replace(/^v/, '');
-const bundleName = `x4-dashboard-${version}`;
+const bundleName = `x4-dashboard-server-${version}`;
 const distDir = path.join(rootDir, 'dist');
 const bundleDir = path.join(distDir, bundleName);
 
@@ -21,10 +21,10 @@ const filesToCopy = [
   'server/requestGuards.js',
   'server/package.json',
   'server/package-lock.json',
+  'server/node_modules',
   'server/config/keybindings.json',
   'server/utils/normalizeData.js',
   'server/public',
-  'game-mods/mycu_external_app',
 ];
 
 function ensureDir(dirPath) {
@@ -36,30 +36,37 @@ function copyEntry(relativePath) {
   const targetPath = path.join(bundleDir, relativePath);
 
   if (!fs.existsSync(sourcePath)) {
-    throw new Error(`Missing required bundle input: ${relativePath}`);
+    throw new Error(`Missing required server bundle input: ${relativePath}`);
   }
 
   ensureDir(path.dirname(targetPath));
   fs.cpSync(sourcePath, targetPath, { recursive: true });
 }
 
-function writeReleaseReadme() {
-  const readmePath = path.join(bundleDir, 'RUN_RELEASE.md');
-  const content = `# X4 Dashboard ${version}\n\n`
-    + `This is the packaged runtime bundle for X4 Dashboard.\n\n`
-    + `## Start\n\n`
-    + `1. Install Node.js 18 or newer.\n`
-    + `2. Install server dependencies:\n\n`
-    + `   npm --prefix server install\n\n`
-    + `3. Start the dashboard:\n\n`
-    + `   npm --prefix server start\n\n`
-    + `4. Open http://localhost:3001\n\n`
-    + `## Included\n\n`
-    + `- built frontend in server/public/\n`
-    + `- Node.js server runtime\n`
-    + `- X4 Lua mod in game-mods/mycu_external_app/\n`;
+function writeLaunchFiles() {
+  fs.writeFileSync(
+    path.join(bundleDir, 'start-server.bat'),
+    '@echo off\r\nnode server\\index.js\r\n',
+  );
 
-  fs.writeFileSync(readmePath, content);
+  fs.writeFileSync(
+    path.join(bundleDir, 'start-server.sh'),
+    '#!/usr/bin/env sh\nnode server/index.js\n',
+  );
+
+  const readme = `# X4 Dashboard Server ${version}\n\n`
+    + `This package contains the standalone dashboard server for browser-based clients.\n\n`
+    + `## Start\n\n`
+    + `- Windows: run \`start-server.bat\`\n`
+    + `- Any platform with Node.js 18+: run \`node server/index.js\`\n\n`
+    + `## What this package includes\n\n`
+    + `- built frontend in \`server/public/\`\n`
+    + `- server runtime files and dependencies\n`
+    + `- keybinding configuration\n\n`
+    + `## Client usage\n\n`
+    + `After startup, open the dashboard from a browser on the same machine or another device on the same LAN using the URLs printed by the server.\n`;
+
+  fs.writeFileSync(path.join(bundleDir, 'RUN_SERVER.md'), readme);
 }
 
 fs.rmSync(bundleDir, { recursive: true, force: true });
@@ -69,6 +76,6 @@ for (const entry of filesToCopy) {
   copyEntry(entry);
 }
 
-writeReleaseReadme();
+writeLaunchFiles();
 
-console.log(`Release bundle created: ${bundleDir}`);
+console.log(`Server bundle created: ${bundleDir}`);

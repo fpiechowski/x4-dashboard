@@ -1,0 +1,141 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #123341 0%, #071218 55%, #04090d 100%);
+  color: #e7fbff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.hero {
+  margin-bottom: 24px;
+}
+
+.eyebrow,
+.label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #86d9ea;
+}
+
+h1 {
+  margin: 0;
+  font-size: 42px;
+}
+
+.lede,
+.muted,
+li {
+  color: #b8d4dc;
+  line-height: 1.6;
+}
+
+.panel {
+  background: rgba(9, 22, 28, 0.78);
+  border: 1px solid rgba(134, 217, 234, 0.22);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.status-panel,
+.footer-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.url-panel code {
+  display: block;
+  margin: 0 0 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(1, 8, 12, 0.92);
+  color: #9cf8c7;
+  word-break: break-all;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #1ac5e0, #1491b4);
+  color: #031116;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.secondary-button {
+  background: rgba(134, 217, 234, 0.12);
+  color: #d9f8ff;
+  border: 1px solid rgba(134, 217, 234, 0.26);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(134, 217, 234, 0.1);
+  color: #d9f8ff;
+}
+
+.status-pill.online {
+  background: rgba(88, 194, 129, 0.18);
+  color: #8dffb2;
+}
+
+.status-pill.offline {
+  background: rgba(255, 129, 129, 0.16);
+  color: #ffb4b4;
+}
+
+ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+@media (max-width: 720px) {
+  .shell {
+    padding: 20px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-panel,
+  .footer-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
