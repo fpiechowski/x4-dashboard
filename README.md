@@ -36,7 +36,7 @@ This app can simulate local key presses on the machine where the server is runni
 
 - Node.js 18+
 - X4: Foundations
-- The `djfhe_http` X4 dependency required by `game-mods/mycu_external_app/content.xml`
+- The `djfhe_http` X4 dependency required by `game-mods/x4_dashboard_bridge/content.xml`
 - Optional: `VerboseTransactionLog` if you want richer transaction-log data
 
 Platform notes for key simulation:
@@ -159,7 +159,7 @@ Artifacts are written to `dist/` and split into:
 
 ## X4 mod setup
 
-The Lua integration source lives in `game-mods/mycu_external_app/`.
+The Lua integration source lives in `game-mods/x4_dashboard_bridge/`.
 
 This Lua mod is a modified version of X4 External App. The original X4 External App Node application is not required for `x4-dashboard` to work, because this project ships its own Node.js app that replaces the original frontend/backend flow.
 
@@ -219,7 +219,7 @@ Data flow:
 ```text
 x4-dashboard/
 |- client/                      React + TypeScript source
-|- game-mods/mycu_external_app/ source for the packaged Lua extension
+|- game-mods/x4_dashboard_bridge/ source for the packaged Lua extension
 |- server/                      Express, WebSocket, keypress bridge
 |- server/public/               Local build output (generated, ignored by Git)
 |- README.md

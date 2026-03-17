@@ -6,10 +6,13 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-03-17
+
 ### Changed
 - Repositioned the Electron build as a server launcher that exposes local and LAN dashboard URLs instead of acting as the main dashboard client
 - Split release packaging toward separate server and Lua mod artifacts
 - Updated the packaged Lua mod metadata so it no longer conflicts with the original Mycu mod
+- Renamed the packaged Lua mod folder to `x4_dashboard_bridge` so it no longer clashes with the original Mycu extension folder
 
 ## [1.1.1] - 2026-03-16
 

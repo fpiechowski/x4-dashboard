@@ -1,6 +1,6 @@
 {
   "name": "x4-dashboard-client",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -13,7 +13,8 @@
   "dependencies": {
     "@arwes/react": "1.0.0-next.25020502",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "x4-dashboard": "file:.."
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

@@ -9,7 +9,7 @@ Guidance for agentic coding assistants working in this repository.
   - `client/` - Vite + React + TypeScript frontend
   - `server/` - Express + WebSocket backend in CommonJS
   - `electron/` - desktop wrapper for packaged app builds
-  - `game-mods/mycu_external_app/` - Lua mod that sends game data
+  - `game-mods/x4_dashboard_bridge/` - Lua mod that sends game data
 - `server/public/` is generated build output from `client/` and must not be edited directly.
 
 ## Commands

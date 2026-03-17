@@ -40,7 +40,17 @@ function copyEntry(relativePath) {
   }
 
   ensureDir(path.dirname(targetPath));
-  fs.cpSync(sourcePath, targetPath, { recursive: true });
+
+  if (relativePath === 'server/node_modules') {
+    fs.cpSync(sourcePath, targetPath, {
+      recursive: true,
+      dereference: true,
+      filter: (currentPath) => !currentPath.endsWith(`${path.sep}server${path.sep}node_modules${path.sep}x4-dashboard`),
+    });
+    return;
+  }
+
+  fs.cpSync(sourcePath, targetPath, { recursive: true, dereference: true });
 }
 
 function writeLaunchFiles() {

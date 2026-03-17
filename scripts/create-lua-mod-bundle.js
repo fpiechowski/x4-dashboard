@@ -8,7 +8,7 @@ const version = (versionArg || packageJson.version).replace(/^v/, '');
 const distDir = path.join(rootDir, 'dist');
 const bundleName = `x4-dashboard-lua-mod-${version}`;
 const bundleDir = path.join(distDir, bundleName);
-const sourceDir = path.join(rootDir, 'game-mods', 'mycu_external_app');
+const sourceDir = path.join(rootDir, 'game-mods', 'x4_dashboard_bridge');
 const extensionDir = path.join(bundleDir, 'x4_dashboard_bridge');
 
 function ensureDir(dirPath) {
