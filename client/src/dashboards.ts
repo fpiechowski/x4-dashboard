@@ -131,6 +131,7 @@ export type DashboardConfig = GridDashboard | ColumnsDashboard
 export const DASHBOARDS: DashboardConfig[] = [
 
     // ── Flight ─────────────────────────────────────────────────────────────────
+    // ── Ship Controls ──────────────────────────────────────────────────────────
     {
         id: 'flight',
         label: 'Flight',

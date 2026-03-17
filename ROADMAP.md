@@ -16,7 +16,7 @@ This roadmap is a lightweight public planning document for the next release cycl
 - Improve empty, loading, and disconnected states across widgets
 - Make dashboard scaling and layout behavior more predictable on different screens
 - Audit the current dashboard presets and remove unused or low-value dashboards to keep the shipped set intentional
-- Rename misleading dashboard presets such as `Vertical Flight` and clean up dashboards that should no longer ship by default
+- Rename misleading dashboard presets and keep the shipped dashboard list intentionally small and curated
 
 ### 3. Data model and widget coverage
 - Expand typed support for remaining game data areas still treated loosely
