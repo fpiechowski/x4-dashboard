@@ -76,6 +76,60 @@ const MOCK_FACTIONS = {
   antielid: { name: 'Antigone Republic', relation: 'friend',  licences: [] },
 };
 
+function cloneMissionGroup(group, prefix, copies) {
+  const result = [];
+
+  for (let copyIndex = 0; copyIndex < copies; copyIndex += 1) {
+    for (const offer of group) {
+      const nextOffer = {
+        ...offer,
+        id: `${prefix}-${copyIndex}-${offer.id}`,
+        missions: {},
+      };
+
+      for (const [missionId, mission] of Object.entries(offer.missions || {})) {
+        nextOffer.missions[`${missionId}-${copyIndex}`] = {
+          ...mission,
+          name: copyIndex === 0 ? mission.name : `${mission.name} [${copyIndex + 1}]`,
+        };
+      }
+
+      result.push(nextOffer);
+    }
+  }
+
+  return result;
+}
+
+function cloneLogbookEntries(entries, copies) {
+  const result = [];
+
+  for (let copyIndex = 0; copyIndex < copies; copyIndex += 1) {
+    for (const entry of entries) {
+      result.push({
+        ...entry,
+        title: copyIndex === 0 ? entry.title : `${entry.title} [${copyIndex + 1}]`,
+      });
+    }
+  }
+
+  return result;
+}
+
+function createGeneratedLogbookEntries(count, tick) {
+  const result = [];
+
+  for (let index = 0; index < count; index += 1) {
+    result.push({
+      title: `Incoming transmission ${index + 1}`,
+      text: `Mock diagnostics packet ${tick}-${index + 1} received from sector relay. Review waypoint updates and command traffic for nearby operations.`,
+      factionname: index % 2 === 0 ? 'Argon Federation' : 'Teladi Company',
+    });
+  }
+
+  return result;
+}
+
 // ── State evolution ───────────────────────────────────────────────────────────
 
 class MockDataSource extends EventEmitter {
@@ -113,6 +167,8 @@ class MockDataSource extends EventEmitter {
     this.sector                = 'Segaris Pioneer';
     this.activeMissionTimeLeft = 5400;
     this.intervals             = [];
+    this.missionOfferDensity   = 1;
+    this.logbookDensity        = 1;
   }
 
   emit_data(shipOnly = false) {
@@ -164,9 +220,9 @@ class MockDataSource extends EventEmitter {
     if (!shipOnly) {
       Object.assign(payload, {
         missionOffers: {
-          plot:  MOCK_MISSIONS_PLOT,
-          guild: MOCK_MISSIONS_GUILD,
-          other: MOCK_MISSIONS_OTHER,
+          plot:  cloneMissionGroup(MOCK_MISSIONS_PLOT, 'plot', this.missionOfferDensity),
+          guild: cloneMissionGroup(MOCK_MISSIONS_GUILD, 'guild', this.missionOfferDensity),
+          other: cloneMissionGroup(MOCK_MISSIONS_OTHER, 'other', this.missionOfferDensity),
         },
         activeMission: {
           name:        'Eliminate Pirate Squadron',
@@ -175,7 +231,12 @@ class MockDataSource extends EventEmitter {
           reward:      320_000,
           timeleft:    Math.round(this.activeMissionTimeLeft),
         },
-        logbook:        { list: MOCK_LOGBOOK },
+        logbook:        {
+          list: [
+            ...cloneLogbookEntries(MOCK_LOGBOOK, this.logbookDensity),
+            ...createGeneratedLogbookEntries(this.logbookDensity * 8, this.tick),
+          ],
+        },
         currentResearch: {
           ...MOCK_RESEARCH,
           percentageCompleted: Math.min(99.9, MOCK_RESEARCH.percentageCompleted + this.tick * 0.001),
@@ -316,6 +377,13 @@ class MockDataSource extends EventEmitter {
       this.startCombat();
     }
     this.emit_data(true);
+  }
+
+  adjustContentDensity(delta) {
+    this.missionOfferDensity = Math.max(1, Math.min(5, this.missionOfferDensity + delta));
+    this.logbookDensity = Math.max(1, Math.min(5, this.logbookDensity + delta));
+    console.log(`[Mock] Mission density ${this.missionOfferDensity}, logbook density ${this.logbookDensity}`);
+    this.emit_data(false);
   }
 
   start() {

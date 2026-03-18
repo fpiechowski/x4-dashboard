@@ -264,8 +264,9 @@ export const DASHBOARDS: DashboardConfig[] = [
             },
             {
                 title: 'Comms', titleIcon: '◈',
-                internal: {layout: 'columns', columns: [{widgets: [{id: 'Comms'}]}]},
-                col: 2, row: 2, scale: 1.14
+                style: {flex: 1, minHeight: 0},
+                internal: {layout: 'columns', columns: [{widgets: [{id: 'Comms', grow: true}]}]},
+                col: 2, row: 2, grow: true, scale: 1.14
             },
         ],
     },

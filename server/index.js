@@ -175,6 +175,8 @@ function registerMockToggleRoute(route, action, stateKey) {
 registerMockToggleRoute('/api/mock/combat', () => mock.toggleCombat(), 'inCombat');
 registerMockToggleRoute('/api/mock/travel', () => mock.toggleTravel(), 'travelDrive');
 registerMockToggleRoute('/api/mock/boost', () => mock.toggleBoost(), 'boosting');
+registerMockToggleRoute('/api/mock/content-more', () => mock.adjustContentDensity(1), 'contentDensity');
+registerMockToggleRoute('/api/mock/content-less', () => mock.adjustContentDensity(-1), 'contentDensity');
 
 app.get('/api/state', (req, res) => {
   res.json(aggregator.getState());

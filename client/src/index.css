@@ -734,6 +734,15 @@ body {
 }
 
 /* â”€â”€ Mission Offers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.mission-offers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
 .mission-type-group { margin-bottom: 10px; }
 .mission-type-header {
   font-size: 9px;
@@ -823,6 +832,7 @@ body {
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  padding-right: 4px;
 }
 .comm-item {
   padding: 6px 8px;
@@ -865,6 +875,12 @@ body {
   color: var(--c-cyan-dim);
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+.logbook-text {
+  font-size: 10px;
+  color: var(--c-text-dim);
+  margin-top: 3px;
+  line-height: 1.4;
 }
 
 /* â”€â”€ Research Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */

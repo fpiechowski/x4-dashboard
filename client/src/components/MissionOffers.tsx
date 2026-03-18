@@ -88,7 +88,7 @@ export function MissionOffers({ offers }: Props) {
   const hasAny = offers && Object.values(offers).some(g => g && g.length > 0)
 
   return (
-    <>
+    <div className="mission-offers-list">
       {!hasAny && (
         <div className="empty-state">No missions available</div>
       )}
@@ -111,6 +111,6 @@ export function MissionOffers({ offers }: Props) {
           </div>
         )
       })}
-    </>
+    </div>
   )
 }

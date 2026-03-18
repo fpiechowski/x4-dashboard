@@ -77,6 +77,18 @@ export function DashboardHeader({
             >
               {inCombat ? 'END COMBAT' : 'START COMBAT'}
             </button>
+            <button
+              className="header-settings-btn"
+              onClick={() => postMockAction('/api/mock/content-less')}
+            >
+              LESS LISTS
+            </button>
+            <button
+              className="header-settings-btn"
+              onClick={() => postMockAction('/api/mock/content-more')}
+            >
+              MORE LISTS
+            </button>
           </>
         )}
 
