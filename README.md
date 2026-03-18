@@ -25,6 +25,10 @@ The main product direction is simple: run one server, then open the dashboard fr
 
 ![Flight dashboard](docs/screenshots/dashboard-flight.png)
 
+### Flight dashboard - ARC speedometer
+
+![Flight dashboard with ARC speedometer](docs/screenshots/dashboard-flight-arc.png)
+
 ### Operations dashboard
 
 ![Operations dashboard](docs/screenshots/dashboard-operations.png)
