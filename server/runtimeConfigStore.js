@@ -1,7 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 
-const RUNTIME_CONFIG_PATH = path.join(__dirname, 'config', 'runtime.json');
+const DEFAULT_RUNTIME_CONFIG_PATH = path.join(__dirname, 'config', 'runtime.json');
+
+function getRuntimeConfigPath() {
+  return process.env.X4_USER_DATA_PATH
+    ? path.join(process.env.X4_USER_DATA_PATH, 'runtime.json')
+    : DEFAULT_RUNTIME_CONFIG_PATH;
+}
+
+function readConfigFile(configPath) {
+  return sanitizeRuntimeConfig(JSON.parse(fs.readFileSync(configPath, 'utf8')));
+}
 
 function getDefaultRuntimeConfig() {
   return {
@@ -33,16 +43,25 @@ function sanitizeRuntimeConfig(value) {
 }
 
 function readRuntimeConfig() {
-  if (!fs.existsSync(RUNTIME_CONFIG_PATH)) {
-    return getDefaultRuntimeConfig();
+  const runtimeConfigPath = getRuntimeConfigPath();
+
+  if (fs.existsSync(runtimeConfigPath)) {
+    return readConfigFile(runtimeConfigPath);
   }
 
-  return sanitizeRuntimeConfig(JSON.parse(fs.readFileSync(RUNTIME_CONFIG_PATH, 'utf8')));
+  if (runtimeConfigPath !== DEFAULT_RUNTIME_CONFIG_PATH && fs.existsSync(DEFAULT_RUNTIME_CONFIG_PATH)) {
+    return readConfigFile(DEFAULT_RUNTIME_CONFIG_PATH);
+  }
+
+  return getDefaultRuntimeConfig();
 }
 
 function writeRuntimeConfig(value) {
   const next = sanitizeRuntimeConfig(value);
-  fs.writeFileSync(RUNTIME_CONFIG_PATH, JSON.stringify(next, null, 2));
+  const runtimeConfigPath = getRuntimeConfigPath();
+
+  fs.mkdirSync(path.dirname(runtimeConfigPath), { recursive: true });
+  fs.writeFileSync(runtimeConfigPath, JSON.stringify(next, null, 2));
   return next;
 }
 
@@ -54,7 +73,8 @@ function mergeRuntimeConfigUpdates(current, updates) {
 }
 
 module.exports = {
-  RUNTIME_CONFIG_PATH,
+  RUNTIME_CONFIG_PATH: DEFAULT_RUNTIME_CONFIG_PATH,
+  getRuntimeConfigPath,
   readRuntimeConfig,
   writeRuntimeConfig,
   mergeRuntimeConfigUpdates,

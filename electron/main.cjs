@@ -11,6 +11,8 @@ const DEV_RENDERER_URL = process.env.ELECTRON_RENDERER_URL || ''
 const IS_DEV = Boolean(DEV_RENDERER_URL)
 const LOG_FILE_NAME = 'server.log'
 
+process.env.X4_USER_DATA_PATH = app.getPath('userData')
+
 let mainWindow = null
 let serverProcess = null
 let isQuitting = false
@@ -136,6 +138,22 @@ function getGameInstallStatus() {
   }
 }
 
+function getBridgeInstallStatus(gameInstallStatus) {
+  if (!gameInstallStatus?.resolvedPath) {
+    return {
+      available: false,
+      resolvedPath: '',
+    }
+  }
+
+  const bridgePath = path.join(gameInstallStatus.resolvedPath, 'extensions', 'x4_dashboard_bridge')
+
+  return {
+    available: fs.existsSync(bridgePath),
+    resolvedPath: bridgePath,
+  }
+}
+
 function getRuntimeConfigStorePath() {
   if (IS_DEV) {
     return path.join(__dirname, '..', 'server', 'runtimeConfigStore.js')
@@ -199,12 +217,41 @@ async function getServerHealth() {
   }
 }
 
+async function fetchLocalJson(url, options) {
+  const response = await fetch(url, options)
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`)
+  }
+
+  return response.json()
+}
+
+async function readRuntimeConfigForLauncher(serverRunning) {
+  if (serverRunning) {
+    try {
+      return await fetchLocalJson(`${LOCAL_SERVER_URL}/api/runtime-config`)
+    } catch {}
+  }
+
+  return getRuntimeConfigStore().readRuntimeConfig()
+}
+
+async function readKeybindingsForLauncher(serverRunning) {
+  if (serverRunning) {
+    try {
+      return await fetchLocalJson(`${LOCAL_SERVER_URL}/api/keybindings`)
+    } catch {}
+  }
+
+  return getKeybindingsStore().readKeybindings()
+}
+
 async function getLauncherState(serverRunning) {
   const lanAddress = getLanAddress()
-  const runtimeConfigStore = getRuntimeConfigStore()
-  const keybindingsStore = getKeybindingsStore()
-  const runtimeConfig = runtimeConfigStore.readRuntimeConfig()
+  const runtimeConfig = await readRuntimeConfigForLauncher(serverRunning)
+  const keybindings = await readKeybindingsForLauncher(serverRunning)
   const health = await getServerHealth()
+  const gameInstall = getGameInstallStatus()
 
   return {
     serverRunning,
@@ -214,13 +261,13 @@ async function getLauncherState(serverRunning) {
     lanUrl: lanAddress ? `http://${lanAddress}:${SERVER_PORT}` : null,
     logPath: getLogPath(),
     runtimeConfig,
-    keybindings: keybindingsStore.readKeybindings(),
+    keybindings,
     health,
     diagnostics: {
-      buildStatus: IS_DEV ? 'vite-dev' : (fs.existsSync(getPublicIndexPath()) ? 'bundled' : 'missing'),
       autoHotkey: getAutoHotkeyStatus(runtimeConfig),
       lanDetected: Boolean(lanAddress),
-      gameInstall: getGameInstallStatus(),
+      gameInstall,
+      bridgeInstall: getBridgeInstallStatus(gameInstall),
     },
     startup: {
       port: Number(SERVER_PORT),
@@ -296,6 +343,7 @@ function startServerProcess() {
         ...process.env,
         ELECTRON_RUN_AS_NODE: '1',
         PORT: SERVER_PORT,
+        X4_USER_DATA_PATH: app.getPath('userData'),
       },
       stdio: 'pipe',
       windowsHide: true,
@@ -344,19 +392,52 @@ function registerIpc() {
   ipcMain.handle('launcher:get-state', async () => getLauncherState(await isServerReachable()))
   ipcMain.handle('launcher:open-url', async (_event, url) => shell.openExternal(url))
   ipcMain.handle('launcher:copy-text', async (_event, text) => clipboard.writeText(text))
+  ipcMain.handle('launcher:open-path', async (_event, targetPath) => {
+    if (!targetPath) {
+      return
+    }
+
+    const normalizedPath = path.normalize(targetPath)
+    if (fs.existsSync(normalizedPath)) {
+      const stats = fs.statSync(normalizedPath)
+      if (stats.isDirectory()) {
+        shell.openPath(normalizedPath)
+      } else {
+        shell.showItemInFolder(normalizedPath)
+      }
+    }
+  })
   ipcMain.handle('launcher:update-runtime-config', async (_event, updates) => {
+    if (await isServerReachable()) {
+      try {
+        return await fetchLocalJson(`${LOCAL_SERVER_URL}/api/runtime-config`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates || {}),
+        })
+      } catch {}
+    }
+
     const runtimeConfigStore = getRuntimeConfigStore()
     const current = runtimeConfigStore.readRuntimeConfig()
     const next = runtimeConfigStore.mergeRuntimeConfigUpdates(current, updates || {})
-
     runtimeConfigStore.writeRuntimeConfig(next)
     return next
   })
   ipcMain.handle('launcher:update-keybindings', async (_event, updates) => {
+    if (await isServerReachable()) {
+      try {
+        return await fetchLocalJson(`${LOCAL_SERVER_URL}/api/keybindings`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bindings: updates || {} }),
+        })
+      } catch {}
+    }
+
     const keybindingsStore = getKeybindingsStore()
     const current = keybindingsStore.readKeybindings()
     const next = keybindingsStore.mergeKeybindingUpdates(current, updates || {})
-
     keybindingsStore.writeKeybindings(next)
     return next
   })

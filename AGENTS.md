@@ -54,17 +54,10 @@ npm --prefix client run typecheck
   - `npm run desktop:dist`
   - `npm run release:bundle`
 
-## External Rules
-
-- No `.cursor/rules/` directory is present.
-- No `.cursorrules` file is present.
-- No `.github/copilot-instructions.md` file is present.
-
 ## Architecture
 
 - The Node server serves the built React app from `server/public/`.
 - In dev mode, Vite runs on port `3000` and proxies `/api` to port `3001`.
-- The Electron app is a Server Launcher first, not the main dashboard client.
 - The intended client model is browser-first: one host server, many browser clients on localhost or LAN.
 - The Electron launcher starts the bundled server, shows local/LAN URLs, and manages host-only settings.
 

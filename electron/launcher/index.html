@@ -34,21 +34,21 @@
       <section class="panel status-grid-panel">
         <div class="config-header">
           <div>
-            <p class="label">LAN Runtime Status</p>
-            <p class="muted">Treat LAN access as the primary way to use tablets, side monitors, and extra cockpit screens.</p>
+            <p class="label">Status</p>
+            <p class="muted">Use these informational cards to understand how the current host is exposed to local and LAN clients.</p>
           </div>
         </div>
 
         <div class="status-grid">
           <article class="status-card">
-            <span class="status-card-label">X4 Bridge</span>
-            <strong id="game-feed-status">Checking...</strong>
-            <small id="game-feed-copy">Waiting for X4 or mock data.</small>
-          </article>
-          <article class="status-card">
             <span class="status-card-label">Browser Clients</span>
             <strong id="client-count">0 connected</strong>
             <small>Open more browsers on your LAN to build a multi-screen cockpit.</small>
+          </article>
+          <article class="status-card">
+            <span class="status-card-label">LAN Detection</span>
+            <strong id="lan-detected-status">Checking...</strong>
+            <small id="lan-detected-copy">-</small>
           </article>
           <article class="status-card">
             <span class="status-card-label">Remote Controls</span>
@@ -61,26 +61,26 @@
       <section class="panel status-grid-panel">
         <div class="config-header">
           <div>
-            <p class="label">First-Run Diagnostics</p>
-            <p class="muted">Use these checks to confirm the host machine is ready for real gameplay use.</p>
+            <p class="label">Diagnostics</p>
+            <p class="muted">These are the host-side prerequisites that should ideally be green before you expect the full dashboard experience to work.</p>
           </div>
         </div>
 
         <div class="status-grid diagnostics-grid">
           <article class="status-card">
-            <span class="status-card-label">AutoHotkey</span>
-            <strong id="ahk-status">Checking...</strong>
-            <small id="ahk-copy">-</small>
-          </article>
-          <article class="status-card">
-            <span class="status-card-label">LAN Detection</span>
-            <strong id="lan-detected-status">Checking...</strong>
-            <small id="lan-detected-copy">-</small>
-          </article>
-          <article class="status-card">
             <span class="status-card-label">X4 Install Path</span>
             <strong id="game-path-status">Checking...</strong>
             <small id="game-path-copy">-</small>
+          </article>
+          <article class="status-card">
+            <span class="status-card-label">X4 Bridge</span>
+            <strong id="game-feed-status">Checking...</strong>
+            <small id="game-feed-copy">Waiting for X4 or mock data.</small>
+          </article>
+          <article class="status-card">
+            <span class="status-card-label">AutoHotkey</span>
+            <strong id="ahk-status">Checking...</strong>
+            <small id="ahk-copy">-</small>
           </article>
         </div>
 
@@ -162,8 +162,7 @@
         </div>
 
         <div class="button-row">
-          <button id="save-settings">Save Host Settings</button>
-          <span id="settings-feedback" class="muted">-</span>
+          <div id="settings-feedback" class="inline-feedback" hidden></div>
         </div>
       </section>
 
@@ -186,8 +185,7 @@
         <div id="keybindings-list" class="keybindings-list"></div>
 
         <div class="button-row">
-          <button id="save-keybindings">Save Key Bindings</button>
-          <span id="keybindings-feedback" class="muted">-</span>
+          <div id="keybindings-feedback" class="inline-feedback" hidden></div>
         </div>
       </section>
 

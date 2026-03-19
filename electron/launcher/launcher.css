@@ -113,6 +113,23 @@ li {
   word-break: break-word;
 }
 
+.status-card-link {
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #9cf8c7;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.status-card-link:hover {
+  color: #c6ffe6;
+}
+
 .status-card.good strong {
   color: #9cf8c7;
 }
@@ -310,6 +327,37 @@ li {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.inline-feedback {
+  min-height: 20px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(134, 217, 234, 0.18);
+  background: rgba(7, 18, 24, 0.9);
+  color: #d9f8ff;
+  line-height: 1.5;
+}
+
+.inline-feedback[hidden] {
+  display: none;
+}
+
+.inline-feedback.info {
+  border-color: rgba(134, 217, 234, 0.24);
+  background: rgba(10, 29, 38, 0.82);
+}
+
+.inline-feedback.success {
+  border-color: rgba(156, 248, 199, 0.28);
+  background: rgba(8, 32, 24, 0.82);
+  color: #d7ffe8;
+}
+
+.inline-feedback.error {
+  border-color: rgba(255, 180, 180, 0.28);
+  background: rgba(43, 16, 16, 0.82);
+  color: #ffdede;
 }
 
 button {

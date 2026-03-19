@@ -4,7 +4,9 @@
   "bindings": {
     "flightAssist": {
       "key": "{SPACE}",
-      "modifiers": ["ctrl"],
+      "modifiers": [
+        "ctrl"
+      ],
       "label": "Flight Assist",
       "description": "Toggle flight assist on/off"
     },
