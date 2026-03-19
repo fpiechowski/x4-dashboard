@@ -1,38 +1,45 @@
 # Roadmap
 
-This roadmap is a lightweight public planning document for the next release cycle.
+This roadmap is a lightweight public planning document for a shorter, more frequent release cadence.
 
-## v1.2.0 priorities
+## Release plan
 
-### 1. Desktop polish
-- Add custom application icons and better installer branding
-- Improve first-run experience for desktop users
-- Reduce Electron packaging rough edges and clarify runtime requirements
-- Make LAN access a first-class mode so the app is reachable from other devices by default, not only localhost
-- Separate release artifacts for the server, browser clients, Electron client, and the Lua mod so each piece can be used independently
+### v1.2.0 - Network and settings foundation
+- Make LAN access a first-class runtime mode so the app is reachable from other devices without manual setup
+- Add a dedicated settings and diagnostics surface for the current host/client model
+- Move important runtime configuration into the app UI instead of relying only on environment variables
+- Keep this release focused on the minimum foundation needed to make future setup and control work smoother
 
-### 2. Dashboard UX improvements
-- Add a dedicated settings and diagnostics surface
+### v1.3.0 - Controls and onboarding
+- Add in-app keybinding capture by listening for keyboard input
+- Investigate automatic import of X4 key bindings from local game settings
+- Write a non-technical installation and usage guide for new players
+- Reduce friction between first launch, setup, and the first successful control action
+
+### v1.4.0 - Widget reliability and data coverage
 - Improve empty, loading, and disconnected states across widgets
-- Make dashboard scaling and layout behavior more predictable on different screens
-- Audit the current dashboard presets and remove unused or low-value dashboards to keep the shipped set intentional
-- Rename misleading dashboard presets and keep the shipped dashboard list intentionally small and curated
-
-### 3. Data model and widget coverage
 - Expand typed support for remaining game data areas still treated loosely
 - Add more widgets for factions, inventory, transaction log, and agents
-- Document the contract for adding new exported game fields end to end
+- Verify UnderAttack widget data flow and close any remaining game-state coverage gaps
 
-### 4. Release and contributor experience
-- Add app icons and release screenshots for GitHub releases
-- Improve `README.md` with cleaner formatting, stronger visual structure, emoji where helpful, and screenshots/gifs for key flows
-- Improve issue labeling and contributor onboarding for first contributions
-- Keep CI and release automation current as GitHub Actions platform requirements evolve
-- Move important runtime configuration into the app UI instead of relying only on environment variables
+### v1.5.0 - Quality and release presentation
+- Add an initial automated test suite to protect the most important flows
+- Capture screenshots for under-attack and active-target states
+- Improve release presentation with better screenshots and supporting docs where useful
+- Keep CI and release packaging polished as the project becomes easier to distribute
+
+## Already landed in the current release train
+
+- Custom desktop app icons and installer branding
+- Improved desktop first-run experience
+- Split release artifacts into server, browser client, Electron launcher, and Lua mod packages
+- Renamed and cleaned up shipped dashboard presets
+- Refreshed `README.md` with better structure and screenshots
+- Fixed scrolling in the Mission Offers and Comms widgets
 
 ## Next major version vision
 
-### v2.0.0 candidate: user-defined dashboards
+### v2.0.0 - User-defined dashboards
 - Move beyond editing `client/src/dashboards.ts` as the only way to define layouts
 - Let users create, edit, duplicate, reorder, and delete dashboards from the app UI
 - Persist dashboard definitions in user-managed storage instead of hardcoded source only
@@ -42,7 +49,7 @@ This roadmap is a lightweight public planning document for the next release cycl
 
 ## How this is managed
 
-- The milestone for this cycle is `v1.2.0`
-- The next major planning milestone is `v2.0.0`
-- Implementation tasks are tracked as GitHub issues
-- Scope may shift based on feedback from early public users
+- Each minor release gets its own GitHub milestone
+- Implementation tasks are tracked as GitHub issues and reassigned as scope is split
+- `v2.0.0` stays reserved for user-defined dashboards unless a larger strategic shift appears
+- Scope may still move based on feedback from early public users, but each release should stay intentionally small
