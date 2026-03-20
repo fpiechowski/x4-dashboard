@@ -8,7 +8,7 @@ This roadmap is a lightweight public planning document for a shorter, more frequ
 - Add in-app keybinding capture by listening for keyboard input
 - Investigate automatic import of X4 key bindings from local game settings
 - Write a non-technical installation and usage guide for new players
-- Reduce friction between first launch, setup, and the first successful control action
+- Reduce friction between first launch, setup, and the first successful control action by shipping concrete improvements in setup docs and keybinding flow issues rather than a standalone umbrella tracker
 
 ### v1.4.0 - Widget reliability and data coverage
 - Improve empty, loading, and disconnected states across widgets
@@ -59,6 +59,6 @@ This roadmap is a lightweight public planning document for a shorter, more frequ
 ## How this is managed
 
 - Each minor release gets its own GitHub milestone
-- Implementation tasks are tracked as GitHub issues and reassigned as scope is split
+- Implementation tasks are tracked as concrete GitHub issues; release themes stay in the roadmap and milestone instead of separate umbrella issues unless a distinct cross-cutting deliverable needs one
 - `v2.0.0` stays reserved for user-defined dashboards unless a larger strategic shift appears
 - Scope may still move based on feedback from early public users, but each release should stay intentionally small
