@@ -3,8 +3,8 @@
  * Builds unified dashboard state from X4 External App data.
  *
  * Sources:
- * - playerProfile  → player name, credits, sector
- * - shipStatus     → hull, shields, speed, boost, travel drive, flight assist, docked, seta, scan states
+ * - playerProfile  -> player name, credits, sector
+ * - shipStatus     -> hull, shields, speed, boost, travel drive, flight assist, docked, seta, scan states
  * - missionOffers, activeMission, logbook, currentResearch, factions, agents, inventory, transactionLog
  */
 
@@ -41,6 +41,110 @@ function normalizeMissionOffers(raw) {
     coalition: wrapMissionGroup(raw.coalition),
     other:     wrapMissionGroup(raw.other),
   };
+}
+
+function normalizeText(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function formatLabel(value) {
+  const normalized = normalizeText(value)
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!normalized) return '';
+
+  return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getRelationValue(faction) {
+  const candidates = [faction?.relationValue, faction?.relationvalue, faction?.relation, faction?.standing];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+function getRelationLabel(faction, relationValue) {
+  const directLabel = normalizeText(faction?.relationLabel)
+    || normalizeText(faction?.relationText)
+    || normalizeText(faction?.relationName);
+
+  if (directLabel) return formatLabel(directLabel);
+  if (typeof faction?.relation === 'string') return formatLabel(faction.relation);
+  if (faction?.isHostile || faction?.ishostile) return 'Hostile';
+  if (faction?.isEnemy || faction?.isenemy) return 'Enemy';
+
+  if (typeof relationValue === 'number') {
+    if (relationValue >= 20) return 'Ally';
+    if (relationValue >= 10) return 'Friend';
+    if (relationValue > -10) return 'Neutral';
+    if (relationValue > -20) return 'Enemy';
+    return 'Hostile';
+  }
+
+  return 'Unknown';
+}
+
+function getLicenseLabels(faction) {
+  const labels = [];
+  const rawLabels = [];
+
+  if (Array.isArray(faction?.licences)) rawLabels.push(...faction.licences);
+  if (Array.isArray(faction?.licenceLabels)) rawLabels.push(...faction.licenceLabels);
+  if (Array.isArray(faction?.licenses)) rawLabels.push(...faction.licenses);
+  if (Array.isArray(faction?.licenseLabels)) rawLabels.push(...faction.licenseLabels);
+  if (typeof faction?.licence === 'string') rawLabels.push(faction.licence);
+  if (typeof faction?.license === 'string') rawLabels.push(faction.license);
+
+  for (const label of rawLabels) {
+    const formatted = formatLabel(label);
+    if (formatted) labels.push(formatted);
+  }
+
+  if (faction?.hasPoliceLicence || faction?.hasPoliceLicense) labels.push('Police');
+  if (faction?.hasMilitaryLicence || faction?.hasMilitaryLicense) labels.push('Military');
+  if (faction?.hasCapitalLicence || faction?.hasCapitalLicense) labels.push('Capital');
+
+  return Array.from(new Set(labels));
+}
+
+function normalizeFactionEntry(faction, fallbackId) {
+  if (!faction || typeof faction !== 'object') return null;
+
+  const id = normalizeText(faction.id) || fallbackId;
+  const name = normalizeText(faction.name) || normalizeText(faction.shortName) || normalizeText(faction.shortname) || formatLabel(fallbackId) || 'Unknown Faction';
+  const shortName = normalizeText(faction.shortName) || normalizeText(faction.shortname) || name;
+  const relationValue = getRelationValue(faction);
+
+  return {
+    id,
+    name,
+    shortName,
+    relationLabel: getRelationLabel(faction, relationValue),
+    relationValue,
+    licenseLabels: getLicenseLabels(faction),
+  };
+}
+
+function normalizeFactions(raw) {
+  if (!raw) return null;
+
+  const entries = Array.isArray(raw)
+    ? raw.map((faction, index) => normalizeFactionEntry(faction, `faction-${index + 1}`))
+    : Object.entries(raw).map(([id, faction]) => normalizeFactionEntry(faction, id));
+
+  const factions = entries.filter(Boolean);
+
+  if (!factions.length) return null;
+
+  return factions.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 class DataAggregator {
@@ -129,7 +233,7 @@ class DataAggregator {
       activeMission:   normalizeActiveMission(ext.activeMission),
       logbook:         normalizeLogbook(ext.logbook),
       currentResearch: ext.currentResearch || null,
-      factions:        ext.factions        || null,
+      factions:        normalizeFactions(ext.factions),
       agents:          ext.agents          || null,
       inventory:       ext.inventory       || null,
       transactionLog:  ext.transactionLog  || null,

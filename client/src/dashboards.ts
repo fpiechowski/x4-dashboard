@@ -39,6 +39,7 @@ export type WidgetId =
     | 'MissionOffers'
     | 'Comms'
     | 'Research'
+    | 'Factions'
     | 'UnderAttack'
 
 // ── Panel internal layout types ───────────────────────────────────────────────
@@ -242,7 +243,7 @@ export const DASHBOARDS: DashboardConfig[] = [
         id: 'operations',
         label: 'Operations',
         layout: 'grid',
-        columns: '1fr 1fr',
+        columns: '1fr 1fr 1fr',
         panels: [
             {
                 title: 'Active Mission', titleIcon: '◆',
@@ -267,6 +268,12 @@ export const DASHBOARDS: DashboardConfig[] = [
                 style: {flex: 1, minHeight: 0},
                 internal: {layout: 'columns', columns: [{widgets: [{id: 'Comms', grow: true}]}]},
                 col: 2, row: 2, grow: true, scale: 1.14
+            },
+            {
+                title: 'Factions', titleIcon: '⬢',
+                style: {flex: 1, minHeight: 0},
+                internal: {layout: 'columns', columns: [{widgets: [{id: 'Factions', grow: true}]}]},
+                col: 3, row: 1, rowSpan: 2, grow: true, scale: 1.14
             },
         ],
     },

@@ -15,8 +15,8 @@ export interface PlayerInfo {
 export interface ShipStatus {
   name: string;
   type: string;         // ship_s / ship_m / ship_l / ship_xl
-  hull: number;         // 0–100 %
-  shields: number;      // 0–100 %
+  hull: number;         // 0-100 %
+  shields: number;      // 0-100 %
   isDockedOrLanded: boolean;
 }
 
@@ -25,7 +25,7 @@ export interface FlightState {
   maxSpeed: number;       // normal speed cap m/s
   maxBoostSpeed: number;  // boosted speed cap m/s (0 if unknown)
   maxTravelSpeed: number; // travel drive cap m/s (0 if unknown/auto-scale)
-  boostEnergy: number;    // 0–100 %
+  boostEnergy: number;    // 0-100 %
   boosting: boolean;
   travelDrive: boolean;
   flightAssist: boolean;
@@ -107,6 +107,15 @@ export interface LogbookEntry {
   factionname: string;
 }
 
+export interface FactionStanding {
+  id: string;
+  name: string;
+  shortName: string;
+  relationLabel: string;
+  relationValue: number | null;
+  licenseLabels: string[];
+}
+
 export interface GenericDataRecord {
   [key: string]: unknown;
 }
@@ -125,7 +134,7 @@ export interface GameState {
   activeMission: ActiveMission | null;
   logbook: { list: LogbookEntry[] } | null;
   currentResearch: CurrentResearch | null;
-  factions: GenericDataRecord | null;
+  factions: FactionStanding[] | null;
   agents: GenericListItem[] | null;
   inventory: GenericDataRecord | null;
   transactionLog: { list: GenericListItem[] } | null;

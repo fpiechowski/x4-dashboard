@@ -67,14 +67,14 @@ const MOCK_RESEARCH = {
   ],
 };
 
-const MOCK_FACTIONS = {
-  argon:    { name: 'Argon Federation',  relation: 'ally',    licences: ['military', 'police'] },
-  teladi:   { name: 'Teladi Company',    relation: 'friend',  licences: ['trade'] },
-  paranid:  { name: 'Holy Order',        relation: 'neutral', licences: [] },
-  xenon:    { name: 'Xenon',             relation: 'enemy',   licences: [] },
-  khaak:    { name: "Kha'ak",            relation: 'enemy',   licences: [] },
-  antielid: { name: 'Antigone Republic', relation: 'friend',  licences: [] },
-};
+const MOCK_FACTIONS = [
+  { id: 'antigone', name: 'Antigone Republic', shortName: 'ANT', relationLabel: 'Friend', relationValue: 12, licenseLabels: ['Police'] },
+  { id: 'argon', name: 'Argon Federation', shortName: 'ARG', relationLabel: 'Ally', relationValue: 22, licenseLabels: ['Military', 'Police'] },
+  { id: 'holy-order', name: 'Holy Order', shortName: 'HOP', relationLabel: 'Neutral', relationValue: 0, licenseLabels: [] },
+  { id: 'khaak', name: "Kha'ak", shortName: 'KHK', relationLabel: 'Hostile', relationValue: -30, licenseLabels: [] },
+  { id: 'teladi', name: 'Teladi Company', shortName: 'TEL', relationLabel: 'Friend', relationValue: 18, licenseLabels: ['Trade'] },
+  { id: 'xenon', name: 'Xenon', shortName: 'XEN', relationLabel: 'Enemy', relationValue: -20, licenseLabels: [] },
+];
 
 function cloneMissionGroup(group, prefix, copies) {
   const result = [];
