@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for agentic coding assistants working in this repository.
+Guidance for coding agents working in this repository.
 
 ## Project Snapshot
 
@@ -11,16 +11,16 @@ Guidance for agentic coding assistants working in this repository.
   - `electron/` - desktop launcher / packaged wrapper
   - `game-mods/x4_dashboard_bridge/` - Lua bridge mod
 - `server/public/` is generated build output from `client/`; do not edit it directly.
-- Product model is browser-first: one host server, many browser clients on localhost or LAN.
+- The product is browser-first: one host server, many browser clients on localhost or LAN.
 - Electron is the host-side Server Launcher, not the main dashboard UI.
 
-## External Rules
+## Planning Files
 
-- No `.cursor/rules/` directory is present.
-- No `.cursorrules` file is present.
-- No `.github/copilot-instructions.md` file is present.
+- `ROADMAP.md` is the source of truth for release planning.
+- `CHANGELOG.md` stores user-facing release notes.
+- `RELEASE.md` is the release and packaging checklist.
 
-## Build, Run, and Validation Commands
+## Build, Run, and Validation
 
 Run commands from the repository root unless noted.
 
@@ -41,12 +41,9 @@ npm run release:check  # typecheck + frontend build
 npm run release:bundle # build release bundles into dist/
 ```
 
-## Tests and Linting
-
 - There is currently no test suite.
 - There is currently no linter.
-- There is no single-test command because no tests exist yet.
-- The main validation step is `npm run typecheck`.
+- `npm run typecheck` is the main validation step.
 - Client-only equivalent: `npm --prefix client run typecheck`.
 - After TypeScript changes, run `npm run typecheck`.
 - After packaging or release changes, run the most relevant command when practical:
@@ -69,9 +66,9 @@ npm run release:bundle # build release bundles into dist/
   2. update `getState()` in `server/dataAggregator.js`
   3. update `server/mockData.js` if mock mode should expose it
 
-## Module and File Rules
+## Source Boundaries
 
-- `client/` uses ESM with `.ts` / `.tsx`.
+- `client/` uses ESM with `.ts` and `.tsx`.
 - `server/` uses CommonJS with `.js`.
 - Do not mix module systems.
 - Keep generated assets out of source edits.
@@ -90,18 +87,13 @@ npm run release:bundle # build release bundles into dist/
 - Use `T | null` instead of `T | undefined` for nullable client state.
 - `client/tsconfig.json` uses `strict: false`; do not tighten it casually.
 - For loosely shaped external data, `Record<string, any>` is acceptable here.
-
-## Imports and Structure
-
-- Match the surrounding import style and ordering in each file.
-- Keep imports minimal; remove unused imports.
+- Match surrounding import style and ordering in each file.
+- Keep imports minimal and remove unused imports.
 - Keep components focused; move reusable logic to hooks or utilities.
 - Widget components render content only; panel chrome belongs in `ArwesPanel`.
-- Dashboard layout model is `Dashboard -> Panel -> Widget`.
 - Dashboard configs live in `client/src/dashboards.ts`.
 - Widget registration lives in `client/src/components/dashboard/widgetRegistry.tsx`.
 - Layout helpers live in `client/src/components/dashboard/DashboardLayouts.tsx`.
-- Current curated shipped dashboards are `Flight`, `Ship Controls`, and `Operations`.
 
 ## Frontend Conventions
 
@@ -117,54 +109,33 @@ npm run release:bundle # build release bundles into dist/
 
 ## Server Conventions and Error Handling
 
-- Do not introduce `async/await` in `server/`; follow the existing callback/sync style.
+- Do not introduce `async/await` in `server/`; follow the existing callback and sync style.
 - Use synchronous config reads where the current code expects them.
 - HTTP routes should return JSON errors with explicit status codes.
-- Keep section comments in the existing style, e.g. `// === WebSocket server ===`.
+- Keep section comments in the existing style, for example `// === WebSocket server ===`.
 - Use defensive nullish coalescing and clamp numeric values where appropriate.
 - WebSocket send failures should remain silent where the repo already does that.
 - Error-handling patterns:
-  - WebSocket / JSON parse: silent `catch {}` where already used
+  - WebSocket or JSON parse failures: silent `catch {}` where already used
   - HTTP routes: `res.status(...).json({ error: '...' })`
   - Key press failures: `console.error(...)`
   - Missing config files may crash loudly if the current code expects that
 
-## Key Bindings and Runtime Config
+## Runtime and Distribution
 
 - Host-only settings and key bindings belong in the Electron Server Launcher, not the browser dashboard.
 - Browser UI should focus on dashboard use and client-side preferences.
-- Current env vars include `PORT`, `MOCK`, `AUTOHOTKEY_PATH`, `X4_FORCE_ACTIVATE`, `X4_WINDOW_TITLE`, and `ALLOW_REMOTE_CONTROLS`.
 - When adding a new host-side flag or action, update both client and server mappings.
-- Preserve current behavior unless the user explicitly asks for config model changes.
-
-## Release and Distribution
-
 - Release bundles are created by `scripts/create-server-bundle.js` and `scripts/create-lua-mod-bundle.js`.
 - GitHub workflows live in `.github/workflows/ci.yml` and `.github/workflows/release.yml`.
-- Desktop artifacts are written to `release/`; server/Lua bundles to `dist/`.
+- Desktop artifacts are written to `release/`; server and Lua bundles to `dist/`.
 - If you change packaging, ensure the build still includes server runtime dependencies.
 
-## GitHub Planning Workflow
+## Git Conventions
 
-- Treat `ROADMAP.md` as the source of truth for product planning.
-- Keep roadmap, milestones, and open issues aligned.
-- Use milestones for release-sized groupings such as `v1.2.0` and `v2.0.0`.
-- Prefer updating an existing issue before creating a new one.
-- When creating an issue from user discussion or roadmap work, attach it to the most appropriate existing milestone if one fits.
-- New planning issues should use `Goal`, `Scope`, and `Why`.
-- Do not create releases, tags, or close milestones unless the user explicitly asks.
-- Before proposing a release version, check milestone scope and unfinished issues.
-
-## Git Workflow
-
-- Create local commits proactively while working; do not wait for the user to ask once a meaningful chunk is done.
-- Do not ask whether to commit unless the user explicitly wants to control commit boundaries or commit messages.
-- Treat local commits as the default checkpoint mechanism while work is in progress.
-- Do not push unless the user explicitly asks.
-- When the user asks for a push, inspect recent local history first.
-- Squash or otherwise consolidate related local commits into a clean public history whenever practical before pushing.
-- If the user asks to push immediately, still review history and use judgment.
-- Before creating a release or tag, make sure the related history is already clean enough for public consumption.
+- Use Conventional Commits for every commit.
+- Keep commit scopes aligned with the touched area when practical.
+- Do not push, tag, or rewrite history unless the user explicitly asks.
 
 ## Do Not
 
