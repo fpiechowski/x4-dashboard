@@ -1,7 +1,7 @@
 import React from 'react'
 import { Animator, Text } from '@arwes/react'
 import { DASHBOARDS } from '../../dashboards'
-import { ConnectionMeta, FlightState } from '../../types/gameData'
+import { CombatState, ConnectionMeta, FlightState } from '../../types/gameData'
 
 interface Props {
   meta: ConnectionMeta
@@ -9,7 +9,7 @@ interface Props {
   dashboardId: string
   dashboardScale: number
   flight: FlightState
-  inCombat: boolean
+  combat: CombatState
   onChangeDashboard: (id: string) => void
   onChangeDashboardScale: (scale: number) => void
 }
@@ -26,10 +26,17 @@ export function DashboardHeader({
   dashboardId,
   dashboardScale,
   flight,
-  inCombat,
+  combat,
   onChangeDashboard,
   onChangeDashboardScale,
 }: Props) {
+  const hasCombatAlert = combat.alertLevel > 0
+  const combatButtonLabel = combat.alertLevel === 0
+    ? 'START ALERT'
+    : combat.alertLevel === 1
+      ? 'START COMBAT'
+      : 'END COMBAT'
+
   return (
     <header className="dashboard-header">
       <Animator>
@@ -72,10 +79,16 @@ export function DashboardHeader({
               {flight.boosting ? 'END BOOST' : 'BOOST'}
             </button>
             <button
-              className={`header-settings-btn ${inCombat ? 'mock-combat-active' : ''}`}
+              className={`header-settings-btn ${hasCombatAlert ? 'mock-combat-active' : ''}`}
               onClick={() => postMockAction('/api/mock/combat')}
             >
-              {inCombat ? 'END COMBAT' : 'START COMBAT'}
+              {combatButtonLabel}
+            </button>
+            <button
+              className={`header-settings-btn ${combat.incomingMissiles > 0 ? 'mock-combat-active' : ''}`}
+              onClick={() => postMockAction('/api/mock/missile')}
+            >
+              {combat.incomingMissiles > 0 ? 'CLEAR MISSILE' : 'MISSILE LOCK'}
             </button>
             <button
               className="header-settings-btn"

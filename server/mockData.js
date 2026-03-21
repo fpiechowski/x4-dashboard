@@ -157,7 +157,8 @@ class MockDataSource extends EventEmitter {
     this.phaseTick   = 0;
 
     // Combat
-    this.inCombat         = false;
+    this.alertLevel       = 0;
+    this.attackerCount    = 0;
     this.targetHull       = 100;
     this.targetShields    = 100;
     this.incomingMissiles = 0;
@@ -181,7 +182,7 @@ class MockDataSource extends EventEmitter {
         sectorname:  this.sector,
         sectorowner: 'Teladi Company',
       },
-      targetInfo: this.inCombat ? {
+      targetInfo: this.alertLevel >= 2 ? {
         hasTarget:   true,
         name:        'XEN-SCOUT-041',
         shipName:    'Xenon S',
@@ -211,8 +212,8 @@ class MockDataSource extends EventEmitter {
         scanMode:      this.scanMode,
         longRangeScan: this.longRangeScan,
         shipSize:      'ship_s',
-        alertLevel:       this.inCombat ? 2 : 0,
-        attackerCount:    this.inCombat ? 1 : 0,
+        alertLevel:       this.alertLevel,
+        attackerCount:    this.attackerCount,
         incomingMissiles: this.incomingMissiles,
       },
     };
@@ -252,7 +253,7 @@ class MockDataSource extends EventEmitter {
     this.tick++;
     const t = this.tick * 0.05;
 
-    if (this.inCombat) {
+    if (this.alertLevel >= 2) {
       this.hull          = Math.max(18, this.hull          - 0.4 - Math.random() * 0.8);
       this.shields       = Math.max(0,  this.shields       - 1.2 - Math.random() * 1.5);
       this.targetHull    = Math.max(0,  this.targetHull    - 1.5 - Math.random() * 2.0);
@@ -261,6 +262,13 @@ class MockDataSource extends EventEmitter {
       this.travelDrive = false;
       this.speed       = 300 + Math.sin(t * 3) * 200;
       this.boostEnergy = Math.min(100, this.boostEnergy + 0.3);
+    } else if (this.alertLevel === 1) {
+      this.shields = Math.max(72, this.shields - 0.15 - Math.random() * 0.3);
+      this.hull    = Math.min(100, this.hull + 0.01);
+      this.speed   = Math.max(0, 180 + Math.sin(t * 1.2) * 70);
+      this.boosting = false;
+      this.travelDrive = false;
+      this.boostEnergy = Math.min(100, this.boostEnergy + 0.4);
     } else {
       this.shields = Math.min(100, this.shields + 0.25);
       this.hull    = Math.min(100, this.hull    + 0.02);
@@ -326,16 +334,33 @@ class MockDataSource extends EventEmitter {
   }
 
   startCombat() {
-    if (this.inCombat) return;
-    this.inCombat         = true;
+    if (this.alertLevel >= 2) return;
+    this.alertLevel       = 2;
+    this.attackerCount    = 1;
     this.targetHull       = 100;
     this.targetShields    = 100;
     this.incomingMissiles = 0;
     console.log('[Mock] ⚠ COMBAT STARTED');
   }
 
+  startAlert() {
+    if (this.alertLevel === 1) return;
+    this.alertLevel = 1;
+    this.attackerCount = 1;
+    this.incomingMissiles = 0;
+    console.log('[Mock] ! ALERT ACTIVE');
+  }
+
+  clearCombatState() {
+    this.alertLevel = 0;
+    this.attackerCount = 0;
+    this.incomingMissiles = 0;
+    this.targetHull = 100;
+    this.targetShields = 100;
+  }
+
   toggleTravel() {
-    if (this.inCombat) return; // combat overrides flight state
+    if (this.alertLevel >= 2) return; // combat overrides flight state
     if (this.travelDrive) {
       // Disengage travel drive
       this.flightPhase = 'travel_stop';
@@ -351,7 +376,7 @@ class MockDataSource extends EventEmitter {
   }
 
   toggleBoost() {
-    if (this.inCombat) return; // combat overrides flight state
+    if (this.alertLevel >= 2) return; // combat overrides flight state
     if (this.boosting) {
       // Stop boosting, go to recover
       this.flightPhase = 'recover';
@@ -369,12 +394,30 @@ class MockDataSource extends EventEmitter {
   }
 
   toggleCombat() {
-    if (this.inCombat) {
-      this.inCombat         = false;
-      this.incomingMissiles = 0;
-      console.log('[Mock] Combat ended manually');
-    } else {
+    if (this.alertLevel === 0) {
+      this.startAlert();
+    } else if (this.alertLevel === 1) {
       this.startCombat();
+    } else {
+      this.clearCombatState();
+      console.log('[Mock] Combat ended manually');
+    }
+    this.emit_data(true);
+  }
+
+  toggleMissileLock() {
+    if (this.alertLevel === 0) {
+      this.startCombat();
+      this.incomingMissiles = 1;
+      this.attackerCount = Math.max(1, this.attackerCount);
+      console.log('[Mock] ⇢ MISSILE LOCK CREATED');
+    } else {
+      this.incomingMissiles = this.incomingMissiles > 0 ? 0 : 1;
+      if (this.incomingMissiles > 0 && this.alertLevel < 2) {
+        this.alertLevel = 2;
+      }
+      this.attackerCount = this.alertLevel > 0 ? Math.max(1, this.attackerCount) : 0;
+      console.log(this.incomingMissiles > 0 ? '[Mock] ⇢ MISSILE LOCK CREATED' : '[Mock] Missile lock cleared');
     }
     this.emit_data(true);
   }

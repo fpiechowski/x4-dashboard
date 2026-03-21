@@ -47,6 +47,76 @@ function normalizeText(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function getFiniteNumber(...candidates) {
+  for (const candidate of candidates) {
+    const value = Number(candidate);
+    if (Number.isFinite(value)) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
+function clampNumber(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function normalizeCombatPayload(raw) {
+  const shipStatus = raw && typeof raw === 'object' ? raw : {};
+  const nestedCombat = shipStatus.combat && typeof shipStatus.combat === 'object' ? shipStatus.combat : {};
+
+  const alertLevel = getFiniteNumber(
+    shipStatus.alertLevel,
+    shipStatus.alertlevel,
+    nestedCombat.alertLevel,
+    nestedCombat.alertlevel,
+    nestedCombat.level,
+    nestedCombat.state
+  );
+  const attackerCount = getFiniteNumber(
+    shipStatus.attackerCount,
+    shipStatus.attackers,
+    shipStatus.numAttackers,
+    shipStatus.attackercount,
+    nestedCombat.attackerCount,
+    nestedCombat.attackers,
+    nestedCombat.numAttackers,
+    nestedCombat.attackercount
+  );
+  const incomingMissiles = getFiniteNumber(
+    shipStatus.incomingMissiles,
+    shipStatus.missiles,
+    shipStatus.missileCount,
+    shipStatus.numIncomingMissiles,
+    shipStatus.incomingmissiles,
+    nestedCombat.incomingMissiles,
+    nestedCombat.missiles,
+    nestedCombat.missileCount,
+    nestedCombat.numIncomingMissiles,
+    nestedCombat.incomingmissiles
+  );
+
+  return {
+    alertLevel: clampNumber(Math.round(alertLevel ?? 0), 0, 2),
+    attackerCount: Math.max(0, Math.round(attackerCount ?? 0)),
+    incomingMissiles: Math.max(0, Math.round(incomingMissiles ?? 0)),
+  };
+}
+
+function mergeShipStatus(previous, next) {
+  const prevShipStatus = previous && typeof previous === 'object' ? previous : {};
+  const nextShipStatus = next && typeof next === 'object' ? next : {};
+  const merged = { ...prevShipStatus, ...nextShipStatus };
+  const combat = normalizeCombatPayload(nextShipStatus);
+
+  merged.alertLevel = combat.alertLevel;
+  merged.attackerCount = combat.attackerCount;
+  merged.incomingMissiles = combat.incomingMissiles;
+
+  return merged;
+}
+
 function formatLabel(value) {
   const normalized = normalizeText(value)
     .replace(/([a-z])([A-Z])/g, '$1 $2')
@@ -157,8 +227,13 @@ class DataAggregator {
     this.externalConnected = data._connected !== false;
     if (!this.externalConnected) return;
     const { _connected, ...rest } = data;
+    const previousShipStatus = this.external.shipStatus;
     // Merge so partial updates (e.g. ship-only ticks) don't wipe mission data
     this.external = { ...this.external, ...rest };
+
+    if (rest.shipStatus !== undefined) {
+      this.external.shipStatus = mergeShipStatus(previousShipStatus, rest.shipStatus);
+    }
   }
 
   getState() {
@@ -215,6 +290,8 @@ class DataAggregator {
       bounty:      ti.bounty      ?? 0,
     } : null;
 
+    const combat = normalizeCombatPayload(es);
+
     return {
       _meta: {
         timestamp:         new Date().toISOString(),
@@ -225,9 +302,9 @@ class DataAggregator {
       flight,
       combat: {
         target:           combatTarget,
-        alertLevel:       es?.alertLevel       ?? 0,
-        attackerCount:    es?.attackerCount     ?? 0,
-        incomingMissiles: es?.incomingMissiles  ?? 0,
+        alertLevel:       combat.alertLevel,
+        attackerCount:    combat.attackerCount,
+        incomingMissiles: combat.incomingMissiles,
       },
       missionOffers:   normalizeMissionOffers(ext.missionOffers),
       activeMission:   normalizeActiveMission(ext.activeMission),

@@ -58,10 +58,14 @@ pcall(ffi.cdef, [[
 
 local output = {}
 function output.handle()
-    local shipId = C.GetPlayerOccupiedShipID()
+    local occupiedShipId = C.GetPlayerOccupiedShipID()
+    local controlledShipId = C.GetPlayerControlledShipID()
+    local shipId = occupiedShipId
     if shipId == 0 then
         return nil
     end
+
+    local combatShipId = controlledShipId ~= 0 and controlledShipId or shipId
 
     local hull, shields = GetPlayerShipHullShield()
     local _, _, speedPerSecond, boosting, travelMode = GetPlayerSpeed()
@@ -79,9 +83,9 @@ function output.handle()
     local attackerCount    = 0
     local incomingMissiles = 0
     local autopilot = false
-    pcall(function() alertLevel       = C.GetAlertLevel(shipId) end)
-    pcall(function() attackerCount    = C.GetNumAllAttackers(shipId) end)
-    pcall(function() incomingMissiles = C.GetNumIncomingMissiles(shipId) end)
+    pcall(function() alertLevel       = C.GetAlertLevel(combatShipId) end)
+    pcall(function() attackerCount    = C.GetNumAllAttackers(combatShipId) end)
+    pcall(function() incomingMissiles = C.GetNumIncomingMissiles(combatShipId) end)
     pcall(function() autopilot        = C.IsAutoPilotActive() end)
 
     local shipName = GetComponentData(ConvertStringTo64Bit(tostring(shipId)), "name") or ""

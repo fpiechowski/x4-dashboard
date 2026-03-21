@@ -27,7 +27,7 @@ export function Dashboard({
 }: Props) {
   const { _meta, ship } = state
   const config = getDashboard(dashboardId)
-  const inCombat = state.combat.alertLevel > 0
+  const combat = state.combat
   const scaledLayoutStyle: React.CSSProperties = {
     '--dashboard-scale': String(dashboardScale),
   } as React.CSSProperties
@@ -40,7 +40,7 @@ export function Dashboard({
         dashboardId={dashboardId}
         dashboardScale={dashboardScale}
         flight={state.flight}
-        inCombat={inCombat}
+        combat={combat}
         onChangeDashboard={onChangeDashboard}
         onChangeDashboardScale={onChangeDashboardScale}
       />
