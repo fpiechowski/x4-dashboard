@@ -53,7 +53,8 @@ pcall(ffi.cdef, [[
     UILoadoutStatistics3 GetCurrentLoadoutStatistics3(UniverseID shipid);
     int GetAlertLevel(UniverseID componentid);
     int GetNumAllAttackers(UniverseID componentid);
-    int GetNumIncomingMissiles(UniverseID componentid);
+    bool IsMissileIncoming(void);
+    bool IsMissileLockingOn(void);
 ]])
 
 local output = {}
@@ -81,12 +82,21 @@ function output.handle()
 
     local alertLevel       = 0
     local attackerCount    = 0
-    local incomingMissiles = 0
+    local missileIncoming = false
+    local missileLockingOn = false
     local autopilot = false
     pcall(function() alertLevel       = C.GetAlertLevel(combatShipId) end)
     pcall(function() attackerCount    = C.GetNumAllAttackers(combatShipId) end)
-    pcall(function() incomingMissiles = C.GetNumIncomingMissiles(combatShipId) end)
+    pcall(function() missileIncoming  = C.IsMissileIncoming() end)
+    pcall(function() missileLockingOn = C.IsMissileLockingOn() end)
     pcall(function() autopilot        = C.IsAutoPilotActive() end)
+
+    local normalizedAlertLevel = tonumber(alertLevel) or 0
+    if missileIncoming then
+        normalizedAlertLevel = math.max(normalizedAlertLevel, 2)
+    elseif missileLockingOn then
+        normalizedAlertLevel = math.max(normalizedAlertLevel, 1)
+    end
 
     local shipName = GetComponentData(ConvertStringTo64Bit(tostring(shipId)), "name") or ""
     local playerActivity = GetPlayerActivity() or "none"
@@ -109,9 +119,11 @@ function output.handle()
         scanMode     = playerActivity == "scan",
         longRangeScan = playerActivity == "scan_longrange",
         shipSize     = ffi.string(C.GetPlayerShipSize()),
-        alertLevel        = tonumber(alertLevel)       or 0,
-        attackerCount     = tonumber(attackerCount)    or 0,
-        incomingMissiles  = tonumber(incomingMissiles) or 0,
+        alertLevel        = normalizedAlertLevel,
+        attackerCount     = tonumber(attackerCount) or 0,
+        incomingMissiles  = missileIncoming and 1 or 0,
+        missileIncoming   = missileIncoming,
+        missileLockingOn  = missileLockingOn,
     }
 end
 

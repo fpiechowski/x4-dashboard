@@ -6,7 +6,7 @@ const DEFAULT_STATE: GameState = {
   player: { name: '–', faction: '', credits: 0, sector: '', sectorOwner: '' },
   ship: { name: '', type: '', hull: 100, shields: 100, isDockedOrLanded: false },
   flight: { speed: 0, maxSpeed: 0, maxBoostSpeed: 0, maxTravelSpeed: 0, boostEnergy: 100, boosting: false, travelDrive: false, flightAssist: true, seta: false, autopilot: false, scanMode: false, longRangeScan: false },
-  combat: { target: null, alertLevel: 0, attackerCount: 0, incomingMissiles: 0 },
+  combat: { target: null, alertLevel: 0, attackerCount: 0, incomingMissiles: 0, missileIncoming: false, missileLockingOn: false },
   missionOffers: null,
   activeMission: null,
   logbook: null,

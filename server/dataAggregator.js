@@ -58,6 +58,19 @@ function getFiniteNumber(...candidates) {
   return null;
 }
 
+function getBoolean(...candidates) {
+  for (const candidate of candidates) {
+    if (typeof candidate === 'boolean') {
+      return candidate;
+    }
+
+    if (candidate === 1 || candidate === '1') return true;
+    if (candidate === 0 || candidate === '0') return false;
+  }
+
+  return null;
+}
+
 function clampNumber(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
@@ -96,11 +109,36 @@ function normalizeCombatPayload(raw) {
     nestedCombat.numIncomingMissiles,
     nestedCombat.incomingmissiles
   );
+  const missileIncoming = getBoolean(
+    shipStatus.missileIncoming,
+    shipStatus.missileincoming,
+    nestedCombat.missileIncoming,
+    nestedCombat.missileincoming
+  );
+  const missileLockingOn = getBoolean(
+    shipStatus.missileLockingOn,
+    shipStatus.missileLocking,
+    shipStatus.missilelockingon,
+    shipStatus.lockingOn,
+    nestedCombat.missileLockingOn,
+    nestedCombat.missileLocking,
+    nestedCombat.missilelockingon,
+    nestedCombat.lockingOn
+  );
+  const hasMissileIncoming = missileIncoming ?? (incomingMissiles ?? 0) > 0;
+  const hasMissileLockingOn = missileLockingOn ?? false;
+  const normalizedAlertLevel = hasMissileIncoming
+    ? Math.max(Math.round(alertLevel ?? 0), 2)
+    : hasMissileLockingOn
+      ? Math.max(Math.round(alertLevel ?? 0), 1)
+      : Math.round(alertLevel ?? 0);
 
   return {
-    alertLevel: clampNumber(Math.round(alertLevel ?? 0), 0, 2),
+    alertLevel: clampNumber(normalizedAlertLevel, 0, 2),
     attackerCount: Math.max(0, Math.round(attackerCount ?? 0)),
-    incomingMissiles: Math.max(0, Math.round(incomingMissiles ?? 0)),
+    incomingMissiles: hasMissileIncoming ? Math.max(1, Math.round(incomingMissiles ?? 0)) : 0,
+    missileIncoming: hasMissileIncoming,
+    missileLockingOn: hasMissileLockingOn,
   };
 }
 
@@ -113,6 +151,8 @@ function mergeShipStatus(previous, next) {
   merged.alertLevel = combat.alertLevel;
   merged.attackerCount = combat.attackerCount;
   merged.incomingMissiles = combat.incomingMissiles;
+  merged.missileIncoming = combat.missileIncoming;
+  merged.missileLockingOn = combat.missileLockingOn;
 
   return merged;
 }
@@ -305,6 +345,8 @@ class DataAggregator {
         alertLevel:       combat.alertLevel,
         attackerCount:    combat.attackerCount,
         incomingMissiles: combat.incomingMissiles,
+        missileIncoming:  combat.missileIncoming,
+        missileLockingOn: combat.missileLockingOn,
       },
       missionOffers:   normalizeMissionOffers(ext.missionOffers),
       activeMission:   normalizeActiveMission(ext.activeMission),

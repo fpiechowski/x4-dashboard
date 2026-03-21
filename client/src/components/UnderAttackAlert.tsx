@@ -4,11 +4,16 @@ interface Props {
   alertLevel: number      // 1 = alert (orange), 2 = combat (red)
   attackerCount: number
   incomingMissiles: number
+  missileIncoming: boolean
+  missileLockingOn: boolean
 }
 
-export function UnderAttackAlert({ alertLevel, attackerCount, incomingMissiles }: Props) {
-  const isCombat = alertLevel >= 2
+export function UnderAttackAlert({ alertLevel, attackerCount, incomingMissiles, missileIncoming, missileLockingOn }: Props) {
+  const hasIncomingMissile = missileIncoming || incomingMissiles > 0
+  const hasMissileLock = missileLockingOn && !hasIncomingMissile
+  const isCombat = alertLevel >= 2 || hasIncomingMissile
   const modifier = isCombat ? 'combat' : 'alert'
+  const missileLabel = hasIncomingMissile ? 'MISSILE INCOMING' : hasMissileLock ? 'LOCKING ON' : null
 
   return (
     <div className={`under-attack-alert under-attack-alert--${modifier}`} role="alert">
@@ -21,9 +26,9 @@ export function UnderAttackAlert({ alertLevel, attackerCount, incomingMissiles }
           {attackerCount} {attackerCount === 1 ? 'ATTACKER' : 'ATTACKERS'}
         </span>
       )}
-      {incomingMissiles > 0 && (
+      {missileLabel && (
         <span className="under-attack-missile">
-          ⟫ MISSILE LOCK ⟫
+          ⟫ {missileLabel} ⟫
         </span>
       )}
       <span className="under-attack-icon">{isCombat ? '▲' : '!'}</span>

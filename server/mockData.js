@@ -162,6 +162,8 @@ class MockDataSource extends EventEmitter {
     this.targetHull       = 100;
     this.targetShields    = 100;
     this.incomingMissiles = 0;
+    this.missileIncoming  = false;
+    this.missileLockingOn = false;
 
     // Misc
     this.tick                  = 0;
@@ -215,6 +217,8 @@ class MockDataSource extends EventEmitter {
         alertLevel:       this.alertLevel,
         attackerCount:    this.attackerCount,
         incomingMissiles: this.incomingMissiles,
+        missileIncoming:  this.missileIncoming,
+        missileLockingOn: this.missileLockingOn,
       },
     };
 
@@ -340,6 +344,8 @@ class MockDataSource extends EventEmitter {
     this.targetHull       = 100;
     this.targetShields    = 100;
     this.incomingMissiles = 0;
+    this.missileIncoming  = false;
+    this.missileLockingOn = false;
     console.log('[Mock] ⚠ COMBAT STARTED');
   }
 
@@ -348,6 +354,8 @@ class MockDataSource extends EventEmitter {
     this.alertLevel = 1;
     this.attackerCount = 1;
     this.incomingMissiles = 0;
+    this.missileIncoming = false;
+    this.missileLockingOn = false;
     console.log('[Mock] ! ALERT ACTIVE');
   }
 
@@ -355,6 +363,8 @@ class MockDataSource extends EventEmitter {
     this.alertLevel = 0;
     this.attackerCount = 0;
     this.incomingMissiles = 0;
+    this.missileIncoming = false;
+    this.missileLockingOn = false;
     this.targetHull = 100;
     this.targetShields = 100;
   }
@@ -406,18 +416,29 @@ class MockDataSource extends EventEmitter {
   }
 
   toggleMissileLock() {
-    if (this.alertLevel === 0) {
-      this.startCombat();
+    if (!this.missileLockingOn && !this.missileIncoming) {
+      if (this.alertLevel === 0) {
+        this.startCombat();
+      }
+      this.missileLockingOn = true;
+      this.missileIncoming = false;
+      this.incomingMissiles = 0;
+      this.attackerCount = Math.max(1, this.attackerCount);
+      this.alertLevel = Math.max(this.alertLevel, 1);
+      console.log('[Mock] ⇢ MISSILE LOCK CREATED');
+    } else if (this.missileLockingOn) {
+      this.missileLockingOn = false;
+      this.missileIncoming = true;
       this.incomingMissiles = 1;
       this.attackerCount = Math.max(1, this.attackerCount);
-      console.log('[Mock] ⇢ MISSILE LOCK CREATED');
+      this.alertLevel = Math.max(this.alertLevel, 2);
+      console.log('[Mock] ⇢ MISSILE INCOMING');
     } else {
-      this.incomingMissiles = this.incomingMissiles > 0 ? 0 : 1;
-      if (this.incomingMissiles > 0 && this.alertLevel < 2) {
-        this.alertLevel = 2;
-      }
+      this.missileLockingOn = false;
+      this.missileIncoming = false;
+      this.incomingMissiles = 0;
       this.attackerCount = this.alertLevel > 0 ? Math.max(1, this.attackerCount) : 0;
-      console.log(this.incomingMissiles > 0 ? '[Mock] ⇢ MISSILE LOCK CREATED' : '[Mock] Missile lock cleared');
+      console.log('[Mock] Missile warning cleared');
     }
     this.emit_data(true);
   }

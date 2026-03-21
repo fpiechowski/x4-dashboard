@@ -53,6 +53,8 @@ export interface CombatState {
   alertLevel: number;       // 0 = none, 1 = alert (orange), 2 = combat (red)
   attackerCount: number;
   incomingMissiles: number;
+  missileIncoming: boolean;
+  missileLockingOn: boolean;
 }
 
 export interface MissionEntry {

@@ -85,10 +85,10 @@ export function DashboardHeader({
               {combatButtonLabel}
             </button>
             <button
-              className={`header-settings-btn ${combat.incomingMissiles > 0 ? 'mock-combat-active' : ''}`}
+              className={`header-settings-btn ${combat.missileIncoming || combat.missileLockingOn ? 'mock-combat-active' : ''}`}
               onClick={() => postMockAction('/api/mock/missile')}
             >
-              {combat.incomingMissiles > 0 ? 'CLEAR MISSILE' : 'MISSILE LOCK'}
+              {combat.missileIncoming ? 'CLEAR MISSILE' : combat.missileLockingOn ? 'MISSILE INBOUND' : 'MISSILE LOCK'}
             </button>
             <button
               className="header-settings-btn"
