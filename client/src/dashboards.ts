@@ -238,6 +238,30 @@ export const DASHBOARDS: DashboardConfig[] = [
         }],
     },
 
+    {
+        id: 'target',
+        label: 'Target',
+        layout: 'columns',
+        columns: [{
+            panels: [
+                {
+                    title: 'Target',
+                    colorFn: (s) => s.combat.target?.isHostile ? 'danger' : 'warning',
+                    internal: {
+                        layout: 'columns', columns: [{
+                            widgets: [
+                                {id: 'TargetInfo', scale: 0.7},
+                                {id: 'TargetShields'},
+                                {id: 'TargetHull'},
+                            ]
+                        }]
+                    },
+                    grow: true, scale: 1.43
+                },
+            ]
+        }],
+    },
+
     // ── Operations ─────────────────────────────────────────────────────────────
     {
         id: 'operations',
