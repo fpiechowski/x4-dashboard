@@ -11,7 +11,6 @@ export function UnderAttackAlert({ missileIncoming, missileLockingOn }: Props) {
         modifier: 'incoming',
         icon: '▲',
         label: 'MISSILE INCOMING',
-        detail: 'TRACKING YOUR SHIP',
       }
     : missileLockingOn
       ? {
@@ -28,7 +27,7 @@ export function UnderAttackAlert({ missileIncoming, missileLockingOn }: Props) {
     <div className={`under-attack-alert under-attack-alert--${warningState.modifier}`} role="alert">
       <span className="under-attack-icon">{warningState.icon}</span>
       <span className="under-attack-text">{warningState.label}</span>
-      <span className="under-attack-missile">{warningState.detail}</span>
+      {warningState.detail && <span className="under-attack-missile">{warningState.detail}</span>}
       <span className="under-attack-icon">{warningState.icon}</span>
     </div>
   )
