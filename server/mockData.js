@@ -417,27 +417,19 @@ class MockDataSource extends EventEmitter {
 
   toggleMissileLock() {
     if (!this.missileLockingOn && !this.missileIncoming) {
-      if (this.alertLevel === 0) {
-        this.startCombat();
-      }
       this.missileLockingOn = true;
       this.missileIncoming = false;
       this.incomingMissiles = 0;
-      this.attackerCount = Math.max(1, this.attackerCount);
-      this.alertLevel = Math.max(this.alertLevel, 1);
       console.log('[Mock] ⇢ MISSILE LOCK CREATED');
     } else if (this.missileLockingOn) {
       this.missileLockingOn = false;
       this.missileIncoming = true;
       this.incomingMissiles = 1;
-      this.attackerCount = Math.max(1, this.attackerCount);
-      this.alertLevel = Math.max(this.alertLevel, 2);
       console.log('[Mock] ⇢ MISSILE INCOMING');
     } else {
       this.missileLockingOn = false;
       this.missileIncoming = false;
       this.incomingMissiles = 0;
-      this.attackerCount = this.alertLevel > 0 ? Math.max(1, this.attackerCount) : 0;
       console.log('[Mock] Missile warning cleared');
     }
     this.emit_data(true);

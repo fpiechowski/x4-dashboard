@@ -1,37 +1,35 @@
 import React from 'react'
 
 interface Props {
-  alertLevel: number      // 1 = alert (orange), 2 = combat (red)
-  attackerCount: number
-  incomingMissiles: number
   missileIncoming: boolean
   missileLockingOn: boolean
 }
 
-export function UnderAttackAlert({ alertLevel, attackerCount, incomingMissiles, missileIncoming, missileLockingOn }: Props) {
-  const hasIncomingMissile = missileIncoming || incomingMissiles > 0
-  const hasMissileLock = missileLockingOn && !hasIncomingMissile
-  const isCombat = alertLevel >= 2 || hasIncomingMissile
-  const modifier = isCombat ? 'combat' : 'alert'
-  const missileLabel = hasIncomingMissile ? 'MISSILE INCOMING' : hasMissileLock ? 'LOCKING ON' : null
+export function UnderAttackAlert({ missileIncoming, missileLockingOn }: Props) {
+  const warningState = missileIncoming
+    ? {
+        modifier: 'incoming',
+        icon: '▲',
+        label: 'MISSILE INCOMING',
+        detail: 'TRACKING YOUR SHIP',
+      }
+    : missileLockingOn
+      ? {
+          modifier: 'lock',
+          icon: '!',
+          label: 'MISSILE LOCK',
+          detail: 'LOCK ACQUIRED',
+        }
+      : null
+
+  if (!warningState) return null
 
   return (
-    <div className={`under-attack-alert under-attack-alert--${modifier}`} role="alert">
-      <span className="under-attack-icon">{isCombat ? '▲' : '!'}</span>
-      <span className="under-attack-text">
-        {isCombat ? 'UNDER ATTACK' : 'ALERT'}
-      </span>
-      {attackerCount > 0 && (
-        <span className="under-attack-count">
-          {attackerCount} {attackerCount === 1 ? 'ATTACKER' : 'ATTACKERS'}
-        </span>
-      )}
-      {missileLabel && (
-        <span className="under-attack-missile">
-          ⟫ {missileLabel} ⟫
-        </span>
-      )}
-      <span className="under-attack-icon">{isCombat ? '▲' : '!'}</span>
+    <div className={`under-attack-alert under-attack-alert--${warningState.modifier}`} role="alert">
+      <span className="under-attack-icon">{warningState.icon}</span>
+      <span className="under-attack-text">{warningState.label}</span>
+      <span className="under-attack-missile">{warningState.detail}</span>
+      <span className="under-attack-icon">{warningState.icon}</span>
     </div>
   )
 }

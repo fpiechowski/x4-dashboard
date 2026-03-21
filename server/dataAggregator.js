@@ -128,9 +128,9 @@ function normalizeCombatPayload(raw) {
   const hasMissileIncoming = missileIncoming ?? (incomingMissiles ?? 0) > 0;
   const hasMissileLockingOn = missileLockingOn ?? false;
   const normalizedAlertLevel = hasMissileIncoming
-    ? Math.max(Math.round(alertLevel ?? 0), 2)
+    ? 2
     : hasMissileLockingOn
-      ? Math.max(Math.round(alertLevel ?? 0), 1)
+      ? 1
       : Math.round(alertLevel ?? 0);
 
   return {

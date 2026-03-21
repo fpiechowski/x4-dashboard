@@ -50,7 +50,7 @@ export interface CombatTarget {
 
 export interface CombatState {
   target: CombatTarget | null;
-  alertLevel: number;       // 0 = none, 1 = alert (orange), 2 = combat (red)
+  alertLevel: number;       // compatibility field; missile states drive the warning widget
   attackerCount: number;
   incomingMissiles: number;
   missileIncoming: boolean;

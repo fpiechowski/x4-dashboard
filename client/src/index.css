@@ -2541,7 +2541,7 @@ body {
   animation: under-attack-pulse 1s ease-in-out infinite alternate;
 }
 
-.under-attack-alert--alert {
+.under-attack-alert--lock {
   color: var(--c-orange);
   border-top: 1px solid rgba(255, 109, 0, 0.4);
   border-bottom: 1px solid rgba(255, 109, 0, 0.4);
@@ -2549,7 +2549,7 @@ body {
   text-shadow: 0 0 8px rgba(255, 109, 0, 0.7);
 }
 
-.under-attack-alert--combat {
+.under-attack-alert--incoming {
   color: var(--c-red);
   border-top: 1px solid rgba(255, 23, 68, 0.5);
   border-bottom: 1px solid rgba(255, 23, 68, 0.5);
@@ -2569,8 +2569,8 @@ body {
 }
 
 .under-attack-missile {
-  color: var(--c-red);
-  text-shadow: 0 0 12px rgba(255, 23, 68, 0.9);
+  color: currentColor;
+  text-shadow: inherit;
   letter-spacing: 3px;
   animation: missile-flash 0.3s ease-in-out infinite alternate;
 }

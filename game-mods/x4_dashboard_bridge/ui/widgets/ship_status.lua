@@ -51,8 +51,6 @@ pcall(ffi.cdef, [[
     bool IsAutoPilotActive(void);
     const char* GetPlayerShipSize(void);
     UILoadoutStatistics3 GetCurrentLoadoutStatistics3(UniverseID shipid);
-    int GetAlertLevel(UniverseID componentid);
-    int GetNumAllAttackers(UniverseID componentid);
     bool IsMissileIncoming(void);
     bool IsMissileLockingOn(void);
 ]])
@@ -66,8 +64,6 @@ function output.handle()
         return nil
     end
 
-    local combatShipId = controlledShipId ~= 0 and controlledShipId or shipId
-
     local hull, shields = GetPlayerShipHullShield()
     local _, _, speedPerSecond, boosting, travelMode = GetPlayerSpeed()
     local maxSpeed = 0
@@ -80,22 +76,18 @@ function output.handle()
         maxTravelSpeed = tonumber(loadout.TravelSpeed) or 0
     end)
 
-    local alertLevel       = 0
-    local attackerCount    = 0
     local missileIncoming = false
     local missileLockingOn = false
     local autopilot = false
-    pcall(function() alertLevel       = C.GetAlertLevel(combatShipId) end)
-    pcall(function() attackerCount    = C.GetNumAllAttackers(combatShipId) end)
     pcall(function() missileIncoming  = C.IsMissileIncoming() end)
     pcall(function() missileLockingOn = C.IsMissileLockingOn() end)
     pcall(function() autopilot        = C.IsAutoPilotActive() end)
 
-    local normalizedAlertLevel = tonumber(alertLevel) or 0
+    local missileWarningLevel = 0
     if missileIncoming then
-        normalizedAlertLevel = math.max(normalizedAlertLevel, 2)
+        missileWarningLevel = 2
     elseif missileLockingOn then
-        normalizedAlertLevel = math.max(normalizedAlertLevel, 1)
+        missileWarningLevel = 1
     end
 
     local shipName = GetComponentData(ConvertStringTo64Bit(tostring(shipId)), "name") or ""
@@ -119,8 +111,8 @@ function output.handle()
         scanMode     = playerActivity == "scan",
         longRangeScan = playerActivity == "scan_longrange",
         shipSize     = ffi.string(C.GetPlayerShipSize()),
-        alertLevel        = normalizedAlertLevel,
-        attackerCount     = tonumber(attackerCount) or 0,
+        alertLevel        = missileWarningLevel,
+        attackerCount     = 0,
         incomingMissiles  = missileIncoming and 1 or 0,
         missileIncoming   = missileIncoming,
         missileLockingOn  = missileLockingOn,

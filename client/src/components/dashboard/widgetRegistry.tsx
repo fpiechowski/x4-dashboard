@@ -88,11 +88,8 @@ export function renderWidget({ id, state, onKeyPress, scale = 1, isInitialLoadin
     case 'Factions':
       return <Factions factions={state.factions} dataState={dataState} />
     case 'UnderAttack':
-      return state.combat.alertLevel === 0 && !state.combat.missileIncoming && !state.combat.missileLockingOn ? null : (
+      return !state.combat.missileIncoming && !state.combat.missileLockingOn ? null : (
         <UnderAttackAlert
-          alertLevel={state.combat.alertLevel}
-          attackerCount={state.combat.attackerCount}
-          incomingMissiles={state.combat.incomingMissiles}
           missileIncoming={state.combat.missileIncoming}
           missileLockingOn={state.combat.missileLockingOn}
         />

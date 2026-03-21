@@ -36,6 +36,11 @@ export function DashboardHeader({
     : combat.alertLevel === 1
       ? 'START COMBAT'
       : 'END COMBAT'
+  const missileButtonLabel = combat.missileIncoming
+    ? 'CLEAR MISSILE'
+    : combat.missileLockingOn
+      ? 'MISSILE INBOUND'
+      : 'MISSILE LOCK'
 
   return (
     <header className="dashboard-header">
@@ -88,7 +93,7 @@ export function DashboardHeader({
               className={`header-settings-btn ${combat.missileIncoming || combat.missileLockingOn ? 'mock-combat-active' : ''}`}
               onClick={() => postMockAction('/api/mock/missile')}
             >
-              {combat.missileIncoming ? 'CLEAR MISSILE' : combat.missileLockingOn ? 'MISSILE INBOUND' : 'MISSILE LOCK'}
+              {missileButtonLabel}
             </button>
             <button
               className="header-settings-btn"
