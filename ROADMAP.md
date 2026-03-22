@@ -21,6 +21,7 @@ This roadmap is a lightweight public planning document for a shorter, more frequ
 ### v1.5.0 - Quality and release presentation
 - Add an initial automated test suite to protect the most important flows
 - Capture screenshots for under-attack and active-target states
+- Add separate dashboard zoom and text scaling controls so players can tune widget readability without resizing the top title bar
 - Improve release presentation with better screenshots and supporting docs where useful
 - Keep CI and release packaging polished as the project becomes easier to distribute
 
