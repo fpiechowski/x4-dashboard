@@ -476,6 +476,85 @@ function normalizeAgents(raw) {
   return agents;
 }
 
+function normalizeInventoryCategory(rawCategory) {
+  if (!rawCategory) return null;
+
+  if (typeof rawCategory === 'string') {
+    const name = normalizeText(rawCategory);
+    if (!name) return null;
+
+    return {
+      id: normalizeStringValue(rawCategory).toLowerCase().replace(/\s+/g, '-'),
+      name,
+    };
+  }
+
+  if (typeof rawCategory !== 'object') return null;
+
+  const id = normalizeStringValue(rawCategory.id);
+  const name = normalizeText(rawCategory.name) || formatLabel(id);
+
+  if (!id && !name) return null;
+
+  return {
+    id: id || normalizeStringValue(name).toLowerCase().replace(/\s+/g, '-'),
+    name: name || id,
+  };
+}
+
+function normalizeInventoryItem(rawItem, fallbackId) {
+  if (!rawItem || typeof rawItem !== 'object') return null;
+
+  const id = normalizeStringValue(rawItem.id)
+    || normalizeStringValue(rawItem.itemId)
+    || normalizeStringValue(rawItem.wareId)
+    || normalizeStringValue(rawItem.ware)
+    || fallbackId;
+  const name = normalizeText(rawItem.name)
+    || normalizeText(rawItem.itemName)
+    || normalizeText(rawItem.wareName)
+    || normalizeText(rawItem.ware)
+    || 'Unknown Item';
+  const amount = Math.max(0, Math.round(getFiniteNumber(rawItem.amount, rawItem.quantity, rawItem.count) ?? 0));
+  const category = normalizeInventoryCategory(rawItem.category);
+  const averagePrice = getOptionalFiniteNumber(rawItem.averagePrice, rawItem.averageprice, rawItem.price, rawItem.unitPrice, rawItem.unitprice);
+  const isIllegal = getBoolean(rawItem.isIllegal, rawItem.illegal, rawItem.isillegal) ?? false;
+
+  return {
+    id: id || name.toLowerCase().replace(/\s+/g, '-'),
+    name,
+    amount,
+    category,
+    isIllegal,
+    averagePrice,
+  };
+}
+
+function normalizeInventory(raw) {
+  if (!raw) return null;
+
+  const source = Array.isArray(raw)
+    ? raw
+    : Array.isArray(raw.list)
+      ? raw.list
+      : Object.entries(raw)
+          .filter(([key]) => key !== 'list')
+          .map(([id, item]) => ({ id, ...item }));
+
+  const list = source
+    .map((item, index) => normalizeInventoryItem(item, `inventory-${index + 1}`))
+    .filter(Boolean)
+    .sort((a, b) => {
+      const aCategory = a.category?.name || '';
+      const bCategory = b.category?.name || '';
+
+      if (aCategory !== bCategory) return aCategory.localeCompare(bCategory);
+      return a.name.localeCompare(b.name);
+    });
+
+  return { list };
+}
+
 class DataAggregator {
   constructor() {
     this.external = {};
@@ -589,7 +668,7 @@ class DataAggregator {
       currentResearch: ext.currentResearch || null,
       factions:        normalizeFactions(ext.factions),
       agents:          Array.isArray(ext.agents) ? ext.agents : normalizeAgents(ext.agents),
-      inventory:       ext.inventory       || null,
+      inventory:       normalizeInventory(ext.inventory),
       transactionLog:  normalizeTransactionLog(ext.transactionLog),
     };
   }

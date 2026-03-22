@@ -139,6 +139,22 @@ const MOCK_TRANSACTION_LOG = [
   },
 ];
 
+const MOCK_INVENTORY_ITEMS = [
+  { id: 'security-slicer', name: 'Security Slicer', amount: 6, category: { id: 'useful', name: 'General Wares' }, averagePrice: 18420, isIllegal: false },
+  { id: 'advanced-electronics', name: 'Advanced Electronics', amount: 18, category: { id: 'crafting', name: 'Crafting Wares' }, averagePrice: 3400, isIllegal: false },
+  { id: 'unstable-crystal', name: 'Unstable Crystal', amount: 3, category: { id: 'useful', name: 'General Wares' }, averagePrice: 12600, isIllegal: false },
+  { id: 'spacefly-eggs', name: 'Spacefly Eggs', amount: 11, category: { id: 'tradeonly', name: 'Trade Wares' }, averagePrice: 7800, isIllegal: true },
+  { id: 'programmable-field-array', name: 'Programmable Field Array', amount: 5, category: { id: 'crafting', name: 'Crafting Wares' }, averagePrice: 9650, isIllegal: false },
+  { id: 'paintmod-sunset', name: 'Sunset Iridescence', amount: 1, category: { id: 'paintmod', name: 'Paint Modifications' }, averagePrice: null, isIllegal: false },
+];
+
+const EXTRA_MOCK_INVENTORY_ITEMS = [
+  { id: 'lodestone', name: 'Lodestone', amount: 14, category: { id: 'crafting', name: 'Crafting Wares' }, averagePrice: 1820, isIllegal: false },
+  { id: 'remote-detonator', name: 'Remote Detonator', amount: 4, category: { id: 'useful', name: 'General Wares' }, averagePrice: 9100, isIllegal: false },
+  { id: 'majonic-vials', name: 'Majonic Vials', amount: 7, category: { id: 'tradeonly', name: 'Trade Wares' }, averagePrice: 2440, isIllegal: false },
+  { id: 'secure-container', name: 'Secure Container', amount: 2, category: { id: 'useful', name: 'General Wares' }, averagePrice: 15100, isIllegal: false },
+];
+
 function createMockAgents(tick) {
   const showEmptyState = Math.floor(tick / 48) % 2 === 1;
 
@@ -301,6 +317,25 @@ function createMockTransactionLog(tick) {
   })).sort((a, b) => b.time - a.time);
 }
 
+
+function createMockInventory(tick, density) {
+  const emptyCycle = Math.floor(tick / 36) % 3 === 2;
+
+  if (emptyCycle) {
+    return { list: [] };
+  }
+
+  const extraCount = Math.max(0, density - 1);
+  const sourceItems = [...MOCK_INVENTORY_ITEMS, ...EXTRA_MOCK_INVENTORY_ITEMS.slice(0, extraCount)];
+
+  return {
+    list: sourceItems.map((item, index) => ({
+      ...item,
+      amount: Math.max(0, item.amount + ((tick + index * 3) % 5) - 2),
+    })).filter((item) => item.amount > 0),
+  };
+}
+
 // ── State evolution ───────────────────────────────────────────────────────────
 
 class MockDataSource extends EventEmitter {
@@ -423,6 +458,7 @@ class MockDataSource extends EventEmitter {
         },
         factions: MOCK_FACTIONS,
         agents: createMockAgents(this.tick),
+        inventory: createMockInventory(this.tick, this.logbookDensity),
         transactionLog: createMockTransactionLog(this.tick),
       });
     }

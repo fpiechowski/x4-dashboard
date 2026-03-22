@@ -41,6 +41,7 @@ export type WidgetId =
     | 'Research'
     | 'Factions'
     | 'Agents'
+    | 'Inventory'
     | 'TransactionLog'
     | 'UnderAttack'
 
@@ -427,8 +428,14 @@ export const DASHBOARDS: DashboardConfig[] = [
         id: 'operations-trade',
         label: 'Operations / Trade',
         layout: 'grid',
-        columns: 'minmax(120px, 0.34fr) minmax(0, 1fr)',
+        columns: 'minmax(280px, 0.44fr) minmax(0, 1fr)',
         panels: [
+            {
+                title: 'Inventory', titleIcon: '▣', color: 'success',
+                style: {flex: 1, minHeight: 0},
+                internal: {layout: 'columns', columns: [{widgets: [{id: 'Inventory', grow: true}]}]},
+                col: 1, row: 1, grow: true, scale: 1.14
+            },
             {
                 title: 'Transaction Log', titleIcon: '¤', color: 'warning',
                 style: {flex: 1, minHeight: 0},

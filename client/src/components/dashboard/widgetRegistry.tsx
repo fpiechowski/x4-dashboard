@@ -20,6 +20,7 @@ import { ActiveMission } from '../ActiveMission'
 import { Comms } from '../Comms'
 import { Factions } from '../Factions'
 import { Agents } from '../Agents'
+import { Inventory } from '../Inventory'
 import { Research } from '../Research'
 import { TransactionLog } from '../TransactionLog'
 import { UnderAttackAlert } from '../UnderAttackAlert'
@@ -91,6 +92,8 @@ export function renderWidget({ id, state, onKeyPress, scale = 1, isInitialLoadin
       return <Factions factions={state.factions} dataState={dataState} />
     case 'Agents':
       return <Agents agents={state.agents} dataState={dataState} />
+    case 'Inventory':
+      return <Inventory inventory={state.inventory} dataState={dataState} />
     case 'TransactionLog':
       return <TransactionLog transactionLog={state.transactionLog} dataState={dataState} />
     case 'UnderAttack':

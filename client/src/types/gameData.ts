@@ -181,6 +181,24 @@ export interface AgentEntry {
   currentMission: AgentMission | null;
 }
 
+export interface InventoryCategory {
+  id: string;
+  name: string;
+}
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  amount: number;
+  category: InventoryCategory | null;
+  isIllegal: boolean;
+  averagePrice: number | null;
+}
+
+export interface InventoryData {
+  list: InventoryItem[];
+}
+
 export interface GenericDataRecord {
   [key: string]: unknown;
 }
@@ -202,7 +220,7 @@ export interface GameState {
   currentResearch: CurrentResearch | null;
   factions: FactionStanding[] | null;
   agents: AgentEntry[] | null;
-  inventory: GenericDataRecord | null;
+  inventory: InventoryData | null;
   transactionLog: TransactionLog | null;
 }
 

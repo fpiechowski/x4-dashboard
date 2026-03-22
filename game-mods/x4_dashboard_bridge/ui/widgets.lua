@@ -25,6 +25,10 @@ return {
         path = "widgets.factions",
         groups = { 1 },
     },
+    inventory = {
+        path = "widgets.inventory",
+        groups = { 2 },
+    },
     transactionLog = {
         path = "widgets.transaction_log",
         groups = { 2 },
