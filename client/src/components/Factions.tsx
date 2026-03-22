@@ -117,18 +117,27 @@ export function Factions({ factions, dataState }: Props) {
           const relationLabel = faction.relationLabel || 'Unknown'
           const licenses = faction.licenseLabels || []
           const monogram = getFactionMonogram(faction)
+          const signalValue = relationValue || relationLabel.slice(0, 3).toUpperCase()
+          const licenseSummary = licenses.length > 0
+            ? licenses.length === 1
+              ? licenses[0]
+              : `${licenses[0]} +${licenses.length - 1}`
+            : 'No licences'
 
           return (
             <div key={faction.id || name} className={`faction-card faction-card-${relationTone}`}>
-              <div className="faction-card-header">
+              <div className="faction-card-top">
                 <div className={`faction-monogram faction-monogram-${relationTone}`}>{monogram}</div>
-                <div className="faction-card-heading">
+                <div className={`faction-card-signal faction-card-signal-${relationTone}`}>
+                  <span>Rep</span>
+                  <strong>{signalValue}</strong>
+                </div>
+              </div>
+
+              <div className="faction-card-heading">
+                <div className="faction-card-heading-main">
                   <div className="faction-name">{name}</div>
                   {shortName && <div className="faction-short-name">{shortName}</div>}
-                </div>
-                <div className={`faction-relation faction-relation-${relationTone}`}>
-                  <span>{relationLabel}</span>
-                  {relationValue && <strong>{relationValue}</strong>}
                 </div>
               </div>
 
@@ -136,23 +145,14 @@ export function Factions({ factions, dataState }: Props) {
                 <div className="faction-relation-meter-track">
                   <div className={`faction-relation-meter-fill faction-relation-meter-fill-${relationTone}`} style={{ width: `${meterFill}%` }} />
                 </div>
-                <div className="faction-relation-meter-labels">
-                  <span>Hostile</span>
-                  <span>Neutral</span>
-                  <span>Allied</span>
-                </div>
               </div>
 
-              {licenses.length > 0 && (
-                <div className="faction-license-row">
-                  <span className="faction-license-label">Licences</span>
-                  <div className="faction-license-chips">
-                    {licenses.map((license) => (
-                      <span key={`${faction.id}-${license}`} className="faction-license-chip">{license}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div className="faction-card-footer">
+                <span className={`faction-relation-pill faction-relation-pill-${relationTone}`}>{relationLabel}</span>
+                <span className={`faction-license-count${licenses.length ? '' : ' is-empty'}`}>{licenses.length} LIC</span>
+              </div>
+
+              <div className="faction-license-mini">{licenseSummary}</div>
             </div>
           )
         })}
