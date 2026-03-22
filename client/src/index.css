@@ -1330,6 +1330,232 @@ body {
   -webkit-box-orient: vertical;
 }
 
+/* Agents */
+.agents-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.agents-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.agents-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 7px 8px;
+  border: 1px solid var(--c-border-dim);
+  background: linear-gradient(180deg, rgba(0, 18, 26, 0.85), rgba(0, 10, 16, 0.9));
+}
+
+.agents-summary-label {
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+}
+
+.agents-summary-card strong {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.agents-summary-card.tone-active strong,
+.agent-monogram-active {
+  color: var(--c-green);
+}
+
+.agents-summary-card.tone-idle strong,
+.agent-monogram-idle {
+  color: var(--c-cyan);
+}
+
+.agents-summary-card.tone-total strong {
+  color: var(--c-text-bright);
+}
+
+.agents-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 230, 118, 0.55) rgba(0, 10, 16, 0.65);
+}
+
+.agents-card-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.agents-card-list::-webkit-scrollbar-track {
+  background: rgba(0, 10, 16, 0.65);
+  border-left: 1px solid rgba(0, 230, 118, 0.12);
+}
+
+.agents-card-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(0, 230, 118, 0.72), rgba(0, 168, 255, 0.72));
+  border: 1px solid rgba(0, 10, 16, 0.8);
+  border-radius: 999px;
+}
+
+.agent-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  background: linear-gradient(180deg, rgba(0, 22, 30, 0.9), rgba(0, 10, 16, 0.96));
+}
+
+.agent-card-active {
+  border-color: rgba(0, 230, 118, 0.22);
+}
+
+.agent-card-idle {
+  border-color: rgba(0, 229, 255, 0.16);
+}
+
+.agent-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.agent-monogram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid currentColor;
+  background: rgba(255, 255, 255, 0.02);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.agent-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.agent-name {
+  font-size: 12px;
+  color: var(--c-text-bright);
+  line-height: 1.2;
+}
+
+.agent-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 8px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+.agent-rank {
+  color: var(--c-text);
+}
+
+.agent-faction {
+  color: var(--c-cyan-dim);
+}
+
+.agent-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.agent-skill-chip {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 6px;
+  border: 1px solid var(--c-border-dim);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.agent-skill-chip span,
+.agent-block-label,
+.agent-mission-type {
+  font-size: 8px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+}
+
+.agent-skill-chip strong,
+.agent-assignment-value,
+.agent-mission-name,
+.agent-idle-title {
+  font-size: 10px;
+  color: var(--c-text-bright);
+}
+
+.agent-assignment-block,
+.agent-mission-block,
+.agent-idle-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 7px;
+  background: rgba(0, 8, 14, 0.52);
+  border: 1px solid var(--c-border-dim);
+}
+
+.agent-mission-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.agent-mission-time {
+  font-size: 8px;
+  color: var(--c-green);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.agent-mission-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 8px;
+  color: var(--c-text);
+}
+
+.agent-mission-meta span,
+.agent-mission-target {
+  padding: 2px 5px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.agent-mission-target,
+.agent-idle-detail {
+  font-size: 9px;
+  color: var(--c-text-dim);
+  line-height: 1.4;
+}
+
 @media (max-width: 900px) {
   .dashboard-grid-operations {
     grid-template-columns: 1fr !important;
@@ -1342,6 +1568,10 @@ body {
   }
 
   .factions-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .agents-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

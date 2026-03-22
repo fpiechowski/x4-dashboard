@@ -47,6 +47,11 @@ function normalizeText(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function normalizeStringValue(value) {
+  if (value === null || value === undefined) return '';
+  return String(value).trim();
+}
+
 function getFiniteNumber(...candidates) {
   for (const candidate of candidates) {
     const value = Number(candidate);
@@ -376,6 +381,101 @@ function normalizeTransactionLog(raw) {
   return { list };
 }
 
+function normalizeAgentShip(rawShip) {
+  const ship = rawShip && typeof rawShip === 'object' ? rawShip : {};
+
+  const id = ship.id === 0 ? '' : normalizeStringValue(ship.id);
+  const name = normalizeText(ship.name);
+  const prestige = normalizeText(ship.prestige);
+
+  return {
+    id: id || null,
+    name: name || null,
+    prestige: prestige || null,
+  };
+}
+
+function normalizeAgentMission(rawMission) {
+  if (!rawMission || typeof rawMission !== 'object') return null;
+
+  const name = normalizeText(rawMission.name);
+
+  if (!name) return null;
+
+  const type = normalizeText(rawMission.type);
+  const likelihoodOfSuccess = normalizeText(rawMission.likelihoodOfSuccess);
+  const riskToAgent = normalizeText(rawMission.riskToAgent);
+  const rewards = normalizeText(rawMission.rewards);
+  const target = normalizeText(rawMission.target);
+
+  return {
+    type: type || 'mission',
+    name,
+    likelihoodOfSuccess: likelihoodOfSuccess || null,
+    successChance: getOptionalFiniteNumber(rawMission.successChance),
+    riskToAgent: riskToAgent || null,
+    rewards: rewards || null,
+    target: target || null,
+    startTime: getOptionalFiniteNumber(rawMission.startTime),
+    endTime: getOptionalFiniteNumber(rawMission.endTime),
+    timeLeftSeconds: getOptionalFiniteNumber(rawMission.timeLeftSeconds),
+    timeLeftText: normalizeText(rawMission.timeLeftText) || null,
+  };
+}
+
+function normalizeAgentEntry(entry, index) {
+  if (!entry || typeof entry !== 'object') return null;
+
+  const rawAgent = entry.agent && typeof entry.agent === 'object' ? entry.agent : {};
+  const id = normalizeStringValue(rawAgent.id) || `agent-${index + 1}`;
+  const name = normalizeText(rawAgent.name) || 'Unknown Agent';
+  const rank = normalizeText(rawAgent.rank) || 'Unranked';
+  const originFactionId = normalizeText(rawAgent.originFactionId) || 'unknown';
+  const originFactionName = normalizeText(rawAgent.originFactionName) || normalizeText(rawAgent.originFactionNameShort) || 'Unknown Faction';
+  const originFactionNameShort = normalizeText(rawAgent.originFactionNameShort) || originFactionName;
+  const gender = normalizeText(rawAgent.gender) || 'unknown';
+  const icon = normalizeText(rawAgent.icon);
+  const negotiationLevel = normalizeText(rawAgent.negotiationLevel) || 'Unknown';
+  const espionageLevel = normalizeText(rawAgent.espionageLevel) || 'Unknown';
+
+  return {
+    agent: {
+      id,
+      name,
+      rank,
+      originFactionId,
+      originFactionName,
+      originFactionNameShort,
+      gender,
+      icon,
+      ship: normalizeAgentShip(rawAgent.ship),
+      negotiationLevel,
+      espionageLevel,
+    },
+    currentMission: normalizeAgentMission(entry.currentMission),
+  };
+}
+
+function normalizeAgents(raw) {
+  if (!raw) return null;
+  if (!Array.isArray(raw)) return null;
+
+  const agents = raw
+    .map((entry, index) => normalizeAgentEntry(entry, index))
+    .filter(Boolean)
+    .sort((a, b) => {
+      const aActive = a.currentMission ? 1 : 0;
+      const bActive = b.currentMission ? 1 : 0;
+
+      if (aActive !== bActive) return bActive - aActive;
+      return a.agent.name.localeCompare(b.agent.name);
+    });
+
+  if (!agents.length) return [];
+
+  return agents;
+}
+
 class DataAggregator {
   constructor() {
     this.external = {};
@@ -483,7 +583,7 @@ class DataAggregator {
       logbook:         normalizeLogbook(ext.logbook),
       currentResearch: ext.currentResearch || null,
       factions:        normalizeFactions(ext.factions),
-      agents:          ext.agents          || null,
+      agents:          normalizeAgents(ext.agents),
       inventory:       ext.inventory       || null,
       transactionLog:  normalizeTransactionLog(ext.transactionLog),
     };

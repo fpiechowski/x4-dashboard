@@ -40,6 +40,7 @@ export type WidgetId =
     | 'Comms'
     | 'Research'
     | 'Factions'
+    | 'Agents'
     | 'TransactionLog'
     | 'UnderAttack'
 
@@ -360,10 +361,16 @@ export const DASHBOARDS: DashboardConfig[] = [
                 col: 4, row: 1, rowSpan: 3, grow: true, height: '640px', scale: 1.14
             },
             {
+                title: 'Agents', titleIcon: '◌', color: 'success',
+                style: {flex: 1, minHeight: 0},
+                internal: {layout: 'columns', columns: [{widgets: [{id: 'Agents', grow: true}]}]},
+                col: 1, row: 3, grow: true, height: '250px', scale: 1.14
+            },
+            {
                 title: 'Factions', titleIcon: '⬢',
                 style: {flex: 1, minHeight: 0},
                 internal: {layout: 'columns', columns: [{widgets: [{id: 'Factions', grow: true}]}]},
-                col: 1, colSpan: 3, row: 3, grow: true, height: '250px', scale: 1.14
+                col: 2, colSpan: 2, row: 3, grow: true, height: '250px', scale: 1.14
             },
         ],
     },

@@ -139,6 +139,104 @@ const MOCK_TRANSACTION_LOG = [
   },
 ];
 
+function createMockAgents(tick) {
+  const showEmptyState = Math.floor(tick / 48) % 2 === 1;
+
+  if (showEmptyState) {
+    return [];
+  }
+
+  const missionTimeLeft = Math.max(0, 4800 - tick * 2);
+  const eventTimeLeft = Math.max(0, 2100 - tick);
+
+  return [
+    {
+      agent: {
+        id: 'agent-helena-voss',
+        name: 'Helena Voss',
+        rank: 'Senior Operative',
+        originFactionId: 'argon',
+        originFactionName: 'Argon Federation',
+        originFactionNameShort: 'ARG',
+        gender: 'female',
+        icon: 'pilotf01',
+        ship: {
+          id: 'ship-spearpoint',
+          name: 'Spearpoint',
+          prestige: 'Nemesis Vanguard',
+        },
+        negotiationLevel: 'Expert',
+        espionageLevel: 'Veteran',
+      },
+      currentMission: {
+        type: 'action',
+        name: 'Broker Ceasefire Channel',
+        likelihoodOfSuccess: 'Likely',
+        successChance: 72,
+        riskToAgent: 'Low Risk',
+        rewards: 'ARG influence + license access',
+        target: 'Hatikvah Free League Relay',
+        startTime: 51200,
+        endTime: 51200 + missionTimeLeft,
+        timeLeftSeconds: missionTimeLeft,
+        timeLeftText: `${Math.max(1, Math.round(missionTimeLeft / 60))}m remaining`,
+      },
+    },
+    {
+      agent: {
+        id: 'agent-tomas-rehn',
+        name: 'Tomas Rehn',
+        rank: 'Field Analyst',
+        originFactionId: 'teladi',
+        originFactionName: 'Teladi Company',
+        originFactionNameShort: 'TEL',
+        gender: 'male',
+        icon: 'pilotm02',
+        ship: {
+          id: 'ship-silent-profit',
+          name: 'Silent Profit',
+          prestige: 'Kestrel Vanguard',
+        },
+        negotiationLevel: 'Skilled',
+        espionageLevel: 'Expert',
+      },
+      currentMission: null,
+    },
+    {
+      agent: {
+        id: 'agent-lira-hale',
+        name: 'Lira Hale',
+        rank: 'Covert Specialist',
+        originFactionId: 'antigone',
+        originFactionName: 'Antigone Republic',
+        originFactionNameShort: 'ANT',
+        gender: 'female',
+        icon: 'pilotf05',
+        ship: {
+          id: null,
+          name: null,
+          prestige: null,
+        },
+        negotiationLevel: 'Adept',
+        espionageLevel: 'Elite',
+      },
+      currentMission: {
+        type: 'event',
+        name: 'Trace Smuggling Exchange',
+        likelihoodOfSuccess: 'Moderate',
+        successChance: 54,
+        riskToAgent: 'Elevated Risk',
+        rewards: 'Intel cache + faction standing',
+        target: null,
+        startTime: 52800,
+        endTime: 52800 + eventTimeLeft,
+        timeLeftSeconds: eventTimeLeft,
+        timeLeftText: `${Math.max(1, Math.round(eventTimeLeft / 60))}m remaining`,
+      },
+    },
+  ];
+}
+
 function cloneMissionGroup(group, prefix, copies) {
   const result = [];
 
@@ -324,6 +422,7 @@ class MockDataSource extends EventEmitter {
           percentageCompleted: Math.min(99.9, MOCK_RESEARCH.percentageCompleted + this.tick * 0.001),
         },
         factions: MOCK_FACTIONS,
+        agents: createMockAgents(this.tick),
         transactionLog: createMockTransactionLog(this.tick),
       });
     }

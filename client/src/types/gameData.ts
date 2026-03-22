@@ -142,6 +142,45 @@ export interface FactionStanding {
   licenseLabels: string[];
 }
 
+export interface AgentShipAssignment {
+  id: string | null;
+  name: string | null;
+  prestige: string | null;
+}
+
+export interface DiplomacyAgent {
+  id: string;
+  name: string;
+  rank: string;
+  originFactionId: string;
+  originFactionName: string;
+  originFactionNameShort: string;
+  gender: string;
+  icon: string;
+  ship: AgentShipAssignment;
+  negotiationLevel: string;
+  espionageLevel: string;
+}
+
+export interface AgentMission {
+  type: string;
+  name: string;
+  likelihoodOfSuccess: string | null;
+  successChance: number | null;
+  riskToAgent: string | null;
+  rewards: string | null;
+  target: string | null;
+  startTime: number | null;
+  endTime: number | null;
+  timeLeftSeconds: number | null;
+  timeLeftText: string | null;
+}
+
+export interface AgentEntry {
+  agent: DiplomacyAgent;
+  currentMission: AgentMission | null;
+}
+
 export interface GenericDataRecord {
   [key: string]: unknown;
 }
@@ -162,7 +201,7 @@ export interface GameState {
   logbook: { list: LogbookEntry[] } | null;
   currentResearch: CurrentResearch | null;
   factions: FactionStanding[] | null;
-  agents: GenericListItem[] | null;
+  agents: AgentEntry[] | null;
   inventory: GenericDataRecord | null;
   transactionLog: TransactionLog | null;
 }
