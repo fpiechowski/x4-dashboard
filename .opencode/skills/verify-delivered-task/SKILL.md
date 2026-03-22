@@ -18,7 +18,7 @@ compatibility: opencode
    - identify the accepted scope, non-goals, validation already run, and any suggested verification steps
    - note any setup details, mock-mode expectations, or known caveats before running anything
 2. Choose the most relevant verification mode.
-   - prefer the lightest realistic mode that can verify the feature, usually `npm run dev:mock`, `npm run dev`, `npm run mock`, or `npm start`
+   - prefer the lightest realistic mode that can verify the feature, usually `npm run dev:mock`, `npm run dev`, `npm run serve`, or `npm start`
    - use the browser dashboard flow first for dashboard features
    - use Electron only when the delivered scope depends on launcher behavior or desktop packaging
 3. Run the application and perform manual-style verification.

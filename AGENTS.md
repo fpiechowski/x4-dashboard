@@ -26,14 +26,11 @@ Run commands from the repository root unless noted.
 
 ```bash
 npm run install:all    # install client and server dependencies
-npm run dev            # Vite + server in dev mode
-npm run desktop:dev    # Vite + server + Electron launcher
-npm run desktop:mock   # mock server + Vite + Electron launcher
-npm run dev:mock       # mock server + Vite
-npm run mock           # mock server only on :3001
+npm run dev            # hot reload: server + Vite client + Electron launcher
+npm run dev:mock       # hot reload: mock server + Vite client + Electron launcher
 npm run build          # build client into server/public/
-npm start              # start production server
-npm run desktop:start  # run Electron against built app
+npm start              # run the built app through the Electron launcher
+npm run serve          # advanced: start only the production server
 npm run desktop:dist   # build Windows desktop artifacts
 npm run typecheck      # main validation command
 npm run check          # alias for typecheck

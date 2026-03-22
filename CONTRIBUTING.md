@@ -12,7 +12,8 @@ npm run dev
 Useful commands:
 
 ```bash
-npm run dev:mock
+npm run dev:mock  # full mock stack with launcher and hot reload
+npm start         # built app through the launcher
 npm run build
 npm run typecheck
 ```

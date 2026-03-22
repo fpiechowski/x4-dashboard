@@ -8,7 +8,8 @@ const { execFileSync } = require('child_process')
 const SERVER_PORT = process.env.PORT || '3001'
 const LOCAL_SERVER_URL = `http://localhost:${SERVER_PORT}`
 const DEV_RENDERER_URL = process.env.ELECTRON_RENDERER_URL || ''
-const IS_DEV = Boolean(DEV_RENDERER_URL)
+const HAS_DEV_RENDERER = Boolean(DEV_RENDERER_URL)
+const IS_PACKAGED = app.isPackaged
 const LOG_FILE_NAME = 'server.log'
 
 process.env.X4_USER_DATA_PATH = app.getPath('userData')
@@ -20,7 +21,7 @@ let usingExistingServer = false
 let startupError = ''
 
 function getLauncherIconPath() {
-  if (IS_DEV) {
+  if (!IS_PACKAGED) {
     return path.join(__dirname, 'assets', 'icon.ico')
   }
 
@@ -28,7 +29,7 @@ function getLauncherIconPath() {
 }
 
 function getPublicIndexPath() {
-  if (IS_DEV) {
+  if (!IS_PACKAGED) {
     return path.join(__dirname, '..', 'server', 'public', 'index.html')
   }
 
@@ -36,7 +37,7 @@ function getPublicIndexPath() {
 }
 
 function getServerEntry() {
-  if (IS_DEV) {
+  if (!IS_PACKAGED) {
     return path.join(__dirname, '..', 'server', 'index.js')
   }
 
@@ -44,7 +45,7 @@ function getServerEntry() {
 }
 
 function getServerCwd() {
-  if (IS_DEV) {
+  if (!IS_PACKAGED) {
     return path.join(__dirname, '..')
   }
 
@@ -155,7 +156,7 @@ function getBridgeInstallStatus(gameInstallStatus) {
 }
 
 function getRuntimeConfigStorePath() {
-  if (IS_DEV) {
+  if (!IS_PACKAGED) {
     return path.join(__dirname, '..', 'server', 'runtimeConfigStore.js')
   }
 
@@ -169,7 +170,7 @@ function getRuntimeConfigStore() {
 }
 
 function getKeybindingsStorePath() {
-  if (IS_DEV) {
+  if (!IS_PACKAGED) {
     return path.join(__dirname, '..', 'server', 'keybindingsStore.js')
   }
 
@@ -183,7 +184,7 @@ function getKeybindingsStore() {
 }
 
 function getKeyPresserPath() {
-  if (IS_DEV) {
+  if (!IS_PACKAGED) {
     return path.join(__dirname, '..', 'server', 'keyPresser.js')
   }
 
@@ -213,7 +214,7 @@ function getLanAddress() {
 }
 
 async function getServerHealth() {
-  const healthUrl = IS_DEV ? `http://localhost:${SERVER_PORT}/api/health` : `${LOCAL_SERVER_URL}/api/health`
+  const healthUrl = `${LOCAL_SERVER_URL}/api/health`
 
   try {
     const response = await fetch(healthUrl)
@@ -267,7 +268,7 @@ async function getLauncherState(serverRunning) {
     serverRunning,
     usingExistingServer,
     startupError,
-    localUrl: IS_DEV ? DEV_RENDERER_URL : LOCAL_SERVER_URL,
+    localUrl: HAS_DEV_RENDERER ? DEV_RENDERER_URL : LOCAL_SERVER_URL,
     lanUrl: lanAddress ? `http://${lanAddress}:${SERVER_PORT}` : null,
     logPath: getLogPath(),
     runtimeConfig,
@@ -291,7 +292,7 @@ function wait(ms) {
 }
 
 async function isServerReachable() {
-  const healthUrl = IS_DEV ? `http://localhost:${SERVER_PORT}/api/health` : `${LOCAL_SERVER_URL}/api/health`
+  const healthUrl = `${LOCAL_SERVER_URL}/api/health`
 
   try {
     const response = await fetch(healthUrl)
@@ -314,7 +315,7 @@ async function waitForServerReady(retries = 80) {
 }
 
 function appendServerLog(chunk) {
-  if (IS_DEV) {
+  if (!IS_PACKAGED) {
     return
   }
 
@@ -324,7 +325,7 @@ function appendServerLog(chunk) {
 }
 
 function startServerProcess() {
-  if (IS_DEV) {
+  if (HAS_DEV_RENDERER) {
     return Promise.resolve()
   }
 
@@ -487,7 +488,7 @@ function createWindow() {
     return { action: 'deny' }
   })
 
-  if (IS_DEV) {
+  if (HAS_DEV_RENDERER) {
     mainWindow.webContents.openDevTools({ mode: 'detach' })
   }
 }

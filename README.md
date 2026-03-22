@@ -52,19 +52,15 @@ npm run install:all
 npm run dev:mock
 ```
 
-Then open `http://localhost:3001`.
-
-### 3. Test the Server Launcher in mock mode
-
-```bash
-npm run desktop:mock
-```
-
 This starts:
 
 - the mock server
 - the Vite client
 - the Electron Server Launcher
+
+Use the launcher to open the dashboard, or go directly to `http://localhost:5173`.
+
+The mock buttons and simulated data are available only in this mode.
 
 ## 🎮 Running with the Real Game
 
@@ -78,11 +74,13 @@ Build the frontend:
 npm run build
 ```
 
-Start the server:
+Start the built app:
 
 ```bash
 npm start
 ```
+
+This opens the Electron Server Launcher and runs the built server/client pair behind it.
 
 Open the dashboard from:
 
@@ -104,14 +102,16 @@ It is responsible for:
 Run it in development:
 
 ```bash
-npm run desktop:dev
+npm run dev
 ```
+
+This does not build a desktop bundle. It only starts the Electron shell against the live Vite client.
 
 Run it against the locally built production app:
 
 ```bash
 npm run build
-npm run desktop:start
+npm start
 ```
 
 Build Windows artifacts:
@@ -136,7 +136,7 @@ That makes `x4-dashboard` much better suited to multi-screen cockpit setups than
 
 ### LAN-first workflow
 
-- Start the host machine with `npm start`, `npm run desktop:start`, or the packaged Server Launcher
+- Start the host machine with `npm start` or the packaged Server Launcher
 - Use the **LAN URL** shown by the launcher as the default address for other devices
 - Keep the **local URL** for the host machine itself
 - Leave remote controls disabled unless you explicitly want LAN clients to trigger host-side inputs
@@ -228,10 +228,10 @@ If your dashboard server runs on another LAN machine, point `host` to that machi
 Main commands:
 
 ```bash
-npm run dev            # Vite + server
-npm run dev:mock       # Vite + mock server
-npm run desktop:dev    # Vite + server + launcher
-npm run desktop:mock   # Vite + mock server + launcher
+npm run dev            # hot reload + real server + launcher
+npm run dev:mock       # hot reload + mock server + launcher
+npm start              # built app through the launcher
+npm run serve          # advanced: built server only
 npm run build          # build client into server/public/
 npm run typecheck      # main validation step
 npm run release:check  # typecheck + frontend build
