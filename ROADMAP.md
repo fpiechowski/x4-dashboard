@@ -13,8 +13,8 @@ This roadmap is a lightweight public planning document for a shorter, more frequ
 
 ### v1.4.0 - Widget reliability and data coverage
 - Improve empty, loading, and disconnected states across widgets
-- Expand typed support for remaining game data areas still treated loosely
-- Add more widgets for factions, inventory, transaction log, and agents
+- Complete typed support for the remaining secondary game data areas after shipping factions and transaction log
+- Add the remaining secondary-data follow-up widgets for agents and inventory, with inventory depending on confirmed bridge coverage
 - Verify UnderAttack widget data flow and close any remaining game-state coverage gaps
 
 ### v1.5.0 - Quality and release presentation
