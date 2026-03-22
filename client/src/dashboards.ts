@@ -327,7 +327,7 @@ export const DASHBOARDS: DashboardConfig[] = [
         id: 'operations',
         label: 'Operations',
         layout: 'grid',
-        columns: '1fr 1fr 1fr',
+        columns: '0.9fr 1.2fr 1.2fr 1fr',
         panels: [
             {
                 title: 'Active Mission', titleIcon: '◆',
@@ -337,33 +337,33 @@ export const DASHBOARDS: DashboardConfig[] = [
                 col: 1, row: 1, scale: 1.14
             },
             {
-                title: 'Mission Offers', titleIcon: '◈',
-                style: {flex: 1, minHeight: 0},
-                internal: {layout: 'columns', columns: [{widgets: [{id: 'MissionOffers', grow: true}]}]},
-                col: 1, row: 2, grow: true, scale: 1.14
-            },
-            {
                 title: 'Research', titleIcon: '⬡', color: 'purple',
                 internal: {layout: 'columns', columns: [{widgets: [{id: 'Research'}]}]},
-                col: 2, row: 1, scale: 1.14
+                col: 1, row: 2, scale: 1.14
             },
             {
                 title: 'Comms', titleIcon: '◈',
                 style: {flex: 1, minHeight: 0},
                 internal: {layout: 'columns', columns: [{widgets: [{id: 'Comms', grow: true}]}]},
-                col: 2, row: 2, grow: true, scale: 1.14
-            },
-            {
-                title: 'Transaction Log', titleIcon: '¤', color: 'warning',
-                style: {flex: 1, minHeight: 0},
-                internal: {layout: 'columns', columns: [{widgets: [{id: 'TransactionLog', grow: true}]}]},
-                col: 1, colSpan: 2, row: 3, grow: true, scale: 1.14
+                col: 2, colSpan: 2, row: 1, rowSpan: 2, grow: true, height: '420px', scale: 1.14
             },
             {
                 title: 'Factions', titleIcon: '⬢',
                 style: {flex: 1, minHeight: 0},
                 internal: {layout: 'columns', columns: [{widgets: [{id: 'Factions', grow: true}]}]},
-                col: 3, row: 1, rowSpan: 3, grow: true, scale: 1.14
+                col: 4, row: 1, rowSpan: 2, grow: true, height: '420px', scale: 1.14
+            },
+            {
+                title: 'Mission Offers', titleIcon: '◈',
+                style: {flex: 1, minHeight: 0},
+                internal: {layout: 'columns', columns: [{widgets: [{id: 'MissionOffers', grow: true}]}]},
+                col: 1, colSpan: 2, row: 3, grow: true, height: '280px', scale: 1.14
+            },
+            {
+                title: 'Transaction Log', titleIcon: '¤', color: 'warning',
+                style: {flex: 1, minHeight: 0},
+                internal: {layout: 'columns', columns: [{widgets: [{id: 'TransactionLog', grow: true}]}]},
+                col: 3, colSpan: 2, row: 3, grow: true, height: '260px', scale: 1.14
             },
         ],
     },

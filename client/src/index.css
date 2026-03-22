@@ -1046,7 +1046,7 @@ body {
 .factions-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   overflow-y: auto;
   flex: 1;
   min-height: 0;
@@ -1076,21 +1076,122 @@ body {
 }
 
 .faction-card {
-  padding: 8px 9px;
+  padding: 10px 11px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(0, 22, 30, 0.92), rgba(0, 10, 16, 0.96)),
+    var(--c-bg-deep);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.factions-summary-grid,
+.factions-card-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.factions-summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.factions-card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.factions-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 7px 8px;
   border: 1px solid var(--c-border-dim);
-  background: var(--c-bg-deep);
+  background: linear-gradient(180deg, rgba(0, 18, 26, 0.85), rgba(0, 10, 16, 0.9));
+}
+
+.factions-summary-card strong {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.factions-summary-label {
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+}
+
+.factions-summary-card.tone-positive strong,
+.faction-monogram-positive,
+.faction-relation-meter-fill-positive {
+  color: var(--c-green);
+}
+
+.factions-summary-card.tone-neutral strong,
+.faction-monogram-neutral,
+.faction-relation-meter-fill-neutral {
+  color: var(--c-cyan);
+}
+
+.factions-summary-card.tone-negative strong,
+.faction-monogram-negative,
+.faction-relation-meter-fill-negative {
+  color: var(--c-orange);
+}
+
+.factions-summary-card.tone-unknown strong,
+.faction-monogram-unknown,
+.faction-relation-meter-fill-unknown {
+  color: var(--c-text);
+}
+
+.faction-card-positive {
+  border-color: rgba(130, 225, 96, 0.2);
+}
+
+.faction-card-neutral {
+  border-color: rgba(0, 229, 255, 0.18);
+}
+
+.faction-card-negative {
+  border-color: rgba(255, 152, 0, 0.2);
+}
+
+.faction-card-unknown {
+  border-color: var(--c-border-dim);
 }
 
 .faction-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
+}
+
+.faction-card-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.faction-monogram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid currentColor;
+  background: rgba(255, 255, 255, 0.02);
+  clip-path: polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px));
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  flex-shrink: 0;
 }
 
 .faction-name {
   font-size: 11px;
   color: var(--c-text-bright);
+  line-height: 1.3;
 }
 
 .faction-short-name {
@@ -1110,6 +1211,7 @@ body {
   letter-spacing: 1.2px;
   text-transform: uppercase;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .faction-relation strong {
@@ -1136,9 +1238,40 @@ body {
 }
 
 .faction-license-row {
-  margin-top: 7px;
-  padding-top: 7px;
+  margin-top: 9px;
+  padding-top: 8px;
   border-top: 1px solid var(--c-border-dim);
+}
+
+.faction-relation-meter {
+  margin-top: 9px;
+}
+
+.faction-relation-meter-track {
+  position: relative;
+  height: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(90deg, rgba(255, 152, 0, 0.16), rgba(0, 229, 255, 0.12), rgba(130, 225, 96, 0.16)),
+    rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.faction-relation-meter-fill {
+  height: 100%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+  opacity: 0.8;
+}
+
+.faction-relation-meter-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 7px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
 }
 
 .faction-license-label {
@@ -1164,6 +1297,26 @@ body {
   color: var(--c-cyan);
   text-transform: uppercase;
   background: rgba(0, 229, 255, 0.05);
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid-operations {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-grid-operations > .dashboard-grid-cell {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    height: auto !important;
+  }
+
+  .factions-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .factions-card-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* â”€â”€ Docked Status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */

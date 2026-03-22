@@ -102,7 +102,7 @@ function renderPanel(panel: PanelDisplay, state: GameState, onKeyPress: (action:
 
 export function GridLayout({ config, state, onKeyPress, wsConnected, isInitialLoading }: LayoutProps & { config: GridDashboard }) {
   return (
-    <div className="dashboard-grid" style={{ gridTemplateColumns: config.columns }}>
+    <div className={`dashboard-grid dashboard-grid-${config.id}`} style={{ gridTemplateColumns: config.columns }}>
       {config.panels.map((panel) => {
         const content = renderPanel(panel, state, onKeyPress, wsConnected, isInitialLoading)
         if (content === null) return null
