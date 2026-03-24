@@ -62,6 +62,8 @@ function output.handle()
 
     for i = 0, n - 1 do
         local partnername = ffi.string(buf[i].partnername)
+        local rawWare = ffi.string(buf[i].ware)
+        local wareName = GetWareData(rawWare, "name") or rawWare
 
         local entry = {
             entryid = ConvertStringTo64Bit(tostring(buf[i].entryid)),
@@ -72,7 +74,8 @@ function output.handle()
             partnername = (partnername ~= "") and (partnername .. " (" .. ffi.string(buf[i].partneridcode) .. ")") or "",
             buyer = buf[i].buyerid,
             seller = buf[i].sellerid,
-            ware = ffi.string(buf[i].ware),
+            ware = rawWare,
+            wareName = wareName,
             amount = buf[i].amount,
             price = tonumber(buf[i].price) / 100,
             description = "",

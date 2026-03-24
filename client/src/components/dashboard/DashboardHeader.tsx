@@ -6,6 +6,8 @@ import { CombatState, ConnectionMeta, FlightState } from '../../types/gameData'
 interface Props {
   meta: ConnectionMeta
   wsConnected: boolean
+  bridgeConnected: boolean
+  lastDataTimestamp: number
   dashboardId: string
   dashboardScale: number
   flight: FlightState
@@ -23,6 +25,8 @@ function postMockAction(endpoint: string) {
 export function DashboardHeader({
   meta,
   wsConnected,
+  bridgeConnected,
+  lastDataTimestamp,
   dashboardId,
   dashboardScale,
   flight,
@@ -30,6 +34,13 @@ export function DashboardHeader({
   onChangeDashboard,
   onChangeDashboardScale,
 }: Props) {
+  const lastSyncText = (() => {
+    if (lastDataTimestamp === 0 || bridgeConnected) return null
+    const seconds = Math.floor((Date.now() - lastDataTimestamp) / 1000)
+    if (seconds < 60) return `${seconds}s ago`
+    const minutes = Math.floor(seconds / 60)
+    return `${minutes}m ago`
+  })()
   const hasCombatAlert = combat.alertLevel > 0
   const combatButtonLabel = combat.alertLevel === 0
     ? 'START ALERT'
@@ -57,10 +68,16 @@ export function DashboardHeader({
       </Animator>
 
       <div className="header-right">
-        <div className={`conn-badge ${wsConnected ? 'active' : 'inactive'}`}>
+        <div className={`conn-badge ${bridgeConnected ? 'active' : 'inactive'}`}>
           <span className="conn-dot" />
-          {wsConnected ? 'LIVE' : 'OFFLINE'}
+          {bridgeConnected ? 'LIVE' : 'OFFLINE'}
         </div>
+
+        {lastSyncText && (
+          <div className="conn-badge inactive" style={{ fontSize: '0.7em', padding: '2px 6px' }}>
+            Last sync: {lastSyncText}
+          </div>
+        )}
 
         {meta.externalConnected && (
           <div className="conn-badge active">

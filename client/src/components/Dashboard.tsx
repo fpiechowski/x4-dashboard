@@ -7,6 +7,8 @@ import { GridLayout, ColumnsLayout } from './dashboard/DashboardLayouts'
 interface Props {
   state: GameState
   wsConnected: boolean
+  bridgeConnected: boolean
+  lastDataTimestamp: number
   isInitialLoading: boolean
   dashboardId: string
   dashboardScale: number
@@ -18,6 +20,8 @@ interface Props {
 export function Dashboard({
   state,
   wsConnected,
+  bridgeConnected,
+  lastDataTimestamp,
   isInitialLoading,
   dashboardId,
   dashboardScale,
@@ -37,6 +41,8 @@ export function Dashboard({
       <DashboardHeader
         meta={_meta}
         wsConnected={wsConnected}
+        bridgeConnected={bridgeConnected}
+        lastDataTimestamp={lastDataTimestamp}
         dashboardId={dashboardId}
         dashboardScale={dashboardScale}
         flight={state.flight}

@@ -62,14 +62,20 @@ function output.handle()
     local hasOccupiedShip = occupiedShipId ~= 0
     local hasControlledShip = controlledShipId ~= 0
 
-    if not hasControlledShip then
+    local shipId = controlledShipId
+    local isControlled = hasControlledShip
+    
+    if not hasControlledShip and hasOccupiedShip then
+        shipId = occupiedShipId
+        isControlled = true
+    end
+
+    if not isControlled then
         return {
             occupied = hasOccupiedShip,
             controlled = false,
         }
     end
-
-    local shipId = controlledShipId
 
     local hull, shields = GetPlayerShipHullShield()
     local _, _, speedPerSecond, boosting, travelMode = GetPlayerSpeed()

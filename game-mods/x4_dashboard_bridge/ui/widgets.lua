@@ -11,31 +11,31 @@ return {
     },
     missionOffers = {
         path = "widgets.mission_offers",
-        groups = { 1 },
+        groups = { 1, 2, 3 },
     },
     activeMission = {
         path = "widgets.active_mission",
-        groups = { 1 },
+        groups = { 1, 2, 3 },
     },
     currentResearch = {
         path = "widgets.current_research",
-        groups = { 1 },
+        groups = { 1, 2, 3 },
     },
     factions = {
         path = "widgets.factions",
-        groups = { 1 },
+        groups = { 1, 2, 3 },
     },
     inventory = {
         path = "widgets.inventory",
-        groups = { 2 },
+        groups = { 1, 2, 3 },
     },
     transactionLog = {
         path = "widgets.transaction_log",
-        groups = { 2 },
+        groups = { 1, 2, 3 },
     },
     logbook = {
         path = "widgets.logbook",
-        groups = { 3 },
+        groups = { 1, 2, 3 },
     },
     agents = {
         path = "widgets.agents",

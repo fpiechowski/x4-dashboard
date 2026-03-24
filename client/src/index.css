@@ -270,7 +270,7 @@ body {
   gap: var(--gap);
   flex: 1;
   min-height: 0;
-  align-content: start;
+  align-content: stretch;
 }
 
 /* â”€â”€ Columns layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -297,6 +297,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .col {
