@@ -20,6 +20,12 @@ Guidance for coding agents working in this repository.
 - `CHANGELOG.md` stores user-facing release notes.
 - `RELEASE.md` is the release and packaging checklist.
 
+## Task Prioritization
+
+- Always prioritize tasks from the nearest release milestone over future releases.
+- When selecting next tasks, prefer issues assigned to the current milestone in `ROADMAP.md`.
+- Do not pick tasks from later milestones unless the current milestone has no open work or the user explicitly requests it.
+
 ## Build, Run, and Validation
 
 Run commands from the repository root unless noted.

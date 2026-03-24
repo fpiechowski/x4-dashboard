@@ -15,6 +15,7 @@ compatibility: opencode
 ## Workflow
 
 1. Start by loading the minimum planning context needed and use `project-status-and-next-steps` to choose the best next task.
+   - prefer tasks from the nearest release milestone in `ROADMAP.md` over future releases
    - prefer concrete open GitHub issues over vague ideas
    - use user constraints such as issue number, milestone, label, or theme when provided
    - if nothing is even a viable next candidate, stop and report the specific unblock
