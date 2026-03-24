@@ -88,6 +88,7 @@ export function useGameData(wsUrl: string) {
     const interval = setInterval(() => {
       if (lastDataTimestamp > 0 && Date.now() - lastDataTimestamp > DATA_TIMEOUT_MS) {
         setBridgeConnected(false);
+        setState(DEFAULT_STATE);
       }
     }, 500);
 
