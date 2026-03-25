@@ -75,24 +75,26 @@ When asked to select or prepare a task for delivery, always start by loading `pr
 
 ## Closing Delivered Work
 
-When verification passes and you need to close a delivered task:
+When verification passes and you receive acceptance test scenarios from `tester`:
 
-1. Close the GitHub issue with a concise delivery note including:
+1. Present the acceptance test scenarios to the user.
+2. Suggest: "The implementation passed automated verification. Here are acceptance test scenarios you can run manually to verify the feature works as expected."
+3. Ask: "Should I close the GitHub issue?" and wait for explicit approval.
+4. Only after user approval, close the GitHub issue with a concise delivery note including:
    - What was implemented
    - Verification result
    - Any follow-up items
-
-2. Update `ROADMAP.md` if the delivery changes milestone status.
-
-3. Ask the user: "Should I push the changes to remote?" and wait for explicit approval.
-
-4. Only after user approval, execute the push.
+5. Update `ROADMAP.md` if the delivery changes milestone status.
+6. Ask: "Should I push the changes to remote?" and wait for explicit approval.
+7. Only after user approval, execute the push.
 
 ## Guardrails
 
 - Do not close issues before verification passes.
+- Do not close issues without user approval.
 - Do not push without explicit user approval.
 - Developer works on local git only - push happens after verification passes.
+- Acceptance testing is optional - user decides whether to perform it.
 
 ## Decision Style
 

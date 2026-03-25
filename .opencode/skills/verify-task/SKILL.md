@@ -34,11 +34,35 @@ compatibility: opencode
    - For `blocked`, include the exact blocker and what would unblock retesting
    - For `pass`, include the tested scenarios and why the task can now be handed to `product-manager`
 
+6. **When outcome is `pass`**, prepare acceptance test scenarios for manual verification by the user.
+   - Identify the key user-facing functionality that was delivered
+   - Create a list of test scenarios with concrete steps
+   - Each scenario should include:
+     - What to test
+     - Steps to execute (specific, not vague)
+     - Expected result
+   - Format:
+     ```markdown
+     ## Acceptance Test Scenarios
+
+     ### Scenario 1: [Feature name]
+     **Steps:**
+     1. [Concrete step 1]
+     2. [Concrete step 2]
+     3. [Concrete step 3]
+     **Expected:** [What should happen]
+
+     ### Scenario 2: [Another feature]
+     ...
+     ```
+   - Return these scenarios to the orchestrator along with the verification result
+
 ## Output
 
 - Verification mode, commands, and environment used
 - Tested scenarios and acceptance cues covered
 - Explicit outcome: `pass`, `fail`, or `blocked`
+- **Acceptance test scenarios for user (when `pass`)** - list of steps for manual testing
 - Repro steps and expected versus actual behavior for failures
 - Whether the task can be handed to `product-manager` now
 

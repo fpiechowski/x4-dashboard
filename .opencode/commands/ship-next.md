@@ -20,17 +20,24 @@ Run the full delivery loop for `x4-dashboard`:
 3. **Verification** - Pass implementation to @tester:
    - Tell @tester to use `verify-task` skill
    - Return explicit `pass`, `fail`, or `blocked` outcome
+   - **When `pass`: also return acceptance test scenarios for user**
 
 4. **Failure loop** - If @tester returns `fail`:
    - Pass failure report back to @developer
    - Repeat implementation → verification until `pass` or blocked
    - If blocked, inform user and explain the blocker
 
-5. **Issue closure** - After @tester returns `pass`:
-   - Call @product-manager to close the issue and update roadmap
-   - Ask user if changes should be pushed to remote
-   - If user approves push, execute `git push`
+5. **Acceptance testing** - After @tester returns `pass`:
+   - Present acceptance test scenarios from @tester to the user
+   - Suggest user perform manual acceptance testing (optional)
 
-6. **Summary** - Report the complete delivery outcome.
+6. **Issue closure** - Call @product-manager:
+   - Ask user: "Should I close the GitHub issue?"
+   - After approval, close the issue with delivery note
+   - Update roadmap if needed
+   - Ask user: "Should I push the changes to remote?"
+   - After approval, execute `git push`
+
+7. **Summary** - Report the complete delivery outcome.
 
 Stop early only if no viable task exists or a blocker cannot be resolved.

@@ -58,6 +58,27 @@ You MUST load `verify-task` BEFORE starting any verification work. This skill de
 
 When asked to verify delivered work, always start by loading `verify-task`.
 
+## Acceptance Test Preparation
+
+When verification passes, you MUST prepare acceptance test scenarios for the user:
+
+1. Identify what was delivered from the implementation brief
+2. Create concrete test scenarios with specific steps
+3. Each scenario should be actionable - not vague like "check if it works"
+4. Include what to verify and expected results
+
+Example format:
+```markdown
+### Scenario: [Feature name]
+**Steps:**
+1. Open the dashboard at localhost:3000
+2. Navigate to the Ships panel
+3. Click on a ship to select it
+**Expected:** Ship details appear in the right panel
+```
+
+Return these scenarios to the orchestrator along with your verification result.
+
 ## Handoffs
 
 - Return control to the orchestrator with one of three explicit outcomes: `pass`, `fail`, or `blocked`.
