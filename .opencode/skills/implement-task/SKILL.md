@@ -23,11 +23,11 @@ compatibility: opencode
    - TypeScript changes -> `npm run typecheck`
    - Packaging or release changes -> the most relevant release command from `AGENTS.md`
    - If validation is not practical, say exactly what remains to verify
-5. Once you reach a meaningful checkpoint, create a local commit without asking.
+5. Once you reach a meaningful checkpoint, create a LOCAL commit without asking.
    - Use Conventional Commits
    - Choose an accurate type and scope
    - Commit only the files relevant to that checkpoint
-6. If the user or parent workflow explicitly asks for a push, push the current branch after the local commit and report the branch or remote result.
+6. Do NOT push. Work on local git only. Push happens after verification passes and user approves.
 7. Report touched files, validation results, and clear retest guidance for `tester`.
    - Include how to run the feature
    - Include the main acceptance path or scenarios to verify
@@ -36,7 +36,7 @@ compatibility: opencode
 
 ## Guardrails
 
-- Never push unless the user or parent workflow explicitly asks.
+- Never push - push happens after verification passes and user approves.
 - Never rewrite history or force-push unless the user explicitly asks.
 - Work around unrelated local changes; do not revert them.
 - If the task is mostly roadmap, issues, milestones, or release planning rather than implementation, hand it off to `product-manager`.

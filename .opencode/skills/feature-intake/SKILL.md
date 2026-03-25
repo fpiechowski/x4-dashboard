@@ -21,14 +21,35 @@ compatibility: opencode
    - Later milestone if it is valuable but not next
    - Future vision if it is too large or premature
 4. Prefer updating an existing issue before creating a new one.
-5. When creating or rewriting an issue, make it implementation-ready:
-   - Clear summary
-   - `Goal`
-   - `Scope`
-   - `Why`
-   - Milestone assignment when one clearly fits
+5. Create or update the GitHub issue using the template below.
 6. Update `ROADMAP.md` if the planning picture changed.
 7. If you changed local planning or config files, create a local Conventional Commit without asking.
+
+## GitHub Issue Template
+
+When creating a GitHub issue, use this structure:
+
+```markdown
+## Summary
+[One-line description]
+
+## Goal
+[What this feature achieves]
+
+## Why
+[Business value / user need]
+
+## Scope
+- [In scope item 1]
+- [In scope item 2]
+
+## Acceptance Criteria
+- [ ] [Testable criterion 1]
+- [ ] [Testable criterion 2]
+
+## Milestone
+[Target milestone or "TBD"]
+```
 
 ## Output
 

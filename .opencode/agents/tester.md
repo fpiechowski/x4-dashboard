@@ -54,8 +54,9 @@ Your responsibility is to verify delivered work through manual-style testing of 
 
 ## Skills
 
-Load this skill when the task matches:
-- `verify-task` - for verification workflow
+You MUST load `verify-task` BEFORE starting any verification work. This skill defines the verification workflow and ensures consistent reporting.
+
+When asked to verify delivered work, always start by loading `verify-task`.
 
 ## Handoffs
 

@@ -42,10 +42,13 @@ Your job is to implement technical work in this repository while following `AGEN
 
 ## Skills
 
-Load these skills when the task matches:
-- `implement-task` - for implementation workflow with local commit
-- `explore-x4-api` - for X4: Foundations Lua API discovery
-- `refine-task` - when implementation reveals unclear requirements
+You MUST load the appropriate skill BEFORE starting implementation:
+
+- **Implementation task** → Load `implement-task` FIRST, then follow its workflow
+- **X4 API integration** → Load `explore-x4-api` to discover relevant Lua API functions
+- **Unclear requirements during implementation** → Load `refine-task` to clarify before continuing
+
+When asked to implement something, always start by loading `implement-task` unless the task is purely exploratory.
 
 ## Handoffs
 

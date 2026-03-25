@@ -7,16 +7,30 @@ User constraint or override: $ARGUMENTS
 
 Run the full delivery loop for `x4-dashboard`:
 
-- Select one implementation-ready task or open issue to deliver now by using `delivery-pipeline` as @product-manager.
-- If the best next task is not implementation-ready yet, refine it first via `refine-task` and then continue once the task is ready.
-- Prefer the best roadmap-aligned issue unless `$ARGUMENTS` narrows the choice by issue number, milestone, label, or theme.
-- Hand off a concrete implementation brief to @developer.
-- As @developer use `implement-task` skill, implement the work, run the relevant validation, create a Conventional Commit, and push the current branch because this command explicitly authorizes the push.
-- After the @developer returns, hand off the original brief and delivered result to @tester.
-- As @tester use `verify-task` skill, run the application in the most relevant mode, perform manual-style verification of the delivered scope, and return to the orchestrator immediately once the result is clearly `pass`, `fail`, or `blocked`.
-- If @tester returns `fail`, hand off the failure report and original brief back to @developer, then repeat the `@developer` -> `@tester` loop until @tester returns `pass` or a real blocker remains.
-- After @tester returns `pass`, or when a real blocker stops delivery, use `delivery-pipeline` skill as @product-manager to update or close the related issue based on both the implementation result and the verification result.
+1. **Task preparation** - Call @product-manager to use `prepare-task` skill:
+   - Select the best implementation-ready task (or use `$ARGUMENTS` to specify)
+   - Refine if needed using `refine-task`
+   - Return implementation brief to orchestrator
 
-Stop early only if no viable next task exists or refinement still leaves a real blocker, and report the unblock instead of guessing.
+2. **Implementation** - Pass brief to @developer:
+   - Tell @developer to use `implement-task` skill
+   - Developer creates LOCAL commit only (no push)
+   - Return implementation result to orchestrator
 
-After you're done give a report on your work including the task, solution and approach.
+3. **Verification** - Pass implementation to @tester:
+   - Tell @tester to use `verify-task` skill
+   - Return explicit `pass`, `fail`, or `blocked` outcome
+
+4. **Failure loop** - If @tester returns `fail`:
+   - Pass failure report back to @developer
+   - Repeat implementation → verification until `pass` or blocked
+   - If blocked, inform user and explain the blocker
+
+5. **Issue closure** - After @tester returns `pass`:
+   - Call @product-manager to close the issue and update roadmap
+   - Ask user if changes should be pushed to remote
+   - If user approves push, execute `git push`
+
+6. **Summary** - Report the complete delivery outcome.
+
+Stop early only if no viable task exists or a blocker cannot be resolved.
