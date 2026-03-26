@@ -34,7 +34,7 @@ export function FeaturesSection() {
   return (
     <section className="features-section" id="features">
       <div className="features-container">
-        <Animator>
+        <Animator active>
           <Animated
             as="div"
             className="section-header"
@@ -91,7 +91,7 @@ export function FeaturesSection() {
 
         <div className="features-grid">
           {features.map((feature, index) => (
-            <Animator key={feature.title}>
+            <Animator key={feature.title} active>
               <Animated
                 as="div"
                 className="feature-card"

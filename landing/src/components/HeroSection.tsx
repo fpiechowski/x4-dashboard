@@ -11,7 +11,7 @@ export const HeroSection: FC<HeroSectionProps> = ({ onGuideClick }) => {
   return (
     <section className="hero-section" id="hero">
       <div className="hero-content">
-        <Animator>
+        <Animator active>
           <Animated
             as="div"
             className="hero-badge"
@@ -35,7 +35,7 @@ export const HeroSection: FC<HeroSectionProps> = ({ onGuideClick }) => {
           </Animated>
         </Animator>
 
-        <Animator>
+        <Animator active>
           <Animated
             as="h1"
             className="hero-title"
@@ -60,7 +60,7 @@ export const HeroSection: FC<HeroSectionProps> = ({ onGuideClick }) => {
           </Animated>
         </Animator>
 
-        <Animator>
+        <Animator active>
           <Animated
             as="div"
             className="hero-subtitle"
@@ -84,7 +84,7 @@ export const HeroSection: FC<HeroSectionProps> = ({ onGuideClick }) => {
           </Animated>
         </Animator>
 
-        <Animator>
+        <Animator active>
           <Animated
             as="div"
             className="hero-cta"
@@ -134,7 +134,7 @@ export const HeroSection: FC<HeroSectionProps> = ({ onGuideClick }) => {
           </Animated>
         </Animator>
 
-        <Animator>
+        <Animator active>
           <Animated
             as="div"
             className="hero-stats"

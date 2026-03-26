@@ -52,7 +52,7 @@ export function ScreenshotCarousel() {
   }, [isAutoPlaying, nextSlide])
 
   return (
-    <Animator>
+    <Animator active>
       <Animated
         as="div"
         className="carousel-container"

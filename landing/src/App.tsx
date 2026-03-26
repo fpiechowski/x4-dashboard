@@ -201,7 +201,7 @@ Once this works, you can keep the launcher running on the host PC and use the da
 
   return (
     <div className="app">
-      <Animator combine>
+      <Animator combine active>
         <Animated
           as="div"
           className="app-background"
@@ -212,7 +212,7 @@ Once this works, you can keep the launcher running on the host PC and use the da
       </Animator>
 
       <header className="app-header">
-        <Animator>
+        <Animator active>
           <Animated
             as="div"
             className="header-content"

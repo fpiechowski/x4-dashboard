@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-        <Animator>
+        <Animator active>
           <Animated
             as="div"
             className="footer-content"
