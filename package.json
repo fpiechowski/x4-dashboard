@@ -27,12 +27,15 @@
     "install:all": "npm --prefix server install && npm --prefix client install",
     "dev": "electron .",
     "dev:mock": "cross-env MOCK=true electron .",
-    
+
     "build": "npm --prefix client run build",
     "start": "electron .",
     "serve": "node server/index.js",
     "typecheck": "npm --prefix client run typecheck",
     "check": "npm run typecheck",
+    "test": "npm --prefix server test",
+    "test:watch": "npm --prefix server run test:watch",
+    "test:coverage": "npm --prefix server run test:coverage",
     "release:check": "npm run typecheck && npm run build",
     "release:bundle": "npm run release:check && node scripts/create-server-bundle.js && node scripts/create-lua-mod-bundle.js",
     "desktop:dist": "npm run release:check && electron-builder --publish never"

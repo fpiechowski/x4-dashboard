@@ -234,6 +234,9 @@ npm start              # built app through the launcher
 npm run serve          # advanced: built server only
 npm run build          # build client into server/public/
 npm run typecheck      # main validation step
+npm run test           # run automated test suite
+npm run test:watch     # run tests in watch mode
+npm run test:coverage  # run tests with coverage report
 npm run release:check  # typecheck + frontend build
 npm run desktop:dist   # build Windows launcher artifacts
 npm run release:bundle # build standalone server + Lua bundles
@@ -241,9 +244,9 @@ npm run release:bundle # build standalone server + Lua bundles
 
 Current validation status:
 
-- no dedicated automated test suite yet
+- automated test suite available via Jest (server-side)
 - no linter configured yet
-- `npm run typecheck` is the main code validation command
+- `npm run typecheck` and `npm test` are the main validation commands
 
 ## 🧠 Architecture Overview
 
@@ -281,8 +284,7 @@ x4-dashboard/
 
 - The project is playable, but still evolving
 - Remote hosting is not a supported security model
-- Some launcher and LAN workflows are still being refined for `v1.3.0`
-- There is still no automated test suite
+- Some launcher and LAN workflows are still being refined
 
 ## 🙏 Credits
 
