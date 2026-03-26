@@ -89,13 +89,19 @@
 }
 
 .github-link {
-  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: hsl(200deg 20% 70%);
   border: 1px solid hsl(191deg 100% 50% / 40%);
   border-radius: 4px;
   transition: all 0.2s ease;
 }
 
 .github-link:hover {
+  color: hsl(191deg 100% 50%);
   background: hsl(191deg 100% 50% / 10%);
   border-color: hsl(191deg 100% 50% / 60%);
 }

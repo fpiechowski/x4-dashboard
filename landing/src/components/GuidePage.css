@@ -1,0 +1,156 @@
+.guide-page {
+  min-height: 100vh;
+  padding: 100px 24px 60px;
+  background: linear-gradient(
+    180deg,
+    hsl(220deg 40% 5%) 0%,
+    hsl(220deg 35% 8%) 50%,
+    hsl(220deg 30% 6%) 100%
+  );
+}
+
+.guide-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.guide-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.guide-content-wrapper {
+  position: relative;
+  background: rgba(0, 15, 25, 0.6);
+}
+
+.guide-content {
+  position: relative;
+  z-index: 1;
+  padding: 40px;
+}
+
+.guide-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.guide-ordered-list {
+  padding-left: 24px;
+  margin: 0 0 20px 0;
+}
+
+.guide-list-item {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 12px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: hsl(200deg 20% 75%);
+}
+
+.guide-list .guide-list-item::before {
+  content: '◈';
+  position: absolute;
+  left: 0;
+  color: hsl(191deg 100% 50%);
+  font-size: 12px;
+}
+
+.guide-ordered-list .guide-list-item {
+  padding-left: 8px;
+}
+
+.guide-ordered-list .guide-list-item::marker {
+  color: hsl(191deg 100% 50%);
+  font-weight: 600;
+}
+
+.guide-code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  background: hsl(220deg 30% 15%);
+  color: hsl(191deg 100% 60%);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.guide-pre {
+  background: hsl(220deg 30% 10%);
+  border: 1px solid hsl(191deg 100% 30% / 30%);
+  border-radius: 4px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.guide-pre code {
+  background: transparent;
+  padding: 0;
+  color: hsl(200deg 20% 85%);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.guide-blockquote {
+  border-left: 3px solid hsl(191deg 100% 50%);
+  padding-left: 20px;
+  margin: 20px 0;
+  color: hsl(200deg 20% 70%);
+}
+
+.guide-link {
+  color: hsl(191deg 100% 50%);
+  text-decoration: none;
+  border-bottom: 1px solid hsl(191deg 100% 50% / 40%);
+  transition: border-color 0.2s ease;
+}
+
+.guide-link:hover {
+  border-color: hsl(191deg 100% 50%);
+}
+
+.guide-footer {
+  margin-top: 48px;
+  text-align: center;
+}
+
+.guide-back-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  color: hsl(191deg 100% 50%);
+  text-decoration: none;
+  border: 1px solid hsl(191deg 100% 50% / 50%);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.guide-back-link:hover {
+  background: hsl(191deg 100% 50% / 10%);
+  border-color: hsl(191deg 100% 50% / 70%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .guide-page {
+    padding: 80px 16px 40px;
+  }
+
+  .guide-content {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .guide-content {
+    padding: 20px;
+  }
+
+  .guide-list-item {
+    font-size: 14px;
+  }
+}

@@ -18,33 +18,15 @@ const features: Feature[] = [
   },
   {
     icon: '◉',
-    title: 'Multi-Device Layouts',
-    description: 'Open the dashboard on tablets, laptops, or side monitors. One server, unlimited browser clients on your LAN.',
+    title: 'Multi-Screen Setup',
+    description: 'Use multiple devices as additional screens. Open the dashboard on tablets, laptops, or side monitors alongside your main display.',
     color: 'hsl(151deg 100% 45%)',
   },
   {
-    icon: '◆',
-    title: 'Sci-Fi Arwes UI',
-    description: 'Immersive cyberpunk interface with animated frames, glowing borders, and typewriter text effects.',
-    color: 'hsl(291deg 90% 70%)',
-  },
-  {
     icon: '▣',
-    title: 'Host Key Integration',
-    description: 'Configurable key bindings to control your ship from the dashboard. Optional remote controls for LAN clients.',
+    title: 'Remote Game Control',
+    description: 'Interact with X4 directly from the dashboard. Trigger actions, manage settings, and control your ship remotely from any connected device.',
     color: 'hsl(26deg 100% 50%)',
-  },
-  {
-    icon: '◎',
-    title: 'Mock Mode',
-    description: 'Preview the full dashboard without starting X4. Perfect for testing layouts and exploring features.',
-    color: 'hsl(349deg 100% 55%)',
-  },
-  {
-    icon: '◊',
-    title: 'Windows Launcher',
-    description: 'Easy-to-use Electron launcher shows local and LAN URLs, manages settings, and handles server startup.',
-    color: 'hsl(191deg 100% 50%)',
   },
 ]
 

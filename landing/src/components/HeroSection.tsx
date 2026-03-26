@@ -1,8 +1,13 @@
-import React from 'react'
-import { Animator, Animated, Text, FrameCorners } from '@arwes/react'
+import type { FC } from 'react'
+import { Animator, Animated, Text } from '@arwes/react'
+import { ScreenshotCarousel } from './ScreenshotCarousel'
 import './HeroSection.css'
 
-export function HeroSection() {
+interface HeroSectionProps {
+  onGuideClick: () => void
+}
+
+export const HeroSection: FC<HeroSectionProps> = ({ onGuideClick }) => {
   return (
     <section className="hero-section" id="hero">
       <div className="hero-content">
@@ -85,7 +90,12 @@ export function HeroSection() {
             animated={['fade', ['y', 20, 0]]}
             style={{ animationDelay: '0.3s' }}
           >
-            <a href="#download" className="cta-button primary">
+            <a
+              href="https://github.com/fpiechowski/x4-dashboard/releases/latest"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cta-button primary"
+            >
               <Text
                 as="span"
                 manager="sequence"
@@ -98,13 +108,11 @@ export function HeroSection() {
                   fontFamily: "'Exo 2', sans-serif",
                 }}
               >
-                Get Started
+                Download
               </Text>
             </a>
-            <a
-              href="https://github.com/fpiechowski/x4-dashboard"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={onGuideClick}
               className="cta-button secondary"
             >
               <Text
@@ -119,9 +127,9 @@ export function HeroSection() {
                   fontFamily: "'Exo 2', sans-serif",
                 }}
               >
-                View on GitHub
+                Player Guide
               </Text>
-            </a>
+            </button>
           </Animated>
         </Animator>
 
@@ -226,62 +234,7 @@ export function HeroSection() {
       </div>
 
       <div className="hero-visual">
-        <Animator>
-          <Animated
-            as="div"
-            className="hero-panel"
-            animated={['fade', ['scale', 0.95, 1]]}
-            style={{ animationDelay: '0.4s' }}
-          >
-            <FrameCorners
-              style={{
-                '--arwes-frames-line-color': 'hsl(191deg 100% 50%)',
-                '--arwes-frames-bg-color': 'hsl(191deg 100% 50% / 5%)',
-                '--arwes-frames-line-filter': 'drop-shadow(0 0 8px hsl(191deg 100% 50% / 40%))',
-              } as React.CSSProperties}
-              animated
-              strokeWidth={2}
-              cornerLength={24}
-            />
-            <div className="panel-content">
-              <div className="hud-display">
-                <div className="hud-header">
-                  <span className="hud-indicator active" />
-                  <Text
-                    as="span"
-                    manager="sequence"
-                    fixed
-                    contentStyle={{
-                      fontSize: '10px',
-                      letterSpacing: '2px',
-                      color: 'hsl(191deg 100% 50%)',
-                      fontFamily: "'Exo 2', sans-serif",
-                    }}
-                  >
-                    SYSTEM ONLINE
-                  </Text>
-                </div>
-                <div className="hud-grid">
-                  <div className="hud-cell">
-                    <div className="hud-value">847</div>
-                    <div className="hud-label">SPEED</div>
-                  </div>
-                  <div className="hud-cell">
-                    <div className="hud-value">94%</div>
-                    <div className="hud-label">SHIELD</div>
-                  </div>
-                  <div className="hud-cell">
-                    <div className="hud-value">12.4</div>
-                    <div className="hud-label">DIST</div>
-                  </div>
-                </div>
-                <div className="hud-bar">
-                  <div className="hud-bar-fill" style={{ width: '73%' }} />
-                </div>
-              </div>
-            </div>
-          </Animated>
-        </Animator>
+        <ScreenshotCarousel />
       </div>
     </section>
   )
