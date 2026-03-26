@@ -6,50 +6,54 @@ const { spawn } = require('child_process')
 const { execFileSync } = require('child_process')
 
 const SERVER_PORT = process.env.PORT || '3001'
+const CLIENT_PORT = process.env.CLIENT_PORT || '3000'
 const LOCAL_SERVER_URL = `http://localhost:${SERVER_PORT}`
-const DEV_RENDERER_URL = process.env.ELECTRON_RENDERER_URL || ''
-const HAS_DEV_RENDERER = Boolean(DEV_RENDERER_URL)
-const IS_PACKAGED = app.isPackaged
+const LOCAL_CLIENT_URL = `http://localhost:${CLIENT_PORT}`
+const DEV_MODE = !app.isPackaged
+const IS_MOCK = process.env.MOCK === 'true'
 const LOG_FILE_NAME = 'server.log'
 
 process.env.X4_USER_DATA_PATH = app.getPath('userData')
 
 let mainWindow = null
 let serverProcess = null
+let viteProcess = null
 let isQuitting = false
-let usingExistingServer = false
 let startupError = ''
 
 function getLauncherIconPath() {
-  if (!IS_PACKAGED) {
-    return path.join(__dirname, 'assets', 'icon.ico')
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'app.asar.unpacked', 'electron', 'assets', 'icon.ico')
   }
-
-  return path.join(process.resourcesPath, 'app.asar.unpacked', 'electron', 'assets', 'icon.ico')
+  return path.join(__dirname, 'assets', 'icon.ico')
 }
 
 function getPublicIndexPath() {
-  if (!IS_PACKAGED) {
-    return path.join(__dirname, '..', 'server', 'public', 'index.html')
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'server', 'public', 'index.html')
   }
-
-  return path.join(process.resourcesPath, 'server', 'public', 'index.html')
+  return path.join(__dirname, '..', 'server', 'public', 'index.html')
 }
 
 function getServerEntry() {
-  if (!IS_PACKAGED) {
-    return path.join(__dirname, '..', 'server', 'index.js')
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'server', 'index.js')
   }
-
-  return path.join(process.resourcesPath, 'server', 'index.js')
+  return path.join(__dirname, '..', 'server', 'index.js')
 }
 
 function getServerCwd() {
-  if (!IS_PACKAGED) {
-    return path.join(__dirname, '..')
+  if (app.isPackaged) {
+    return process.resourcesPath
   }
+  return path.join(__dirname, '..')
+}
 
-  return process.resourcesPath
+function getClientCwd() {
+  if (app.isPackaged) {
+    return process.resourcesPath
+  }
+  return path.join(__dirname, '..', 'client')
 }
 
 function getLogPath() {
@@ -156,11 +160,10 @@ function getBridgeInstallStatus(gameInstallStatus) {
 }
 
 function getRuntimeConfigStorePath() {
-  if (!IS_PACKAGED) {
-    return path.join(__dirname, '..', 'server', 'runtimeConfigStore.js')
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'server', 'runtimeConfigStore.js')
   }
-
-  return path.join(process.resourcesPath, 'server', 'runtimeConfigStore.js')
+  return path.join(__dirname, '..', 'server', 'runtimeConfigStore.js')
 }
 
 function getRuntimeConfigStore() {
@@ -170,11 +173,10 @@ function getRuntimeConfigStore() {
 }
 
 function getKeybindingsStorePath() {
-  if (!IS_PACKAGED) {
-    return path.join(__dirname, '..', 'server', 'keybindingsStore.js')
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'server', 'keybindingsStore.js')
   }
-
-  return path.join(process.resourcesPath, 'server', 'keybindingsStore.js')
+  return path.join(__dirname, '..', 'server', 'keybindingsStore.js')
 }
 
 function getKeybindingsStore() {
@@ -184,11 +186,10 @@ function getKeybindingsStore() {
 }
 
 function getKeyPresserPath() {
-  if (!IS_PACKAGED) {
-    return path.join(__dirname, '..', 'server', 'keyPresser.js')
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'server', 'keyPresser.js')
   }
-
-  return path.join(process.resourcesPath, 'server', 'keyPresser.js')
+  return path.join(__dirname, '..', 'server', 'keyPresser.js')
 }
 
 function getKeyPresser() {
@@ -266,9 +267,8 @@ async function getLauncherState(serverRunning) {
 
   return {
     serverRunning,
-    usingExistingServer,
     startupError,
-    localUrl: HAS_DEV_RENDERER ? DEV_RENDERER_URL : LOCAL_SERVER_URL,
+    localUrl: DEV_MODE ? LOCAL_CLIENT_URL : LOCAL_SERVER_URL,
     lanUrl: lanAddress ? `http://${lanAddress}:${SERVER_PORT}` : null,
     logPath: getLogPath(),
     runtimeConfig,
@@ -282,7 +282,8 @@ async function getLauncherState(serverRunning) {
     },
     startup: {
       port: Number(SERVER_PORT),
-      mockMode: process.argv.includes('--mock') || process.env.MOCK === 'true',
+      mockMode: IS_MOCK,
+      devMode: DEV_MODE,
     },
   }
 }
@@ -315,40 +316,37 @@ async function waitForServerReady(retries = 80) {
 }
 
 function appendServerLog(chunk) {
-  if (!IS_PACKAGED) {
-    return
+  if (app.isPackaged) {
+    try {
+      fs.appendFileSync(getLogPath(), chunk)
+    } catch {}
   }
-
-  try {
-    fs.appendFileSync(getLogPath(), chunk)
-  } catch {}
 }
 
 function startServerProcess() {
-  if (HAS_DEV_RENDERER) {
-    return Promise.resolve()
-  }
-
   return isServerReachable().then((reachable) => {
     if (reachable) {
-      usingExistingServer = true
       startupError = ''
       return
     }
 
-    usingExistingServer = false
     startupError = ''
 
     const serverEntry = getServerEntry()
     if (!fs.existsSync(serverEntry)) {
-      throw new Error(`Cannot find packaged server entry: ${serverEntry}`)
+      throw new Error(`Cannot find server entry: ${serverEntry}`)
     }
 
     try {
       fs.writeFileSync(getLogPath(), '')
     } catch {}
 
-    serverProcess = spawn(process.execPath, [serverEntry], {
+    const args = [serverEntry]
+    if (IS_MOCK) {
+      args.push('--mock')
+    }
+
+    serverProcess = spawn(process.execPath, args, {
       cwd: getServerCwd(),
       env: {
         ...process.env,
@@ -363,18 +361,22 @@ function startServerProcess() {
     serverProcess.stdout.on('data', (chunk) => {
       const text = chunk.toString()
       appendServerLog(text)
-      process.stdout.write(`[server] ${text}`)
+      if (DEV_MODE) {
+        process.stdout.write(`[server] ${text}`)
+      }
     })
 
     serverProcess.stderr.on('data', (chunk) => {
       const text = chunk.toString()
       appendServerLog(text)
-      process.stderr.write(`[server] ${text}`)
+      if (DEV_MODE) {
+        process.stderr.write(`[server] ${text}`)
+      }
     })
 
     serverProcess.on('exit', async (code) => {
       if (!isQuitting && code !== 0) {
-        startupError = `Bundled server stopped unexpectedly (exit code ${code ?? 'unknown'}). Check: ${getLogPath()}`
+        startupError = `Server stopped unexpectedly (exit code ${code ?? 'unknown'}). Check: ${getLogPath()}`
       }
 
       if (mainWindow && !mainWindow.isDestroyed()) {
@@ -390,13 +392,93 @@ function startServerProcess() {
   })
 }
 
-function stopServerProcess() {
-  if (!serverProcess) {
-    return
+function waitForClientReady(retries = 40) {
+  return new Promise((resolve) => {
+    const check = async (attempt = 0) => {
+      try {
+        const response = await fetch(LOCAL_CLIENT_URL)
+        if (response.ok) {
+          resolve()
+          return
+        }
+      } catch {}
+      
+      if (attempt < retries) {
+        setTimeout(() => check(attempt + 1), 500)
+      } else {
+        console.log('[vite] Timeout waiting for Vite, continuing anyway')
+        resolve()
+      }
+    }
+    check()
+  })
+}
+
+function startViteProcess() {
+  if (!DEV_MODE) {
+    console.log('[vite] Not in dev mode, skipping Vite')
+    return Promise.resolve()
   }
 
-  serverProcess.kill()
-  serverProcess = null
+  const vitePath = path.join(__dirname, '..', 'client', 'node_modules', '.bin', 'vite.cmd')
+  console.log(`[vite] Looking for Vite at: ${vitePath}`)
+  console.log(`[vite] Vite exists: ${fs.existsSync(vitePath)}`)
+  console.log(`[vite] Client cwd: ${getClientCwd()}`)
+  
+  if (!fs.existsSync(vitePath)) {
+    console.log('[vite] Vite not found, skipping dev client')
+    return Promise.resolve()
+  }
+
+  console.log('[vite] Starting Vite dev server...')
+  viteProcess = spawn('cmd.exe', ['/c', vitePath], {
+    cwd: getClientCwd(),
+    env: {
+      ...process.env,
+      VITE_WS_URL: `ws://localhost:${SERVER_PORT}`,
+    },
+    stdio: 'pipe',
+    windowsHide: false,
+  })
+
+  console.log(`[vite] Vite process started with PID: ${viteProcess.pid}`)
+
+  viteProcess.stdout.on('data', (chunk) => {
+    const text = chunk.toString()
+    process.stdout.write(`[vite] ${text}`)
+  })
+
+  viteProcess.stderr.on('data', (chunk) => {
+    const text = chunk.toString()
+    process.stderr.write(`[vite] ${text}`)
+  })
+
+  viteProcess.on('exit', (code) => {
+    console.log(`[vite] Vite process exited with code ${code}`)
+    if (!isQuitting && code !== 0) {
+      console.error(`[vite] Vite exited unexpectedly with code ${code}`)
+    }
+  })
+
+  viteProcess.on('error', (err) => {
+    console.error(`[vite] Failed to start Vite: ${err.message}`)
+  })
+
+  return waitForClientReady()
+}
+
+function stopProcesses() {
+  isQuitting = true
+  
+  if (viteProcess) {
+    viteProcess.kill()
+    viteProcess = null
+  }
+  
+  if (serverProcess) {
+    serverProcess.kill()
+    serverProcess = null
+  }
 }
 
 function registerIpc() {
@@ -488,7 +570,7 @@ function createWindow() {
     return { action: 'deny' }
   })
 
-  if (HAS_DEV_RENDERER) {
+  if (DEV_MODE) {
     mainWindow.webContents.openDevTools({ mode: 'detach' })
   }
 }
@@ -499,6 +581,8 @@ app.whenReady().then(async () => {
   try {
     createWindow()
     await startServerProcess()
+    await startViteProcess()
+    
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.once('did-finish-load', async () => {
         mainWindow.webContents.send('launcher:state', await getLauncherState(await isServerReachable()))
@@ -524,8 +608,7 @@ app.whenReady().then(async () => {
 })
 
 app.on('before-quit', () => {
-  isQuitting = true
-  stopServerProcess()
+  stopProcesses()
 })
 
 app.on('window-all-closed', () => {
