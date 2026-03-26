@@ -38,8 +38,8 @@ function AppContent() {
   const [guideContent, setGuideContent] = useState('')
 
   useEffect(() => {
-    // Fetch the player guide markdown content
-    fetch('/player-guide.md')
+    // Fetch the player guide markdown content from GitHub
+    fetch('https://raw.githubusercontent.com/fpiechowski/x4-dashboard/master/docs/player-guide.md')
       .then((res) => {
         if (!res.ok) {
           throw new Error('Failed to load guide')
