@@ -68,6 +68,7 @@ This roadmap is a lightweight public planning document for a shorter, more frequ
 - Keep a built-in set of curated default dashboards while allowing custom user presets
 - Design the widget/layout model so custom dashboards stay compatible with future widgets and data fields
 - Let users manage which built-in dashboards are visible so shipped presets and custom presets can coexist cleanly
+- Individual panel/widget scaling for fine-grained control over widget sizing within custom dashboards (avoids complexity of global font scaling, see #29)
 
 ## How this is managed
 
