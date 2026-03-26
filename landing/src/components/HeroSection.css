@@ -1,0 +1,245 @@
+.hero-section {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  padding: 60px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-content {
+  flex: 1;
+  max-width: 600px;
+}
+
+.hero-badge {
+  display: inline-block;
+  margin-bottom: 24px;
+  padding: 8px 16px;
+  background: hsl(191deg 100% 50% / 8%);
+  border: 1px solid hsl(191deg 100% 50% / 30%);
+  border-radius: 4px;
+}
+
+.hero-title {
+  margin: 0 0 20px 0;
+}
+
+.hero-subtitle {
+  margin: 0 0 40px 0;
+  max-width: 500px;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 32px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button.primary {
+  background: hsl(191deg 100% 50%);
+  color: hsl(220deg 40% 5%);
+  border: none;
+}
+
+.cta-button.primary:hover {
+  background: hsl(191deg 100% 60%);
+  box-shadow: 0 0 20px hsl(191deg 100% 50% / 40%);
+}
+
+.cta-button.secondary {
+  background: transparent;
+  color: hsl(191deg 100% 50%);
+  border: 1px solid hsl(191deg 100% 50% / 50%);
+}
+
+.cta-button.secondary:hover {
+  background: hsl(191deg 100% 50% / 10%);
+  border-color: hsl(191deg 100% 50% / 70%);
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    hsl(191deg 100% 50% / 30%),
+    transparent
+  );
+}
+
+/* Hero Visual */
+.hero-visual {
+  flex: 0 0 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-panel {
+  position: relative;
+  width: 100%;
+  padding: 24px;
+  background: rgba(0, 15, 25, 0.9);
+}
+
+.panel-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hud-display {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hud-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid hsl(191deg 100% 50% / 20%);
+}
+
+.hud-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: hsl(151deg 100% 45%);
+  box-shadow: 0 0 8px hsl(151deg 100% 45%);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.hud-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.hud-cell {
+  text-align: center;
+  padding: 16px;
+  background: hsl(191deg 100% 50% / 5%);
+  border: 1px solid hsl(191deg 100% 50% / 15%);
+}
+
+.hud-value {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: hsl(200deg 20% 95%);
+  margin-bottom: 4px;
+}
+
+.hud-label {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: hsl(200deg 20% 60%);
+}
+
+.hud-bar {
+  height: 4px;
+  background: hsl(200deg 20% 20%);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.hud-bar-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    hsl(191deg 100% 40%),
+    hsl(191deg 100% 50%)
+  );
+  border-radius: 2px;
+  transition: width 1s ease;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .hero-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-cta {
+    justify-content: center;
+  }
+
+  .hero-stats {
+    justify-content: center;
+  }
+
+  .hero-visual {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-stats {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .stat-divider {
+    width: 60px;
+    height: 1px;
+  }
+
+  .hud-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-button {
+    width: 100%;
+  }
+}

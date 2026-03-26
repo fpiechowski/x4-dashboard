@@ -1,0 +1,126 @@
+.download-section {
+  padding: 100px 24px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    hsl(220deg 35% 8% / 80%) 30%,
+    hsl(220deg 35% 8% / 80%) 70%,
+    transparent
+  );
+}
+
+.download-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.download-options {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 60px;
+}
+
+.download-card {
+  position: relative;
+  padding: 40px;
+}
+
+.download-card.primary {
+  background: rgba(0, 20, 35, 0.8);
+}
+
+.download-card.secondary {
+  background: rgba(0, 15, 25, 0.6);
+  flex: 1;
+}
+
+.download-card-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.download-card.primary .download-card-content {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.download-icon {
+  font-size: 48px;
+  color: hsl(191deg 100% 50%);
+  margin-bottom: 20px;
+  text-shadow: 0 0 20px hsl(191deg 100% 50% / 50%);
+}
+
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 40px;
+  background: hsl(191deg 100% 50%);
+  color: hsl(220deg 40% 5%);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.download-button:hover {
+  background: hsl(191deg 100% 60%);
+  box-shadow: 0 0 30px hsl(191deg 100% 50% / 50%);
+  transform: translateY(-2px);
+}
+
+.download-secondary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.download-link {
+  color: hsl(191deg 100% 50%);
+  text-decoration: none;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  transition: color 0.2s ease;
+}
+
+.download-link:hover {
+  color: hsl(191deg 100% 70%);
+}
+
+.download-note {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px;
+  background: rgba(0, 10, 20, 0.4);
+  border: 1px solid hsl(200deg 20% 30% / 30%);
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .download-section {
+    padding: 60px 20px;
+  }
+
+  .download-card {
+    padding: 28px;
+  }
+
+  .download-secondary {
+    grid-template-columns: 1fr;
+  }
+
+  .download-icon {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .download-button {
+    width: 100%;
+  }
+}

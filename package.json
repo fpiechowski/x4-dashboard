@@ -24,14 +24,16 @@
     "node": ">=18"
   },
   "scripts": {
-    "install:all": "npm --prefix server install && npm --prefix client install",
+    "install:all": "npm --prefix server install && npm --prefix client install && npm --prefix landing install",
     "dev": "electron .",
     "dev:mock": "cross-env MOCK=true electron .",
 
     "build": "npm --prefix client run build",
+    "build:landing": "npm --prefix landing run build",
     "start": "electron .",
     "serve": "node server/index.js",
     "typecheck": "npm --prefix client run typecheck",
+    "typecheck:landing": "npm --prefix landing run typecheck",
     "check": "npm run typecheck",
     "test": "npm --prefix server test",
     "test:watch": "npm --prefix server run test:watch",

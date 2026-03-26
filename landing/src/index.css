@@ -1,0 +1,65 @@
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Exo 2', sans-serif;
+  background: hsl(220deg 40% 5%);
+  color: hsl(200deg 20% 90%);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(220deg 40% 8%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(191deg 100% 50% / 30%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(191deg 100% 50% / 50%);
+}
+
+/* Selection styling */
+::selection {
+  background: hsl(191deg 100% 50% / 30%);
+  color: hsl(200deg 20% 95%);
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid hsl(191deg 100% 50%);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
