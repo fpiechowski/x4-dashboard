@@ -140,6 +140,11 @@ npm run release:bundle # build release bundles into dist/
 - Keep commit scopes aligned with the touched area when practical.
 - Do not push, tag, or rewrite history unless the user explicitly asks.
 
+## Language
+
+- **Code, git commits, GitHub:** Use English only. All code comments, commit messages, pull request descriptions, and GitHub issue comments must be in English.
+- **Chat communication:** Use the user's language. Respond in the same language the user uses to communicate with you.
+
 ## Do Not
 
 - Do not edit `server/public/` directly.
