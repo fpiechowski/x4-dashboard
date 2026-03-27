@@ -270,7 +270,7 @@ Once this works, you can keep the launcher running on the host PC and use the da
 
 function App() {
   return (
-    <BrowserRouter basename="/x4-dashboard">
+    <BrowserRouter basename="/">
       <AppContent />
     </BrowserRouter>
   )
