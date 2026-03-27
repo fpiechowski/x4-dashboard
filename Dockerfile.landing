@@ -1,0 +1,35 @@
+# Dockerfile for x4-dashboard landing page deployment
+# This image builds and serves the landing page as static files.
+
+# Build stage - install deps and build landing bundle
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy landing package files
+COPY landing/package*.json ./landing/
+
+# Install landing dependencies (including devDependencies for Vite build)
+RUN npm --prefix landing ci
+
+# Copy landing source code
+COPY landing/ ./landing/
+
+# Build landing app (outputs to landing/dist)
+RUN npm --prefix landing run build
+
+# Production stage - serve static files with Nginx
+FROM nginx:1.27-alpine AS production
+
+# Copy built landing artifacts
+COPY --from=builder /app/landing/dist /usr/share/nginx/html
+
+# Expose HTTP port
+EXPOSE 80
+
+# Container health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -q -O /dev/null http://127.0.0.1/ || exit 1
+
+# Start Nginx in foreground
+CMD ["nginx", "-g", "daemon off;"]
