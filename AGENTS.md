@@ -157,7 +157,7 @@ npm run release:bundle # build release bundles into dist/
 
 ## Skill Usage
 
-Project-local skills are loaded on-demand when the task matches:
+Codex workflow files are loaded on-demand when the task matches:
 
 - `prepare-task` - Select and prepare a task for implementation
 - `implement-task` - Implementation workflow with local commit
@@ -167,7 +167,14 @@ Project-local skills are loaded on-demand when the task matches:
 - `release` - Release readiness and publish workflow
 - `explore-x4-api` - X4: Foundations Lua API discovery
 
-Agent skill permissions are configured per-agent:
+Codex role playbooks map responsibilities to workflows:
 - `developer`: `implement-task`, `explore-x4-api`, `refine-task`
 - `tester`: `verify-task`
 - `product-manager`: `prepare-task`, `feature-intake`, `release`, `refine-task`
+
+Canonical Codex locations:
+- Role playbooks: `.codex/playbook-*.md`
+- Workflow docs: `.codex/workflow-*.md`
+- Migration notes: `docs/CODEX_MIGRATION.md`
+
+Legacy OpenCode files in `.opencode/` are transitional and should not be treated as the source of truth.

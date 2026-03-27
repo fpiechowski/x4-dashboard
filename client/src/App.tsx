@@ -3,6 +3,7 @@ import { AnimatorGeneralProvider, Animator, GridLines, Dots } from '@arwes/react
 import { useGameData } from './hooks/useGameData'
 import { Dashboard } from './components/Dashboard'
 import { DASHBOARDS, getDashboard } from './dashboards'
+import { getDefaultWebSocketUrl } from './utils/network'
 
 const DASHBOARD_SCALE_STORAGE_KEY = 'dashboardScale'
 const DEFAULT_DASHBOARD_ID = DASHBOARDS[0]?.id ?? 'flight'
@@ -11,11 +12,7 @@ function getWebSocketUrl(): string {
   const envUrl = import.meta.env.VITE_WS_URL?.trim()
   if (envUrl) return envUrl
 
-  const currentUrl = new URL(window.location.href)
-  const protocol = currentUrl.protocol === 'https:' ? 'wss:' : 'ws:'
-  const port = currentUrl.port === '3000' ? '3001' : currentUrl.port
-
-  return `${protocol}//${currentUrl.hostname}${port ? `:${port}` : ''}`
+  return getDefaultWebSocketUrl()
 }
 
 function getInitialDashboard(): string {

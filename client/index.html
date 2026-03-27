@@ -4,6 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>X4 Foundations – Command Interface</title>
+    <script>
+      (function () {
+        var path = window.location.pathname || '/'
+        var hasFileExtension = /\.[^/]+$/.test(path)
+        var basePath = hasFileExtension
+          ? path.slice(0, path.lastIndexOf('/') + 1)
+          : (path.endsWith('/') ? path : path + '/')
+
+        var base = document.createElement('base')
+        base.href = basePath || '/'
+        document.head.appendChild(base)
+      })()
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet" />
   </head>

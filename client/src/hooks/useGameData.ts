@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GameState } from '../types/gameData';
+import { withBasePath } from '../utils/network';
 
 const DEFAULT_STATE: GameState = {
   _meta: { timestamp: '', externalConnected: false },
@@ -97,7 +98,7 @@ export function useGameData(wsUrl: string) {
 
   const pressKey = useCallback(async (action: string) => {
     try {
-      const res = await fetch('/api/keypress', {
+      const res = await fetch(withBasePath('/api/keypress'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action }),

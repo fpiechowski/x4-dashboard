@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { FlightState, KeyBinding, KeyBindings, ShipControlState } from '../types/gameData'
 import { isShipTelemetryLive } from '../utils/gameState'
+import { withBasePath } from '../utils/network'
 
 interface Props {
   flight: FlightState
@@ -34,7 +35,7 @@ function loadBindings(): Promise<Record<string, KeyBinding>> {
   if (bindingsCache) return Promise.resolve(bindingsCache)
 
   if (!bindingsRequest) {
-    bindingsRequest = fetch('/api/keybindings')
+    bindingsRequest = fetch(withBasePath('/api/keybindings'))
       .then(r => {
         if (!r.ok) throw new Error('Unable to load key bindings')
         return r.json()

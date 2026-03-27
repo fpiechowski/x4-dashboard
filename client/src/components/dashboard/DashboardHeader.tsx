@@ -2,6 +2,7 @@ import React from 'react'
 import { Animator, Text } from '@arwes/react'
 import { DASHBOARDS } from '../../dashboards'
 import { CombatState, ConnectionMeta, FlightState } from '../../types/gameData'
+import { withBasePath } from '../../utils/network'
 
 interface Props {
   meta: ConnectionMeta
@@ -19,7 +20,7 @@ interface Props {
 const DASHBOARD_SCALE_OPTIONS = [0.5, 0.6, 0.75, 0.85, 1, 1.1, 1.25, 1.4, 1.6, 1.8, 2]
 
 function postMockAction(endpoint: string) {
-  void fetch(endpoint, { method: 'POST' }).catch(() => {})
+  void fetch(withBasePath(endpoint), { method: 'POST' }).catch(() => {})
 }
 
 export function DashboardHeader({
