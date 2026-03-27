@@ -20,3 +20,4 @@
 *.local
 *.log
 .DS_Store
+/server/coverage/
