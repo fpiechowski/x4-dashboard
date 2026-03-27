@@ -18,9 +18,6 @@ RUN npm --prefix client ci
 RUN npm --prefix server ci
 RUN npm --prefix landing ci
 
-# Clear any cached build output
-RUN rm -rf server/public/*
-
 # Copy source code
 COPY . .
 
