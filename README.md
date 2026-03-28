@@ -171,6 +171,15 @@ Build release validation:
 npm run release:check
 ```
 
+## Deployment Targets
+
+The project currently has two Dokploy-managed deployment targets:
+
+- `landing/` through `Dockerfile.landing`
+- mock mode through `Dockerfile.mock`
+
+GitHub Pages is no longer part of the active deployment model for this repository.
+
 ## ⚙️ Host Settings
 
 The following host-side settings now live in the Server Launcher:
@@ -233,7 +242,9 @@ npm run dev:mock       # hot reload + mock server + launcher
 npm start              # built app through the launcher
 npm run serve          # advanced: built server only
 npm run build          # build client into server/public/
+npm run build:landing  # build the landing page
 npm run typecheck      # main validation step
+npm run typecheck:landing # landing page typecheck
 npm run test           # run automated test suite
 npm run test:watch     # run tests in watch mode
 npm run test:coverage  # run tests with coverage report
@@ -246,7 +257,7 @@ Current validation status:
 
 - automated test suite available via Jest (server-side)
 - no linter configured yet
-- `npm run typecheck` and `npm test` are the main validation commands
+- `npm run typecheck`, `npm run typecheck:landing`, and `npm test` are the main validation commands
 
 ## 🧠 Architecture Overview
 
@@ -265,6 +276,7 @@ x4-dashboard/
 |- client/                     React + TypeScript frontend
 |- electron/                   Windows Server Launcher
 |- game-mods/x4_dashboard_bridge/ Lua bridge source
+|- landing/                    Public landing page
 |- server/                     Express + WebSocket backend
 |- server/public/              Generated frontend build output
 |- docs/screenshots/           README screenshots
@@ -278,6 +290,7 @@ x4-dashboard/
 - `RELEASE.md` - release checklist
 - `ROADMAP.md` - current roadmap
 - `CHANGELOG.md` - release history
+- `landing/README.md` - landing page development and deployment notes
 - `AGENTS.md` - instructions for coding agents
 
 ## ⚠️ Known Limitations

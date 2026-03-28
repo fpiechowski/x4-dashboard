@@ -1,0 +1,64 @@
+# Guardrails for high-risk git and release operations in this repository.
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Do not discard local changes. Inspect the diff and use targeted edits instead.",
+    match = ["git reset --hard"],
+)
+
+prefix_rule(
+    pattern = ["git", "checkout", "--"],
+    decision = "forbidden",
+    justification = "Do not revert tracked files with checkout. Review the file and make an explicit edit instead.",
+    match = ["git checkout -- README.md"],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "--force"],
+    decision = "forbidden",
+    justification = "Do not rewrite remote history from this repository.",
+    match = ["git push --force origin master"],
+)
+
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "prompt",
+    justification = "Pushing changes requires explicit user approval in this repository.",
+    match = ["git push origin master"],
+)
+
+prefix_rule(
+    pattern = ["git", "tag"],
+    decision = "prompt",
+    justification = "Creating tags changes release state and should remain an explicit decision.",
+    match = ["git tag v1.4.0"],
+)
+
+prefix_rule(
+    pattern = ["git", "clean"],
+    decision = "prompt",
+    justification = "Cleaning the worktree can remove valuable local files.",
+    match = ["git clean -fd"],
+)
+
+prefix_rule(
+    pattern = ["git", "commit", "--amend"],
+    decision = "prompt",
+    justification = "Amending a commit rewrites local history and should stay explicit.",
+    match = ["git commit --amend --no-edit"],
+)
+
+prefix_rule(
+    pattern = ["gh", "release", "create"],
+    decision = "prompt",
+    justification = "Publishing releases changes public project state and requires explicit approval.",
+    match = ["gh release create v1.4.0"],
+)
+
+prefix_rule(
+    pattern = ["gh", "release", "edit"],
+    decision = "prompt",
+    justification = "Editing releases changes public project state and requires explicit approval.",
+    match = ["gh release edit v1.4.0"],
+)

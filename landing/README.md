@@ -58,13 +58,13 @@ npm run typecheck
 
 ## Deployment
 
-The landing page is automatically deployed to GitHub Pages via the `.github/workflows/pages.yml` workflow when changes are pushed to the `master` branch that affect the `landing/` directory.
+The landing page is deployed through Dokploy using `Dockerfile.landing`.
 
 ### Manual Deployment
 
 1. Build the project: `npm run build`
-2. The `dist/` folder contains the static files ready for deployment
-3. Configure GitHub Pages in repository settings to serve from the `gh-pages` branch or via GitHub Actions
+2. Ensure Dokploy points the service at `Dockerfile.landing`
+3. Use the resulting `landing/dist/` bundle or container image as the deployment artifact
 
 ## Design System
 

@@ -4,62 +4,89 @@ Guidance for coding agents working in this repository.
 
 ## Project Snapshot
 
-- `x4-dashboard` is a React + Node.js dashboard for X4: Foundations.
+- `x4-dashboard` is a browser-first cockpit dashboard and server launcher for X4: Foundations.
 - Main areas:
-  - `client/` - Vite + React + TypeScript frontend
+  - `client/` - main dashboard frontend in React + TypeScript
   - `server/` - Express + WebSocket backend in CommonJS
-  - `electron/` - desktop launcher / packaged wrapper
-  - `game-mods/x4_dashboard_bridge/` - Lua bridge mod
+  - `electron/` - Windows host-side Server Launcher
+  - `game-mods/x4_dashboard_bridge/` - Lua bridge mod for the game
+  - `landing/` - public project landing page
 - `server/public/` is generated build output from `client/`; do not edit it directly.
-- The product is browser-first: one host server, many browser clients on localhost or LAN.
-- Electron is the host-side Server Launcher, not the main dashboard UI.
+- The product model is one host server with one or more browser clients on localhost or LAN.
+- Electron is the host-side launcher, not the main dashboard UI.
 
-## Planning Files
+## Planning And Delivery
 
 - `ROADMAP.md` is the source of truth for release planning.
 - `CHANGELOG.md` stores user-facing release notes.
 - `RELEASE.md` is the release and packaging checklist.
+- Prefer the current milestone in `ROADMAP.md` over future work unless the user explicitly redirects.
+- Prefer concrete GitHub issues over vague ideas when selecting work.
 
-## Task Prioritization
+## Codex Layout
 
-- Always prioritize tasks from the nearest release milestone over future releases.
-- When selecting next tasks, prefer issues assigned to the current milestone in `ROADMAP.md`.
-- Do not pick tasks from later milestones unless the current milestone has no open work or the user explicitly requests it.
+- Repository-wide policy lives in this file.
+- Module-specific policy lives in the nearest nested `AGENTS.md`.
+- Root project skills live in `.agents/skills/`:
+  - `propose`
+  - `refine`
+  - `implement`
+  - `verify`
+  - `deploy`
+  - `release`
+- Custom project roles live in `.codex/agents/`:
+  - `manager`
+  - `developer`
+  - `tester`
+  - `devops`
+- Module-local skills may exist deeper in the tree, such as the X4 bridge skill under `game-mods/x4_dashboard_bridge/.agents/skills/`.
+- `.opencode/` and `opencode.json` are legacy reference material during migration only; do not treat them as the source of truth.
 
-## Build, Run, and Validation
+## Build, Run, And Validation
 
 Run commands from the repository root unless noted.
 
 ```bash
-npm run install:all    # install client and server dependencies
-npm run dev            # hot reload: server + Vite client + Electron launcher
-npm run dev:mock       # hot reload: mock server + Vite client + Electron launcher
-npm run build          # build client into server/public/
-npm start              # run the built app through the Electron launcher
-npm run serve          # advanced: start only the production server
-npm run desktop:dist   # build Windows desktop artifacts
-npm run typecheck      # main validation command
-npm run check          # alias for typecheck
-npm run release:check  # typecheck + frontend build
-npm run release:bundle # build release bundles into dist/
+npm run install:all       # install client, server, and landing dependencies
+npm run dev               # dashboard dev flow with Electron launcher
+npm run dev:mock          # mock dashboard dev flow with Electron launcher
+npm run build             # build dashboard client into server/public/
+npm run build:landing     # build the landing page
+npm start                 # run the built app through the Electron launcher
+npm run serve             # start the production server only
+npm run typecheck         # dashboard/client typecheck
+npm run typecheck:landing # landing page typecheck
+npm run test              # server-side Jest tests
+npm run release:check     # dashboard release validation
+npm run release:bundle    # server + Lua release bundles
+npm run desktop:dist      # Windows desktop artifacts
 ```
 
-- There is currently no test suite.
-- There is currently no linter.
-- `npm run typecheck` is the main validation step.
-- Client-only equivalent: `npm --prefix client run typecheck`.
-- After TypeScript changes, run `npm run typecheck`.
-- After packaging or release changes, run the most relevant command when practical:
+- There is no linter configured.
+- `npm run typecheck` and `npm test` are the main validation commands for the dashboard product.
+- After dashboard TypeScript changes, run `npm run typecheck`.
+- After landing changes, run `npm run typecheck:landing`, and run `npm run build:landing` when practical.
+- After server logic changes, run `npm test` when practical.
+- After packaging, deployment, or release changes, run the most relevant command when practical:
   - `npm run release:check`
-  - `npm run desktop:dist`
   - `npm run release:bundle`
+  - `npm run desktop:dist`
 
-## Architecture Notes
+## Deployment Awareness
 
-- Node serves the built frontend from `server/public/`.
-- In dev, Vite runs on `3000` and proxies `/api` to `3001`.
+- Active deployment for the landing page and mock deployment targets is handled through Dokploy.
+- `Dockerfile.landing` and `Dockerfile.mock` back those Dokploy targets.
+- Do not reintroduce GitHub Pages for `landing/` unless the user explicitly requests it.
+- Codex may use Dokploy MCP and Chrome DevTools MCP when they are configured in the local environment.
+- Never commit MCP secrets, API keys, local endpoints, or user-specific MCP configuration into the repository.
+- GitHub Releases and desktop packaging are still part of the project delivery flow, but they are separate from Dokploy-hosted deployments.
+
+## Architecture Boundaries
+
+- Node serves the built dashboard frontend from `server/public/`.
+- In dashboard dev mode, Vite runs on `3000` and proxies `/api` to `3001`.
 - Data flow:
-  1. Lua bridge posts widget payloads to `POST /api/data`
+  1. the Lua bridge posts widget payloads to `POST /api/data`
   2. `server/utils/normalizeData.js` strips X4 formatting codes
   3. `server/dataAggregator.js` merges partial payloads into durable game state
   4. `client/src/hooks/useGameData.ts` receives updates over WebSocket
@@ -68,113 +95,22 @@ npm run release:bundle # build release bundles into dist/
   1. update `client/src/types/gameData.ts`
   2. update `getState()` in `server/dataAggregator.js`
   3. update `server/mockData.js` if mock mode should expose it
-
-## Source Boundaries
-
-- `client/` uses ESM with `.ts` and `.tsx`.
-- `server/` uses CommonJS with `.js`.
-- Do not mix module systems.
-- Keep generated assets out of source edits.
-- Shared game-state types belong in `client/src/types/gameData.ts`.
-
-## Code Style and Naming
-
-- Follow existing file style; do not reformat unrelated code.
-- Prefer descriptive names using existing product vocabulary.
-- React components and files: PascalCase.
-- Functions, hooks, helpers, and variables: camelCase.
-- Interfaces and props types: PascalCase.
-- Keep `Props` interfaces directly above the component that uses them.
-- Prefer named exports; do not introduce default exports in client code.
-- Prefer `interface` for object shapes instead of `type` aliases or `enum`s.
-- Use `T | null` instead of `T | undefined` for nullable client state.
-- `client/tsconfig.json` uses `strict: false`; do not tighten it casually.
-- For loosely shaped external data, `Record<string, any>` is acceptable here.
-- Match surrounding import style and ordering in each file.
-- Keep imports minimal and remove unused imports.
-- Keep components focused; move reusable logic to hooks or utilities.
-- Widget components render content only; panel chrome belongs in `ArwesPanel`.
-- Dashboard configs live in `client/src/dashboards.ts`.
-- Widget registration lives in `client/src/components/dashboard/widgetRegistry.tsx`.
-- Layout helpers live in `client/src/components/dashboard/DashboardLayouts.tsx`.
-
-## Frontend Conventions
-
-- Functional components only.
-- Use destructuring with defaults for optional props when helpful.
-- Follow hook patterns already used in `useGameData.ts`.
-- Never enable React StrictMode; it breaks Arwes animations.
-- Use `client/src/components/ArwesPanel.tsx` for new framed panels.
-- Every Arwes `<Text>` must have a parent `<Animator>`.
-- Available panel colors: `primary`, `danger`, `success`, `warning`, `purple`.
-- Global CSS lives in `client/src/index.css`; do not split into CSS modules.
-- Prefer CSS classes for static states and inline styles for computed values.
-
-## Server Conventions and Error Handling
-
-- Do not introduce `async/await` in `server/`; follow the existing callback and sync style.
-- Use synchronous config reads where the current code expects them.
-- HTTP routes should return JSON errors with explicit status codes.
-- Keep section comments in the existing style, for example `// === WebSocket server ===`.
-- Use defensive nullish coalescing and clamp numeric values where appropriate.
-- WebSocket send failures should remain silent where the repo already does that.
-- Error-handling patterns:
-  - WebSocket or JSON parse failures: silent `catch {}` where already used
-  - HTTP routes: `res.status(...).json({ error: '...' })`
-  - Key press failures: `console.error(...)`
-  - Missing config files may crash loudly if the current code expects that
-
-## Runtime and Distribution
-
 - Host-only settings and key bindings belong in the Electron Server Launcher, not the browser dashboard.
-- Browser UI should focus on dashboard use and client-side preferences.
-- When adding a new host-side flag or action, update both client and server mappings.
-- Release bundles are created by `scripts/create-server-bundle.js` and `scripts/create-lua-mod-bundle.js`.
-- GitHub workflows live in `.github/workflows/ci.yml` and `.github/workflows/release.yml`.
-- Desktop artifacts are written to `release/`; server and Lua bundles to `dist/`.
-- If you change packaging, ensure the build still includes server runtime dependencies.
+- Shared game-state types belong in `client/src/types/gameData.ts`.
+- Do not mix CommonJS and ESM across module boundaries.
 
-## Git Conventions
+## Repository-Wide Conventions
 
+- Follow existing file style and avoid unrelated refactors.
+- Prefer descriptive names using existing product vocabulary.
 - Use Conventional Commits for every commit.
 - Keep commit scopes aligned with the touched area when practical.
-- Do not push, tag, or rewrite history unless the user explicitly asks.
-
-## Language
-
-- **Code, git commits, GitHub:** Use English only. All code comments, commit messages, pull request descriptions, and GitHub issue comments must be in English.
-- **Chat communication:** Use the user's language. Respond in the same language the user uses to communicate with you.
+- Code, commit messages, PR descriptions, and GitHub comments must be in English.
+- Chat with the user in the user's language.
 
 ## Do Not
 
 - Do not edit `server/public/` directly.
-- Do not add a linter or test framework without explicit request.
-- Do not enable React StrictMode.
-- Do not introduce default exports in client code.
-- Do not use `enum` where an `interface` is sufficient.
-- Do not mix CommonJS and ESM.
+- Do not add a linter or a new test framework without explicit request.
 - Do not use destructive git commands unless explicitly requested.
-
-## Skill Usage
-
-Codex workflow files are loaded on-demand when the task matches:
-
-- `prepare-task` - Select and prepare a task for implementation
-- `implement-task` - Implementation workflow with local commit
-- `verify-task` - Manual-style verification of delivered work
-- `refine-task` - Turn vague tasks into implementation-ready issues
-- `feature-intake` - Turn rough feature ideas into roadmap updates
-- `release` - Release readiness and publish workflow
-- `explore-x4-api` - X4: Foundations Lua API discovery
-
-Codex role playbooks map responsibilities to workflows:
-- `developer`: `implement-task`, `explore-x4-api`, `refine-task`
-- `tester`: `verify-task`
-- `product-manager`: `prepare-task`, `feature-intake`, `release`, `refine-task`
-
-Canonical Codex locations:
-- Role playbooks: `.codex/playbook-*.md`
-- Workflow docs: `.codex/workflow-*.md`
-- Migration notes: `docs/CODEX_MIGRATION.md`
-
-Legacy OpenCode files in `.opencode/` are transitional and should not be treated as the source of truth.
+- Do not push, tag, or rewrite history unless the user explicitly asks.
