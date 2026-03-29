@@ -36,6 +36,14 @@ This roadmap is a lightweight public planning document for a shorter, more frequ
 
 ## Released
 
+### v1.5.0 - Quality and release presentation (released 2026-03-29)
+- Add an initial automated test suite to protect the most important flows
+- Capture screenshots for under-attack and active-target states
+- Add separate dashboard zoom and text scaling controls so players can tune widget readability without resizing the top title bar
+- Build a public landing page using Arwes framework to showcase the project
+- Improve release presentation with better screenshots and supporting docs where useful
+- Keep CI and release packaging polished as the project becomes easier to distribute
+
 ### v1.3.0 - Controls and onboarding (released 2026-03-22)
 - Ship in-launcher keybinding capture for faster host setup
 - Ship automatic import for supported X4 key bindings from local game settings
