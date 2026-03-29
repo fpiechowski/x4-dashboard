@@ -6,6 +6,18 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-03-29
+
+### Added
+- Initial automated Jest test suite for critical server aggregation and normalization flows
+- Combat-focused dashboard screenshots covering under-attack and active-target states
+- Public Arwes-based landing page for project presentation
+
+### Changed
+- Added separate dashboard zoom and text scaling controls to improve widget readability tuning
+- Upgraded GitHub Actions workflow dependencies to remove deprecated Node 20 runtime usage
+- Improved release presentation assets and supporting documentation coverage
+
 ## [1.4.0] - 2026-03-24
 
 ### Added
