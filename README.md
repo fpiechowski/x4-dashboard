@@ -42,13 +42,21 @@ The main product direction is simple: run one server, then open the dashboard fr
 
 ![Flight combat missile inbound](docs/screenshots/dashboard-flight-combat-missile-inbound.png)
 
-### Flight speedometer - Arc
+### Flight speedometer - Arc (Boost active)
 
-![Flight speedometer arc](docs/screenshots/dashboard-flight-speedometer-arc.png)
+![Flight speedometer arc with boost active](docs/screenshots/dashboard-flight-speedometer-arc-boost-active.png)
 
-### Flight speedometer - Bar
+### Flight speedometer - Arc (Travel mode active)
 
-![Flight speedometer bar](docs/screenshots/dashboard-flight-speedometer-bar.png)
+![Flight speedometer arc with travel mode active](docs/screenshots/dashboard-flight-speedometer-arc-travel-active.png)
+
+### Flight speedometer - Bar (Boost active)
+
+![Flight speedometer bar with boost active](docs/screenshots/dashboard-flight-speedometer-bar-boost-active.png)
+
+### Flight speedometer - Bar (Travel mode active)
+
+![Flight speedometer bar with travel mode active](docs/screenshots/dashboard-flight-speedometer-bar-travel-active.png)
 
 ### Ship Controls
 

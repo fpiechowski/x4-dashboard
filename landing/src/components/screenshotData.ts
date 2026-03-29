@@ -28,14 +28,24 @@ export const screenshots: Screenshot[] = [
     title: 'Flight Missile Inbound',
   },
   {
-    src: `${BASE}/dashboard-flight-speedometer-arc.png`,
-    alt: 'Flight dashboard with ARC speedometer style',
-    title: 'Speedometer ARC',
+    src: `${BASE}/dashboard-flight-speedometer-arc-boost-active.png`,
+    alt: 'Flight dashboard with ARC speedometer and boost active',
+    title: 'Speedometer ARC (Boost)',
   },
   {
-    src: `${BASE}/dashboard-flight-speedometer-bar.png`,
-    alt: 'Flight dashboard with BAR speedometer style',
-    title: 'Speedometer BAR',
+    src: `${BASE}/dashboard-flight-speedometer-arc-travel-active.png`,
+    alt: 'Flight dashboard with ARC speedometer and travel mode active',
+    title: 'Speedometer ARC (Travel)',
+  },
+  {
+    src: `${BASE}/dashboard-flight-speedometer-bar-boost-active.png`,
+    alt: 'Flight dashboard with BAR speedometer and boost active',
+    title: 'Speedometer BAR (Boost)',
+  },
+  {
+    src: `${BASE}/dashboard-flight-speedometer-bar-travel-active.png`,
+    alt: 'Flight dashboard with BAR speedometer and travel mode active',
+    title: 'Speedometer BAR (Travel)',
   },
   {
     src: `${BASE}/dashboard-ship-controls.png`,
