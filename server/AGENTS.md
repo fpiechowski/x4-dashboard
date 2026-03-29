@@ -38,3 +38,13 @@ Server-specific guidance for the Express and WebSocket backend.
 - Jest lives in `server/__tests__/`.
 - Add or update tests for new normalization, aggregation, or regression-prone server logic when practical.
 - Run `npm test` for meaningful server logic changes when practical.
+
+## Mock Screenshot Scenarios
+
+- `npm run screenshots:capture` drives deterministic screenshot scenarios through mock toggle routes exposed by `server/index.js`.
+- Keep these routes stable for screenshot regeneration workflows:
+  - `/api/mock/combat`
+  - `/api/mock/missile`
+  - `/api/mock/boost`
+  - `/api/mock/travel`
+- If mock payload shape changes, keep `/api/state` fields used by screenshot automation in sync (`flight.speed`, `flight.maxSpeed`, `flight.maxBoostSpeed`, `flight.boosting`, `flight.travelDrive`).

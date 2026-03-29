@@ -29,7 +29,6 @@
     "dev:mock": "cross-env MOCK=true electron .",
     "dev:landing": "npm --prefix landing run dev",
     "dev:landing:host": "npm --prefix landing run dev -- --host",
-
     "build": "npm --prefix client run build",
     "build:landing": "npm --prefix landing run build",
     "start": "electron .",
@@ -40,7 +39,7 @@
     "test": "npm --prefix server test",
     "test:watch": "npm --prefix server run test:watch",
     "test:coverage": "npm --prefix server run test:coverage",
-    "screenshots:capture": "./scripts/capture-dashboard-screenshots.sh",
+    "screenshots:capture": "node ./scripts/capture-dashboard-screenshots.mjs",
     "release:check": "npm run typecheck && npm run build",
     "release:bundle": "npm run release:check && node scripts/create-server-bundle.js && node scripts/create-lua-mod-bundle.js",
     "desktop:dist": "npm run release:check && electron-builder --publish never"
@@ -49,7 +48,8 @@
     "concurrently": "^8.2.0",
     "cross-env": "^7.0.3",
     "electron": "^37.2.0",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "playwright": "^1.58.2"
   },
   "build": {
     "appId": "com.fpiechowski.x4dashboard",

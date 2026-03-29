@@ -62,6 +62,7 @@ npm run test              # server-side Jest tests
 npm run release:check     # dashboard release validation
 npm run release:bundle    # server + Lua release bundles
 npm run desktop:dist      # Windows desktop artifacts
+npm run screenshots:capture # regenerate docs/screenshots with Playwright
 ```
 
 - There is no linter configured.
@@ -73,6 +74,12 @@ npm run desktop:dist      # Windows desktop artifacts
   - `npm run release:check`
   - `npm run release:bundle`
   - `npm run desktop:dist`
+
+### Screenshot Regeneration
+
+- `npm run screenshots:capture` is the canonical, repeatable way to recreate the public screenshot set in `docs/screenshots/`.
+- The script starts the mock server, normalizes mock state, applies scenario-specific toggles (combat, missile, boost, travel), and captures all expected screenshots with Playwright at a fixed viewport.
+- Keep screenshot filenames stable because README and landing screenshot metadata reference them directly.
 
 ## Deployment Awareness
 
