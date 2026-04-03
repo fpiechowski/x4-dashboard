@@ -222,6 +222,13 @@ The project currently has two Dokploy-managed deployment targets:
 - `landing/` through `Dockerfile.landing`
 - mock mode through `Dockerfile.mock`
 
+Tagged releases also publish versioned GHCR images from this repository:
+
+- `ghcr.io/fpiechowski/x4-dashboard-landing:vX.Y.Z`
+- `ghcr.io/fpiechowski/x4-dashboard-mock:vX.Y.Z`
+
+Infrastructure repositories such as `nebula` should consume those published images instead of rebuilding them.
+
 GitHub Pages is no longer part of the active deployment model for this repository.
 
 ## ⚙️ Host Settings

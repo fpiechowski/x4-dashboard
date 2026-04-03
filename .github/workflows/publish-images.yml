@@ -1,0 +1,108 @@
+name: Publish Container Images
+
+on:
+  push:
+    tags:
+      - "v*"
+    paths:
+      - "Dockerfile.landing"
+      - "Dockerfile.mock"
+      - "landing/**"
+      - "client/**"
+      - "server/**"
+      - "package.json"
+      - "package-lock.json"
+      - "landing/package.json"
+      - "landing/package-lock.json"
+      - "client/package.json"
+      - "client/package-lock.json"
+      - "server/package.json"
+      - "server/package-lock.json"
+      - ".github/workflows/publish-images.yml"
+  workflow_dispatch:
+    inputs:
+      git_ref:
+        description: "Git ref to build"
+        required: false
+        type: string
+      image_tag:
+        description: "Image tag to publish, for example v1.5.0"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve target ref
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git_ref="${{ inputs.git_ref }}"
+          if [[ -z "${git_ref}" ]]; then
+            git_ref="${GITHUB_REF}"
+          fi
+
+          if [[ "${git_ref}" == refs/tags/* ]]; then
+            image_tag="${git_ref#refs/tags/}"
+          else
+            image_tag="${{ inputs.image_tag }}"
+          fi
+
+          if [[ -z "${image_tag}" ]]; then
+            echo "image_tag is required for non-tag workflow_dispatch runs." >&2
+            exit 1
+          fi
+
+          echo "git_ref=${git_ref}" >> "${GITHUB_OUTPUT}"
+          echo "image_tag=${image_tag}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.git_ref }}
+
+      - name: Resolve source commit
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="$(git rev-parse --short=12 HEAD)"
+          echo "source_sha=${source_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push landing image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.landing
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/x4-dashboard-landing:${{ steps.target.outputs.image_tag }}
+            ghcr.io/${{ github.repository_owner }}/x4-dashboard-landing:sha-${{ steps.source.outputs.source_sha }}
+
+      - name: Build and push mock image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.mock
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/x4-dashboard-mock:${{ steps.target.outputs.image_tag }}
+            ghcr.io/${{ github.repository_owner }}/x4-dashboard-mock:sha-${{ steps.source.outputs.source_sha }}

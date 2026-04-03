@@ -44,6 +44,7 @@ npm run desktop:dist
 4. Publish GitHub release notes based on `CHANGELOG.md`
 5. Let `.github/workflows/release.yml` attach the generated server and Lua assets
 6. Let `.github/workflows/release.yml` build and attach Windows desktop installers
+7. Let `.github/workflows/publish-images.yml` publish `x4-dashboard-landing` and `x4-dashboard-mock` images to GHCR for the same release tag
 
 ## Distribution notes
 
@@ -51,3 +52,4 @@ npm run desktop:dist
 - The project is intended for trusted local environments
 - Remote control should stay disabled unless explicitly required
 - Desktop packaging now acts as a server launcher and convenience entry point for browser-based clients
+- `nebula` and other infrastructure repositories should reference the published GHCR images instead of rebuilding this repository
